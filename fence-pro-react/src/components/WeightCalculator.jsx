@@ -37,7 +37,7 @@ export default function WeightCalculator() {
             <span className="bg-blue-200 text-blue-800 w-7 h-7 flex items-center justify-center rounded-full text-sm">1</span>
             Establish Baseline Weight
           </h3>
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-black text-gray-700 uppercase mb-2">Known Quantity (Pieces)</label>
               <div className="relative">
@@ -76,7 +76,7 @@ export default function WeightCalculator() {
         </div>
 
         {/* Step 2: Calculate */}
-        <div className={`grid md:grid-cols-2 gap-6 transition-all duration-300 ${unitWeight > 0 ? 'opacity-100' : 'opacity-40 grayscale pointer-events-none'}`}>
+        <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-300 ${unitWeight > 0 ? 'opacity-100' : 'opacity-40 grayscale pointer-events-none'}`}>
           
           {/* Pieces to Weight */}
           <div className="bg-white border-2 border-amber-200 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">

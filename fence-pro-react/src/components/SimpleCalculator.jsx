@@ -83,39 +83,39 @@ export default function SimpleCalculator() {
       </div>
       <div className="p-5 flex-grow flex flex-col">
         {/* Display */}
-        <div className="bg-gray-800 rounded-lg p-4 mb-4 text-right overflow-hidden shadow-inner border border-gray-700">
-          <div className="h-5 text-gray-400 text-xs font-bold font-mono tracking-wider mb-1">
+        <div className="bg-gray-800 rounded-lg p-5 mb-4 text-right overflow-hidden shadow-inner border border-gray-700">
+          <div className="h-6 text-gray-400 text-sm font-bold font-mono tracking-wider mb-1">
             {previousVal != null ? `${previousVal} ${operator}` : ''}
           </div>
-          <div className="text-4xl font-black text-white truncate font-mono tracking-tighter">
+          <div className="text-5xl font-black text-white truncate font-mono tracking-tighter">
             {display}
           </div>
         </div>
 
         {/* Keypad */}
-        <div className="grid grid-cols-4 gap-2 flex-grow">
-          <button onClick={handleClear} className="col-span-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-lg font-black text-lg transition-colors py-2 active:bg-red-500/30">AC</button>
-          <button onClick={handleDel} className="bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg font-black text-lg transition-colors py-2 active:bg-gray-500">DEL</button>
-          <button onClick={() => handleOp('÷')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-black text-xl transition-colors py-2 active:bg-blue-400 ${operator === '÷' ? 'ring-2 ring-white z-10' : ''}`}>÷</button>
+        <div className="grid grid-cols-4 gap-2 md:gap-3 flex-grow select-none touch-manipulation">
+          <button onClick={handleClear} className="col-span-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-xl font-black text-xl transition-all duration-75 active:scale-95 py-3 md:py-4">AC</button>
+          <button onClick={handleDel} className="bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-xl font-black text-xl transition-all duration-75 active:scale-95 py-3 md:py-4">DEL</button>
+          <button onClick={() => handleOp('÷')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-2xl transition-all duration-75 active:scale-95 py-3 md:py-4 ${operator === '÷' ? 'ring-2 ring-white z-10' : ''}`}>÷</button>
           
-          <button onClick={() => handleNum(7)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-lg font-bold text-xl transition-colors py-3 active:bg-gray-600">7</button>
-          <button onClick={() => handleNum(8)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-lg font-bold text-xl transition-colors py-3 active:bg-gray-600">8</button>
-          <button onClick={() => handleNum(9)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-lg font-bold text-xl transition-colors py-3 active:bg-gray-600">9</button>
-          <button onClick={() => handleOp('×')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-black text-xl transition-colors py-3 active:bg-blue-400 ${operator === '×' ? 'ring-2 ring-white z-10' : ''}`}>×</button>
+          <button onClick={() => handleNum(7)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">7</button>
+          <button onClick={() => handleNum(8)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">8</button>
+          <button onClick={() => handleNum(9)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">9</button>
+          <button onClick={() => handleOp('×')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5 ${operator === '×' ? 'ring-2 ring-white z-10' : ''}`}>×</button>
           
-          <button onClick={() => handleNum(4)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-lg font-bold text-xl transition-colors py-3 active:bg-gray-600">4</button>
-          <button onClick={() => handleNum(5)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-lg font-bold text-xl transition-colors py-3 active:bg-gray-600">5</button>
-          <button onClick={() => handleNum(6)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-lg font-bold text-xl transition-colors py-3 active:bg-gray-600">6</button>
-          <button onClick={() => handleOp('-')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-black text-xl transition-colors py-3 active:bg-blue-400 ${operator === '-' ? 'ring-2 ring-white z-10' : ''}`}>-</button>
+          <button onClick={() => handleNum(4)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">4</button>
+          <button onClick={() => handleNum(5)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">5</button>
+          <button onClick={() => handleNum(6)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">6</button>
+          <button onClick={() => handleOp('-')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5 ${operator === '-' ? 'ring-2 ring-white z-10' : ''}`}>-</button>
           
-          <button onClick={() => handleNum(1)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-lg font-bold text-xl transition-colors py-3 active:bg-gray-600">1</button>
-          <button onClick={() => handleNum(2)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-lg font-bold text-xl transition-colors py-3 active:bg-gray-600">2</button>
-          <button onClick={() => handleNum(3)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-lg font-bold text-xl transition-colors py-3 active:bg-gray-600">3</button>
-          <button onClick={() => handleOp('+')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-black text-xl transition-colors py-3 active:bg-blue-400 ${operator === '+' ? 'ring-2 ring-white z-10' : ''}`}>+</button>
+          <button onClick={() => handleNum(1)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">1</button>
+          <button onClick={() => handleNum(2)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">2</button>
+          <button onClick={() => handleNum(3)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">3</button>
+          <button onClick={() => handleOp('+')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5 ${operator === '+' ? 'ring-2 ring-white z-10' : ''}`}>+</button>
           
-          <button onClick={() => handleNum(0)} className="col-span-2 bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-lg font-bold text-xl transition-colors py-3 active:bg-gray-600">0</button>
-          <button onClick={handleDecimal} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-lg font-bold text-xl transition-colors py-3 active:bg-gray-600">.</button>
-          <button onClick={handleEqual} className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-black text-xl shadow-lg transition-colors py-3 active:bg-emerald-400">=</button>
+          <button onClick={() => handleNum(0)} className="col-span-2 bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">0</button>
+          <button onClick={handleDecimal} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">.</button>
+          <button onClick={handleEqual} className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-2xl shadow-lg transition-all duration-75 active:scale-95 py-4 md:py-5">=</button>
         </div>
       </div>
     </div>

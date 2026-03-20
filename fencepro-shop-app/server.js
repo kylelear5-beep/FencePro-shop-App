@@ -255,7 +255,7 @@ app.post('/api/chat', async (req, res) => {
 
     // Generate content using the new SDK
     const result = await genAI.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       contents: contents,
       config: {
         systemInstruction: SYSTEM_PROMPT
