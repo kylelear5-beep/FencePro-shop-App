@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMM Machine Routing Guides — Superior Fence & Rail</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --maroon: #821302;
+            --maroon-dark: #5E0E01;
+            --green: #689689;
+            --cream: #F5F3EF;
+            --text-dark: #231F20;
+            --text-mid: #555555;
+            --border-light: #D2CFC7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            color: var(--text-dark);
+            background: #E8E5DE;
+            line-height: 1.6;
+        }
+
+        .page {
+            max-width: 8.5in;
+            margin: 30px auto;
+            background: white;
+            padding: 60px 70px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            border-radius: 4px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid var(--maroon);
+        }
+
+        .page-header .header-logo {
+            height: 30px;
+            width: auto;
+        }
+
+        .page-header h2 {
+            font-size: 11px;
+            font-weight: 700;
+            color: #821302;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--maroon);
+            margin-bottom: 6px;
+            margin-top: 36px;
+            text-transform: uppercase;
+        }
+
+        h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--maroon-dark);
+            margin-top: 24px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--green);
+            padding-left: 12px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 14px;
+        }
+
+        li {
+            font-size: 13px;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .highlight-box {
+            background: var(--cream);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 18px;
+            margin: 20px 0;
+        }
+
+        .page-footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 16px;
+            border-top: 2px solid var(--maroon);
+        }
+
+        .page-footer p {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--maroon);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <div class="page-header">
+            <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
+                alt="Superior Fence & Rail" class="header-logo">
+            <h2>CMM Machine Routing Guides</h2>
+        </div>
+
+        <h3 class="section-title">CMM Machine Operations</h3>
+
+        <div class="highlight-box">
+            <p><strong>Overview:</strong> This guide provides technical specifications and operational steps for the CMM
+                post-routing machine used for Vinyl and Aluminum fabrication.</p>
+        </div>
+
+        <h4>Precision Alphanumeric Routing (ABC Wizard)</h4>
+        <ul>
+            <li><strong>Router Bit:</strong> Use an 1/8-inch router bit for alphanumeric routing for clean cuts.</li>
+            <li><strong>Layout:</strong> Options include Top-to-Bottom, Left-to-Right, or rotated 90-degrees for signs.
+            </li>
+            <li><strong>Spacing:</strong> Leave spacing at zero for natural look; use spacebar for manual gaps.</li>
+        </ul>
+
+        <h4>Angles Wizard</h4>
+        <ul>
+            <li><strong>Scope:</strong> Applies adjustments to all holes on the current face.</li>
+            <li><strong>Rise vs Side:</strong> Rise Angle elongates holes; Side Angle makes them wider.</li>
+            <li><strong>Pivot:</strong> Use the middle pivot point to stretch the rise angle equally.</li>
+        </ul>
+
+        <h4>Configuration &amp; Operations</h4>
+        <ul>
+            <li><strong>End Spacing:</strong> Distance from top edge of post to the top of the highest hole.</li>
+            <li><strong>Importing:</strong> Navigate to File > Import Part Data. Select the index file ("master key").
+            </li>
+            <li><strong>Dry Run:</strong> Use to mimic movements without plunging bit. Always test new programs.</li>
+            <li><strong>T-Rail Adapter:</strong> Use for T-shaped handrails; remember this offsets home position.</li>
+        </ul>
+
+        <h4>Safety &amp; E-Stops</h4>
+        <ul>
+            <li><strong>Software Stop:</strong> Use on-screen button for bit breaks or simple pauses.</li>
+            <li><strong>Mechanical E-Stop:</strong> Use the red cabinet button for mechanical issues or reaching inside.
+            </li>
+        </ul>
+
+        <div class="page-footer">
+            <p>Superior Fence & Rail — Hudson Valley H.Q.</p>
+        </div>
+    </div>
+</body>
+
+</html>

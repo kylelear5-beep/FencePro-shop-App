@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop SOP Playbook — Superior Fence & Rail</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --maroon: #821302;
+            --maroon-dark: #5E0E01;
+            --maroon-light: #A52A1A;
+            --green: #689689;
+            --green-dark: #4F7A6F;
+            --green-light: #7AABA0;
+            --charcoal: #231F20;
+            --gold: #C9A84C;
+            --cream: #F5F3EF;
+            --beige: #D2CFC7;
+            --beige-light: #E8E5DE;
+            --text-dark: #231F20;
+            --text-mid: #555555;
+            --text-light: #888888;
+            --border-light: #D2CFC7;
+            --green-soft: #E8F5E9;
+            --green-border: #81C784;
+            --blue-soft: #E3F2FD;
+            --blue-border: #64B5F6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+            color: var(--text-dark);
+            background: #E8E5DE;
+            line-height: 1.6;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .page {
+                box-shadow: none !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+            }
+
+            .page-break {
+                page-break-before: always;
+            }
+
+            @page {
+                margin: 0.6in 0.75in;
+                size: letter;
+            }
+        }
+
+        .page {
+            max-width: 8.5in;
+            margin: 30px auto;
+            background: white;
+            padding: 60px 70px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            border-radius: 4px;
+        }
+
+        /* ========== COVER PAGE ========== */
+        .cover {
+            text-align: center;
+            padding: 80px 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 10in;
+        }
+
+        .cover .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--maroon);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border-bottom: 3px solid var(--maroon);
+            padding-bottom: 12px;
+            margin-bottom: 8px;
+        }
+
+        .cover .logo-sub {
+            font-size: 11px;
+            font-weight: 600;
+            color: #821302;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 80px;
+        }
+
+        .cover .doc-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 46px;
+            font-weight: 700;
+            color: var(--maroon);
+            margin-bottom: 16px;
+        }
+
+        .cover .guide-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-mid);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .cover .location {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--maroon);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 60px;
+        }
+
+        .cover .desc-box {
+            background: var(--cream);
+            border: 1px solid var(--border-light);
+            border-left: 4px solid var(--maroon);
+            padding: 20px 30px;
+            border-radius: 4px;
+            max-width: 480px;
+        }
+
+        .cover .desc-box p {
+            font-size: 13px;
+            color: var(--text-mid);
+            line-height: 1.7;
+        }
+
+        /* ========== PAGE HEADER ========== */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid var(--maroon);
+        }
+
+        .page-header .header-logo {
+            height: 30px;
+            width: auto;
+        }
+
+        .page-header h2 {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: #821302;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* ========== SECTION HEADINGS ========== */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--maroon);
+            margin-bottom: 6px;
+            margin-top: 36px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .section-subtitle {
+            font-size: 12px;
+            font-weight: 600;
+            color: #689689;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .goal-line {
+            font-size: 12px;
+            font-style: italic;
+            color: #821302;
+            font-weight: 600;
+            margin-bottom: 18px;
+            padding: 8px 14px;
+            background: var(--cream);
+            border-left: 3px solid #689689;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* ========== BODY TEXT ========== */
+        p {
+            font-size: 13px;
+            line-height: 1.75;
+            margin-bottom: 14px;
+            color: var(--text-dark);
+        }
+
+        /* ========== NUMBERED STEPS ========== */
+        .sop-steps {
+            list-style: none;
+            padding: 0;
+            counter-reset: sop-counter;
+        }
+
+        .sop-steps>li {
+            counter-increment: sop-counter;
+            padding: 14px 18px 14px 56px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-light);
+            border-left: 4px solid var(--maroon);
+            border-radius: 0 6px 6px 0;
+            font-size: 13px;
+            line-height: 1.65;
+            position: relative;
+        }
+
+        .sop-steps>li::before {
+            content: counter(sop-counter);
+            position: absolute;
+            left: 16px;
+            top: 14px;
+            width: 26px;
+            height: 26px;
+            background: var(--maroon);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .sop-steps>li strong {
+            color: var(--maroon);
+        }
+
+        .sop-steps .sub-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 8px;
+        }
+
+        .sop-steps .sub-list li {
+            font-size: 12.5px;
+            padding: 3px 0 3px 18px;
+            position: relative;
+            color: var(--text-dark);
+        }
+
+        .sop-steps .sub-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--maroon);
+            font-weight: 700;
+        }
+
+        /* ========== GLOSSARY ========== */
+        .glossary {
+            background: var(--cream);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 18px 22px;
+            margin-top: 18px;
+        }
+
+        .glossary h4 {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--maroon);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .glossary p {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .glossary p strong {
+            color: var(--maroon);
+        }
+
+        /* ========== DO / DO NOT ========== */
+        .do-dont-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .do-col,
+        .dont-col {
+            border-radius: 6px;
+            padding: 16px 18px;
+        }
+
+        .do-col {
+            background: #EDF7ED;
+            border: 1px solid #B8DFB8;
+        }
+
+        .dont-col {
+            background: #FDEDED;
+            border: 1px solid #F3C4C4;
+        }
+
+        .do-col h4 {
+            color: #2E7D32;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .dont-col h4 {
+            color: #C62828;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .do-col li,
+        .dont-col li {
+            font-size: 12.5px;
+            margin-bottom: 4px;
+            list-style: none;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .do-col li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #2E7D32;
+            font-weight: 700;
+        }
+
+        .dont-col li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #C62828;
+            font-weight: 700;
+        }
+
+        /* ========== LOAD SECTION ========== */
+        .load-method {
+            background: var(--cream);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .load-method h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--maroon);
+            margin-bottom: 12px;
+        }
+
+        .load-method .load-icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .load-method ol {
+            padding-left: 20px;
+        }
+
+        .load-method ol li {
+            font-size: 12.5px;
+            margin-bottom: 8px;
+            line-height: 1.65;
+        }
+
+        .load-method ol li strong {
+            color: var(--maroon-dark);
+        }
+
+        .load-method .strap-list {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 6px;
+        }
+
+        .load-method .strap-list li {
+            padding-left: 18px;
+            position: relative;
+        }
+
+        .load-method .strap-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--maroon);
+            font-weight: 700;
+        }
+
+        /* ========== TOOLS SECTION ========== */
+        .tool-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tool-list li {
+            padding: 12px 18px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border-light);
+            border-left: 4px solid var(--gold);
+            border-radius: 0 6px 6px 0;
+            font-size: 13px;
+        }
+
+        .tool-list li strong {
+            color: var(--maroon);
+        }
+
+        /* ========== CHECKLIST ========== */
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 10px 14px 10px 40px;
+            margin-bottom: 6px;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 13px;
+            position: relative;
+            background: white;
+        }
+
+        .checklist li::before {
+            content: '☐';
+            position: absolute;
+            left: 14px;
+            top: 10px;
+            font-size: 16px;
+            color: var(--maroon);
+        }
+
+        .checklist li.lock-up {
+            background: var(--cream);
+            font-weight: 600;
+            border-left: 4px solid var(--maroon);
+        }
+
+        /* ========== PRINCIPLES ========== */
+        .principle-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .principle-list li {
+            padding: 14px 20px;
+            margin-bottom: 10px;
+            background: var(--cream);
+            border-left: 4px solid var(--maroon);
+            border-radius: 0 6px 6px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--maroon-dark);
+            font-style: italic;
+        }
+
+        /* ========== FOOTER ========== */
+        .page-footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 16px;
+            border-top: 2px solid var(--maroon);
+        }
+
+        .page-footer p {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--maroon);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 0;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border-light);
+            margin: 30px 0;
+        }
+
+        /* ========== WHY + OUTCOME CALLOUTS ========== */
+        .why-box {
+            background: var(--blue-soft);
+            border: 1px solid var(--blue-border);
+            border-left: 4px solid var(--blue-border);
+            border-radius: 0 6px 6px 0;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            margin-top: 10px;
+        }
+
+        .why-box h5 {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #1565C0;
+            margin-bottom: 6px;
+        }
+
+        .why-box p {
+            font-size: 12.5px;
+            color: var(--text-dark);
+            margin-bottom: 0;
+            line-height: 1.65;
+        }
+
+        .outcome-box {
+            background: var(--green-soft);
+            border: 1px solid var(--green-border);
+            border-left: 4px solid var(--green-border);
+            border-radius: 0 6px 6px 0;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        .outcome-box h5 {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #2E7D32;
+            margin-bottom: 6px;
+        }
+
+        .outcome-box p {
+            font-size: 12.5px;
+            color: var(--text-dark);
+            margin-bottom: 0;
+            line-height: 1.65;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ==================== COVER PAGE ==================== -->
+    <div class="page cover">
+        <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
+            alt="Superior Fence & Rail, Inc." class="logo-img">
+        <div class="tagline">America's Most Trusted Fence Company</div>
+
+        <div class="doc-title">Shop SOP<br>Playbook</div>
+        <div class="guide-title">Production Specialist</div>
+        <div class="location">Hudson Valley H.Q.</div>
+        <div class="edition">Standard Operating Procedures — 2026</div>
+
+        <div class="desc-box">
+            <p>This playbook contains the detailed Standard Operating Procedures for every core responsibility of the
+                Production Specialist. Use it as your daily tactical reference.</p>
+        </div>
+    </div>
+
+    <!-- ==================== PAGE: PRINCIPLES ==================== -->
+    <div class="page page-break">
+        <div class="page-header">
+            <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
+                alt="Superior Fence & Rail" class="header-logo">
+            <h2>Core Principles</h2>
+        </div>
+
+        <h3 class="section-title">Core Principles & Priorities</h3>
+        <p class="section-subtitle">The Rules That Drive Everything</p>
+
+        <ul class="principle-list">
+            <li>"Do one thing to 100% until it's done."</li>
+            <li>"Stage only one job at a time."</li>
+            <li>"Only review one B.O.M. at a time."</li>
+            <li>"Be clear about what CANNOT be done."</li>
+        </ul>
+
+        <hr class="divider">
+
+        <h3 class="section-title">Running Tasks &amp; Receiving</h3>
+        <p class="goal-line">Goal: All material is received for accounting and stored within 24 hours of delivery.</p>
+
+        <div class="why-box">
+            <h5>💡 Why This Matters</h5>
+            <p>Receiving is the <strong>front door</strong> of every job. If material isn’t checked in accurately,
+                accounting can’t reconcile costs, the office can’t schedule installations, and crews show up to a job
+                site missing what they need. Every hour material sits un-received increases the risk of lost, damaged,
+                or misattributed inventory. Catching errors at the truck — before it drives away — is the cheapest fix
+                we’ll ever get.</p>
+        </div>
+
+        <p><strong>Running Tasks:</strong> Receiving hours are 9am to 12pm. Receive any material that comes in. Inspect
+            when it arrives. If obviously damaged OR the wrong material, call supplier directly and don’t take off from
+            truck. Notice broken/low material, hardware, accessories and notify GM. Note issues in BOM.</p>
+
+        <h4 style="color: var(--maroon); margin-bottom: 8px; margin-top: 16px;">Receiving Checklist</h4>
+        <ol class="sop-steps">
+            <li><strong>Find PO:</strong> Find purchase order for the delivery. If none, contact buyer (Current SFR
+                buyer: Chris Wiliams).
+                <ul class="sub-list">
+                    <li><em>Reason:</em> The PO is our single source of truth for what we actually ordered. Without it,
+                        you have no way to verify if the delivery is correct and accounting has no paper trail.</li>
+                </ul>
+            </li>
+            <li><strong>Match PO:</strong> Match purchase order to delivery slip. If issue, contact vendor and/or SFR
+                buyer.
+                <ul class="sub-list">
+                    <li><em>Reason:</em> Vendors make mistakes — wrong quantities, substituted items, partial shipments.
+                        Catching discrepancies now prevents a crew from arriving at a job site missing critical
+                        material, which delays the install and costs the company money.</li>
+                </ul>
+            </li>
+            <li><strong>Truck Inspection:</strong> On flat bed, in box truck, or “delivered good”.
+                <ul class="sub-list">
+                    <li><strong>Good:</strong> All material matches delivery slip and is not broken. Put in its
+                        location.</li>
+                    <li><strong>Wrong material:</strong> Contact vendor asap.</li>
+                    <li><strong>Broken material:</strong> Take photos, write down damage on BOL, contact vendor asap (cc
+                        buyer). Make decision on credit/replacement based on job need.</li>
+                    <li><em>Reason:</em> Documenting damage <strong>before</strong> the driver leaves is critical. Once
+                        the truck pulls away, the vendor can claim it left their warehouse in perfect condition. Photos
+                        and written notes on the BOL are your legal proof for credits or replacements.</li>
+                </ul>
+            </li>
+            <li><strong>Unload &amp; Load:</strong> Unload, perform further inspection if needed. For stock material,
+                put in appropriate bay. For job lot material, put in free location or bay for staging.
+                <ul class="sub-list">
+                    <li><em>Reason:</em> Storing material in the correct spot immediately means staging is faster,
+                        inventory counts are accurate, and nobody wastes 30 minutes searching the yard for something
+                        that got dropped in the wrong bay.</li>
+                </ul>
+            </li>
+            <li><strong>Sign Off:</strong>
+                <ul class="sub-list">
+                    <li><strong>Received:</strong> Initial PO with Date, initials, ‘all good’. Staple delivery slip/BOL
+                        to back, put in ‘received folder’.</li>
+                    <li><strong>Received error:</strong> Describe error on PO, put in Error folder.</li>
+                    <li><strong>Received STI:</strong> Needs further inspection to verify it’s okay.</li>
+                    <li><em>Reason:</em> The signed-off PO is the official record that closes the purchasing loop. If
+                        the paperwork isn’t done, accounting can’t pay the vendor, can’t reconcile job
+                        costs, and we lose visibility into what we actually have on hand.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <div class="outcome-box">
+            <h5>✅ Expected Outcome</h5>
+            <p>Every delivery is verified against its PO, inspected for damage, stored in the correct location, and
+                signed off within 24 hours. Accounting has clean paperwork, the yard inventory is accurate, and no crew
+                is ever surprised by missing or broken material on a job site.</p>
+        </div>
+
+        <div class="page-footer">
+            <p>Superior Fence & Rail — Hudson Valley H.Q.</p>
+        </div>
+    </div>
+
+    <!-- ==================== PAGE: BOM & MATERIAL CHECK-IN ==================== -->
+    <div class="page page-break">
+        <div class="page-header">
+            <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
+                alt="Superior Fence &amp; Rail" class="header-logo">
+            <h2>Shop SOP Playbook</h2>
+        </div>
+
+        <h3 class="section-title">Material Check &amp; B.O.M.</h3>
+        <p class="section-subtitle">Material Check Task</p>
+        <p class="goal-line">Goal: Make sure the appropriate material is in the yard so a job can be scheduled.</p>
+
+        <div class="why-box">
+            <h5>💡 Why This Matters</h5>
+            <p>The Material Check is the <strong>gate</strong> between “sold” and “scheduled.” The office cannot
+                schedule an installation until Fence360 shows the material is confirmed on-site. If you mark it complete
+                without physically verifying, we risk scheduling a crew, sending them to a job, and discovering on-site
+                that key pieces are missing — wasting an entire day of labor and damaging the customer’s trust. A
+                thorough material check also catches purchasing errors early, giving the buyer time to reorder before
+                the job date.</p>
+        </div>
+
+        <p><strong>Purpose:</strong> Material checks are a Fence360 task used when a product needs to be ordered to
+            verify the material is present. The material must be physically checked and completed in Fence360 to queue
+            the office to schedule the installation.</p>
+
+        <ol class="sop-steps">
+            <li>
+                <strong>Get the BOM:</strong>
+                <ul class="sub-list">
+                    <li>Get the BOM(s) from the files. (Sometimes there are multiple BOMs).</li>
+                    <li>Note that the BOM needs to be verified… NOT the purchase order.</li>
+                    <li><em>Reason:</em> The BOM reflects what the <strong>job actually needs</strong>. The PO reflects
+                        what was ordered, which may be a different quantity or specification. You are checking reality
+                        against the job requirement, not against someone else’s order.</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Check Yard &amp; Accessories:</strong>
+                <ul class="sub-list">
+                    <li>Check the exact material quantities in the yard and accessories.</li>
+                    <li>If anything is missing, create a custom task and assign to SFR buyer (Chris Williams) with the
+                        issue.</li>
+                    <li>If everything is present, mark completed in Fence360.</li>
+                    <li><em>Reason:</em> Physically walking the yard and counting is the only way to confirm material is
+                        truly here. Systems can show inventory that’s already been staged for another job, damaged, or
+                        moved. Your eyes are the final confirmation. Flagging shortages immediately gives the buyer
+                        maximum lead time to source replacements.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <div class="outcome-box">
+            <h5>✅ Expected Outcome</h5>
+            <p>Every job that moves to “scheduled” has physically confirmed material in the yard. Zero crews arrive at a
+                job site missing material. Shortages are flagged to the buyer days or weeks before the install date,
+                giving maximum time to resolve.</p>
+        </div>
+
+        <div class="page-footer">
+            <p>Superior Fence & Rail — Hudson Valley H.Q.</p>
+        </div>
+    </div>
+
+    <!-- ==================== PAGE: STAGING ==================== -->
+    <div class="page page-break">
+        <div class="page-header">
+            <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
+                alt="Superior Fence &amp; Rail" class="header-logo">
+            <h2>Shop SOP Playbook</h2>
+        </div>
+
+        <h3 class="section-title">Staging</h3>
+        <p class="goal-line">Goal: All material, except concrete, including gates and accessories is staged in a bay and
+            double counted by 2pm the day before.</p>
+
+        <div class="why-box">
+            <h5>💡 Why This Matters</h5>
+            <p>Staging is where <strong>planning meets execution</strong>. A properly staged job means the crew walks in
+                at 5:30 AM, loads in 20 minutes, and arrives at the customer’s home with every single piece they need. A
+                poorly staged job means the crew calls back at 8 AM asking for missing posts, the customer waits, and we
+                eat the cost of a second trip. The color-coding system and double-check process exist because a single
+                missed aluminum insert or wrong latch can halt an entire installation. Every minute spent staging
+                carefully saves 10 minutes of chaos on the job site.</p>
+        </div>
+
+        <div class="glossary">
+            <p><strong>Success Musts:</strong> Counted material sheet in ‘confirmed kill’ folder. All hardware in the
+                tote with job name marked in blue tape. Job packet in tote. If trailer present on Friday, Monday’s job
+                is loaded and strapped by Friday at 2pm.</p>
+            <p style="margin-top: 8px;"><strong>Next Level Success:</strong> Material is staged 1 week in advance.
+                Concrete is staged.</p>
+        </div>
+
+        <ol class="sop-steps">
+            <li>
+                <strong>Print &amp; Color Code BOM:</strong>
+                <ul class="sub-list">
+                    <li><strong>Orange:</strong> tote items (small hardware, fasteners, consumables).</li>
+                    <li><strong>Blue:</strong> concrete (staged separately, often loaded last).</li>
+                    <li><strong>Pink:</strong> gates, aluminum inserts, loose items (easy to forget, high-impact if
+                        missing).</li>
+                    <li><strong>Green:</strong> important job notes or specific tools on the job package diagram.</li>
+                    <li><em>Reason:</em> Color coding transforms a dense BOM into a visual checklist. It prevents you
+                        from accidentally skipping categories of material and lets the second-checker verify at a glance
+                        that every color group has been addressed. It also helps when staging multiple jobs — you can
+                        quickly see which category you’re pulling for.</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Verify &amp; Collect:</strong>
+                <ul class="sub-list">
+                    <li>Verify BOM for accuracy (aluminum inserts for gate posts, hardware counts, caps, latches, etc.).
+                        Report issues to GM on chat.</li>
+                    <li>Put large material in bay. Pull all hardware, caps, consumables into tote with customer last
+                        name.</li>
+                    <li>Put job packet in the job tote. Put count on the BOM with initials and date next to items, put
+                        in ‘ready for 2nd check’ folder.</li>
+                    <li><em>Reason:</em> Writing your initials and counts on the BOM creates personal accountability and
+                        a paper trail. If something is wrong on the job site, we can trace it back to exactly where the
+                        process broke down and fix it — not to blame, but to improve.</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Double Check:</strong>
+                <ul class="sub-list">
+                    <li>Second person completes double check.</li>
+                    <li>If all material is present, put in confirmed kill file. If error, correct error AND note on the
+                        BOM.</li>
+                    <li><em>Reason:</em> No human catches 100% of their own mistakes. The double-check is an intentional
+                        safety net. The “confirmed kill” folder means that job has been verified by two sets of eyes and
+                        is <strong>guaranteed ready</strong>. This is the standard that lets the GM sleep at night.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <div class="outcome-box">
+            <h5>✅ Expected Outcome</h5>
+            <p>Every job staged to 100% by 2pm the day before. Two people have verified material counts. The foreman
+                finds a perfectly organized bay, a labeled tote with all hardware, and a job packet ready to go — no
+                phone calls, no delays, no surprises.</p>
+        </div>
+
+        <div class="do-dont-grid">
+            <div class="do-col">
+                <h4>✓ DO</h4>
+                <ul>
+                    <li>Wrap loose pickets in plastic.</li>
+                    <li>Band all like materials together.</li>
+                    <li>Ensure material is on pallets or stickers.</li>
+                </ul>
+            </div>
+            <div class="dont-col">
+                <h4>✗ DO NOT</h4>
+                <ul>
+                    <li>Bend pickets when strapping (use corner braces/edge protectors).</li>
+                    <li>Send dinged or damaged material out.</li>
+                </ul>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <h3 class="section-title">Loading</h3>
+        <p class="goal-line">Goal: Load material securely and safely. Foreman doesn’t need to add added strapping or
+            deal with double ends. Material is easy to unload at the site.</p>
+
+        <div class="why-box">
+            <h5>💡 Why This Matters</h5>
+            <p>A badly loaded trailer is a <strong>safety hazard, a liability, and a time killer</strong>. Improper
+                weight distribution causes trailer sway and fish-tailing at highway speeds — that’s a potential
+                accident. Loose material that shifts during hard braking can damage product (meaning a re-order and a
+                delayed job) or fall off the trailer entirely. If the foreman has to re-strap or rearrange material at
+                the job site, that’s 30–45 minutes of paid labor wasted in front of the customer. Loading it right the
+                first time protects people, protects product, and protects the schedule.</p>
+        </div>
+
+        <div class="load-method">
+            <h4><span class="load-icon">🚛</span> Loading Rules &amp; Safety</h4>
+            <ol>
+                <li><strong>Safety Checks:</strong> Trailer brake check, Tire pressure check.
+                    <ul class="strap-list">
+                        <li><em>Reason:</em> Brakes and tires are non-negotiable. A brake failure with 3,000+ lbs of
+                            material behind you is catastrophic. This check takes 2 minutes and prevents the worst-case
+                            scenario.</li>
+                    </ul>
+                </li>
+                <li><strong>Weight Distribution:</strong>
+                    <ul class="strap-list">
+                        <li>80-90% of weight over the axle(s). Heavy material and material used last on axle (concrete +
+                            pickets typically).</li>
+                        <li>10% - 20% on the tongue. No significant weight behind the axle.</li>
+                        <li>Tongue down is okay. <strong>Never tongue up.</strong></li>
+                        <li><em>Reason:</em> Physics. Too much weight behind the axle lifts the tongue, reducing
+                            steering control on the tow vehicle and causing dangerous sway. Tongue-heavy is stable;
+                            tongue-light is a fishtail waiting to happen. Putting heavy/last-used items over the axle
+                            also means the crew unloads lighter items first without unstacking the whole trailer.</li>
+                    </ul>
+                </li>
+                <li><strong>Placement &amp; Strapping:</strong>
+                    <ul class="strap-list">
+                        <li>Parallel deck from wheels to front of trailer.</li>
+                        <li>Loaded so it can be removed easily at the job (e.g. never put pickets on top of posts
+                            because posts are used first).</li>
+                        <li>Two straps per pallet. Extra strap wrapped tightly on ratchet side.</li>
+                        <li>All ratchets on same side. Ensure material will not become free if hard braking.</li>
+                        <li><em>Reason:</em> “Load in reverse order of use” means the crew grabs what they need first
+                            without moving everything else. Two straps per pallet is the minimum to prevent shifting —
+                            one strap can work loose over a bumpy road. Ratchets on the same side means faster
+                            unstrapping at the site.</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="outcome-box">
+            <h5>✅ Expected Outcome</h5>
+            <p>Every trailer leaves the yard road-safe and load-balanced. The foreman arrives at the job site, unstraps,
+                and starts unloading immediately in the correct order. Zero material damage in transit, zero
+                re-strapping on site, zero safety incidents on the road.</p>
+        </div>
+
+        <div class="page-footer">
+            <p>Superior Fence & Rail — Hudson Valley H.Q.</p>
+        </div>
+    </div>
+
+    <!-- ==================== PAGE: TOOLS & END OF DAY ==================== -->
+    <div class="page page-break">
+        <div class="page-header">
+            <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
+                alt="Superior Fence &amp; Rail" class="header-logo">
+            <h2>Shop SOP Playbook</h2>
+        </div>
+
+        <h3 class="section-title">Shop and Yard Org</h3>
+
+        <p class="goal-line">Goal: Fast staging, easy inventory count, easy to identify low supply. Job isn't done until
+
+            it's cleaned up.</p>
+
+
+
+        <div class="why-box">
+
+            <h5>&#x1F4A1; Why This Matters</h5>
+
+            <p>A disorganized yard is a <strong>silent cost center</strong>. When material doesn't have a home, you
+                waste time searching for it during staging. When bays are blocked, forklift operators take longer routes
+                or double-handle pallets. When low inventory isn't noticed, a job gets delayed because we ran out of
+                caps or brackets. An organized yard isn't about looking nice &mdash; it directly controls how fast you
+                can stage, how accurate your inventory counts are, and how quickly you can spot problems before they
+                become emergencies.</p>
+
+        </div>
+
+
+
+        <ul class="checklist">
+
+            <li><strong>Mark trailer locations</strong> for easy loading/unloading. Each material has defined home(s).
+
+                <br><em style="font-size: 11.5px; color: var(--text-mid);">Reason: Defined locations mean anyone can
+                    find anything without asking. It also means returned material goes back to the right spot
+                    automatically.</em>
+            </li>
+
+            <li><strong>See something, do something.</strong> Utilize your steps (bringing trash when walking across
+                yard).
+
+                <br><em style="font-size: 11.5px; color: var(--text-mid);">Reason: Small messes compound into big
+                    problems. Picking up as you go prevents the "big cleanup" that eats an hour at end of day.</em>
+            </li>
+
+            <li><strong>Direct forklift access</strong> to heavily used items.
+
+                <br><em style="font-size: 11.5px; color: var(--text-mid);">Reason: If you have to move 3 pallets to get
+                    to vinyl rails, that's 15 minutes of wasted motion per staging job. Multiply by 5 jobs a week and
+                    you've lost over an hour.</em>
+            </li>
+
+            <li><strong>Notify GM</strong> if any material is low; when in doubt, notify.
+
+                <br><em style="font-size: 11.5px; color: var(--text-mid);">Reason: Material lead times can be 1&ndash;3
+                    weeks. Catching low stock early gives the buyer time to reorder before it becomes an emergency that
+                    delays a job.</em>
+            </li>
+
+            <li class="lock-up"><strong>Key Items:</strong> Magnet sweep once per week. Cut vinyl returns go in the
+
+                racks. Full wood and vinyl goes back in their bay.
+
+                <br><em style="font-size: 11.5px; color: var(--text-mid);">Reason: Loose screws and nails puncture tires
+                    (costly downtime). Vinyl returns in racks preserves usable material and prevents damage. Organized
+                    returns = free inventory.</em>
+            </li>
+
+        </ul>
+
+
+
+        <div class="outcome-box">
+
+            <h5>&#x2705; Expected Outcome</h5>
+
+            <p>The yard is clean and organized every day. Any team member can find any material in under 2 minutes.
+                Inventory counts are fast and accurate. Low stock is flagged before it becomes a crisis. The shop looks
+                professional &mdash; the kind of operation customers and vendors respect.</p>
+
+        </div>
+
+
+
+        <hr class="divider">
+
+
+
+        <h3 class="section-title">Crew Morning</h3>
+
+        <p class="section-subtitle">Get out by 7:20 on days where job is starting</p>
+
+
+
+        <div class="why-box">
+
+            <h5>&#x1F4A1; Why This Matters</h5>
+
+            <p>The morning departure sets the tone for the entire day. A crew that leaves late arrives late, starts
+                late, and may not finish the job &mdash; which means a second trip, overtime, or an unhappy customer.
+                The 7:20 target exists because most jobs are scheduled to start at 8:00 AM. Every role has a specific
+                checklist so that <strong>nothing is left to memory at 5:30 AM</strong> &mdash; checklists don't forget
+                things, tired people do.</p>
+
+        </div>
+
+
+
+        <ul class="tool-list">
+
+            <li><strong>Foreman:</strong> Trailer safety (Weight distribution, Strapping, Connections, Lights, Tires).
+
+                Get unique job details from Operations Manager. Tool check, Consumables.
+
+                <br><em style="font-size: 11.5px; color: var(--text-mid);">Reason: The Foreman is legally responsible
+                    for the trailer on the road. They must personally verify safety. Getting unique job details now
+                    (access issues, slope, dog in yard) prevents surprises on site.</em>
+            </li>
+
+            <li><strong>Co-Foreman:</strong> Materials check: material, consumables, fasteners. Customer call with ETA.
+
+                <br><em style="font-size: 11.5px; color: var(--text-mid);">Reason: The Co-Foreman's material check is
+                    the final line of defense before leaving the yard. The customer ETA call sets expectations and
+                    confirms someone is home to open the gate.</em>
+            </li>
+
+            <li><strong>Installers:</strong> Work with co-foreman to double check material. Work with Production to get
+
+                concrete if necessary. Get unique tools.
+
+                <br><em style="font-size: 11.5px; color: var(--text-mid);">Reason: Three sets of eyes on material means
+                    near-zero chance of leaving something behind. Getting concrete now means Production isn't
+                    interrupted later for an emergency delivery.</em>
+            </li>
+
+        </ul>
+
+
+
+        <div class="outcome-box">
+
+            <h5>&#x2705; Expected Outcome</h5>
+
+            <p>Every crew departs by 7:20 AM with verified material, a safety-checked trailer, and the customer already
+                called. The foreman knows the job details, the team has the right tools, and there are zero "we forgot
+                X" phone calls back to the shop.</p>
+
+        </div>
+
+        <div class="page-footer">
+            <p>Superior Fence & Rail — Hudson Valley H.Q.</p>
+            <p style="letter-spacing: 1px; font-size: 10px; margin-top: 4px; color: var(--text-mid);">Shop SOP Playbook:
+                Production Specialist</p>
+        </div>
+    </div>
+
+</body>
+
+</html>

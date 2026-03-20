@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Procedures SOP — Superior Fence & Rail</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --maroon: #821302;
+            --maroon-dark: #5E0E01;
+            --maroon-light: #A52A1A;
+            --green: #689689;
+            --green-dark: #4F7A6F;
+            --green-light: #7AABA0;
+            --charcoal: #231F20;
+            --gold: #C9A84C;
+            --cream: #F5F3EF;
+            --beige: #D2CFC7;
+            --beige-light: #E8E5DE;
+            --text-dark: #231F20;
+            --text-mid: #555555;
+            --text-light: #888888;
+            --border-light: #D2CFC7;
+            --green-soft: #E8F5E9;
+            --green-border: #81C784;
+            --blue-soft: #E3F2FD;
+            --blue-border: #64B5F6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+            color: var(--text-dark);
+            background: #E8E5DE;
+            line-height: 1.6;
+        }
+
+        .page {
+            max-width: 8.5in;
+            margin: 30px auto;
+            background: white;
+            padding: 60px 70px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            border-radius: 4px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid var(--maroon);
+        }
+
+        .page-header .header-logo {
+            height: 30px;
+            width: auto;
+        }
+
+        .page-header h2 {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: #821302;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--maroon);
+            margin-bottom: 6px;
+            margin-top: 36px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .section-subtitle {
+            font-size: 12px;
+            font-weight: 600;
+            color: #689689;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .goal-line {
+            font-size: 12px;
+            font-style: italic;
+            color: #821302;
+            font-weight: 600;
+            margin-bottom: 18px;
+            padding: 8px 14px;
+            background: var(--cream);
+            border-left: 3px solid #689689;
+            border-radius: 0 4px 4px 0;
+        }
+
+        p {
+            font-size: 13px;
+            line-height: 1.75;
+            margin-bottom: 14px;
+            color: var(--text-dark);
+        }
+
+        .load-method {
+            background: var(--cream);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .load-method h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--maroon);
+            margin-bottom: 12px;
+        }
+
+        .load-method .load-icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .load-method ol {
+            padding-left: 20px;
+        }
+
+        .load-method ol li {
+            font-size: 12.5px;
+            margin-bottom: 8px;
+            line-height: 1.65;
+        }
+
+        .load-method .strap-list {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 6px;
+        }
+
+        .load-method .strap-list li {
+            padding-left: 18px;
+            position: relative;
+        }
+
+        .load-method .strap-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--maroon);
+            font-weight: 700;
+        }
+
+        .why-box {
+            background: var(--blue-soft);
+            border: 1px solid var(--blue-border);
+            border-left: 4px solid var(--blue-border);
+            border-radius: 0 6px 6px 0;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            margin-top: 10px;
+        }
+
+        .why-box h5 {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #1565C0;
+            margin-bottom: 6px;
+        }
+
+        .outcome-box {
+            background: var(--green-soft);
+            border: 1px solid var(--green-border);
+            border-left: 4px solid var(--green-border);
+            border-radius: 0 6px 6px 0;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        .outcome-box h5 {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #2E7D32;
+            margin-bottom: 6px;
+        }
+
+        .page-footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 16px;
+            border-top: 2px solid var(--maroon);
+        }
+
+        .page-footer p {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--maroon);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <div class="page-header">
+            <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
+                alt="Superior Fence & Rail" class="header-logo">
+            <h2>Loading Procedures SOP</h2>
+        </div>
+
+        <h3 class="section-title">Loading</h3>
+        <p class="section-subtitle">Vehicle & Trailer Safety</p>
+        <p class="goal-line">Goal: Load material securely and safely. Material is balanced and easy to unload at the
+            site.</p>
+
+        <div class="why-box">
+            <h5>💡 Why This Matters</h5>
+            <p>A badly loaded trailer is a <strong>safety hazard</strong>. Improper weight distribution causes trailer
+                sway at highway speeds. Loose material can shift or fall off. Loading it right the first time protects
+                people, product, and the schedule.</p>
+        </div>
+
+        <div class="load-method">
+            <h4><span class="load-icon">🚛</span> Loading Rules &amp; Safety</h4>
+            <ol>
+                <li><strong>Safety Checks:</strong> Trailer brake check, Tire pressure check.
+                    <ul class="strap-list">
+                        <li><em>Reason:</em> Brakes and tires are non-negotiable. A brake failure with 3,000+ lbs of
+                            material is catastrophic.</li>
+                    </ul>
+                </li>
+                <li><strong>Weight Distribution:</strong>
+                    <ul class="strap-list">
+                        <li>80-90% of weight over the axle(s).</li>
+                        <li>10% - 20% on the tongue. No significant weight behind the axle.</li>
+                        <li>Tongue down is okay. <strong>Never tongue up.</strong></li>
+                        <li><em>Reason:</em> Tongue-heavy is stable; tongue-light causes dangerous fish-tailing.</li>
+                    </ul>
+                </li>
+                <li><strong>Placement &amp; Strapping:</strong>
+                    <ul class="strap-list">
+                        <li>Parallel deck from wheels to front of trailer.</li>
+                        <li>Load in reverse order of use (e.g. posts first, pickets last).</li>
+                        <li>Two straps per pallet. All ratchets on same side.</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="outcome-box">
+            <h5>✅ Expected Outcome</h5>
+            <p>Every trailer leaves the yard road-safe and load-balanced. Zero material damage in transit and zero
+                safety incidents on the road.</p>
+        </div>
+
+        <div class="page-footer">
+            <p>Superior Fence & Rail — Hudson Valley H.Q.</p>
+        </div>
+    </div>
+</body>
+
+</html>
