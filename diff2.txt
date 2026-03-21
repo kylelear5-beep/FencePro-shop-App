@@ -1,0 +1,91 @@
+diff --git a/fence-pro-react/src/components/WeightCalculator.jsx b/fence-pro-react/src/components/WeightCalculator.jsx
+index ac3ed26..53f5a8c 100644
+--- a/fence-pro-react/src/components/WeightCalculator.jsx
++++ b/fence-pro-react/src/components/WeightCalculator.jsx
+@@ -4,17 +4,17 @@ import { Calculator, Scale, Hash } from 'lucide-react';
+ export default function WeightCalculator() {
+   const [knownQty, setKnownQty] = useState('');
+   const [knownWeight, setKnownWeight] = useState('');
+-  
++
+   const [targetQty, setTargetQty] = useState('');
+   const [targetWeight, setTargetWeight] = useState('');
+ 
+   // Calculations
+-  const unitWeight = (knownQty && knownWeight && Number(knownQty) > 0) 
+-    ? Number(knownWeight) / Number(knownQty) 
++  const unitWeight = (knownQty && knownWeight && Number(knownQty) > 0)
++    ? Number(knownWeight) / Number(knownQty)
+     : 0;
+ 
+-  const calculatedWeight = (unitWeight && targetQty) 
+-    ? (unitWeight * Number(targetQty)).toFixed(2) 
++  const calculatedWeight = (unitWeight && targetQty)
++    ? (unitWeight * Number(targetQty)).toFixed(2)
+     : '0.00';
+ 
+   const calculatedQty = (unitWeight && targetWeight && unitWeight > 0)
+@@ -42,8 +42,8 @@ export default function WeightCalculator() {
+               <label className="block text-sm font-black text-gray-700 uppercase mb-2">Known Quantity (Pieces)</label>
+               <div className="relative">
+                 <Hash className="absolute left-4 top-3.5 text-blue-500" size={20} />
+-                <input 
+-                  type="number" 
++                <input
++                  type="number"
+                   value={knownQty}
+                   onChange={e => setKnownQty(e.target.value)}
+                   className="w-full bg-white border-2 border-gray-200 rounded-lg pl-12 pr-4 py-3 text-lg font-bold focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all"
+@@ -56,8 +56,8 @@ export default function WeightCalculator() {
+               <label className="block text-sm font-black text-gray-700 uppercase mb-2">Known Weight (lbs)</label>
+               <div className="relative">
+                 <Scale className="absolute left-4 top-3.5 text-blue-500" size={20} />
+-                <input 
+-                  type="number" 
++                <input
++                  type="number"
+                   value={knownWeight}
+                   onChange={e => setKnownWeight(e.target.value)}
+                   className="w-full bg-white border-2 border-gray-200 rounded-lg pl-12 pr-4 py-3 text-lg font-bold focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all"
+@@ -77,7 +77,7 @@ export default function WeightCalculator() {
+ 
+         {/* Step 2: Calculate */}
+         <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-300 ${unitWeight > 0 ? 'opacity-100' : 'opacity-40 grayscale pointer-events-none'}`}>
+-          
++
+           {/* Pieces to Weight */}
+           <div className="bg-white border-2 border-amber-200 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+             <h3 className="text-sm font-black text-amber-800 uppercase mb-4 flex items-center gap-2">
+@@ -85,8 +85,8 @@ export default function WeightCalculator() {
+               Find Total Weight
+             </h3>
+             <label className="block text-sm font-black text-gray-700 uppercase mb-2">Target Quantity</label>
+-            <input 
+-              type="number" 
++            <input
++              type="number"
+               value={targetQty}
+               onChange={e => setTargetQty(e.target.value)}
+               disabled={!unitWeight}
+@@ -106,8 +106,8 @@ export default function WeightCalculator() {
+               Find Total Pieces
+             </h3>
+             <label className="block text-sm font-black text-gray-700 uppercase mb-2">Target Weight (lbs)</label>
+-            <input 
+-              type="number" 
++            <input
++              type="number"
+               value={targetWeight}
+               onChange={e => setTargetWeight(e.target.value)}
+               disabled={!unitWeight}
+diff --git a/repo.json b/repo.json
+new file mode 100644
+index 0000000..97b9778
+--- /dev/null
++++ b/repo.json
+@@ -0,0 +1,5 @@
++{
++  "name": "FencePro-shop-App",
++  "private": true,
++  "description": "FencePro Shop Application"
++}

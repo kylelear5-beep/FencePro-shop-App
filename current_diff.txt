@@ -1,0 +1,521 @@
+diff --git a/fence-pro-react/src/App.jsx b/fence-pro-react/src/App.jsx
+index d87cfd3..2032982 100644
+--- a/fence-pro-react/src/App.jsx
++++ b/fence-pro-react/src/App.jsx
+@@ -1,14 +1,14 @@
+ import React, { useState, useEffect, useRef } from 'react';
+-import { 
+-  LayoutGrid, 
+-  FolderKanban, 
+-  Calculator, 
+-  MessageSquareQuote, 
+-  ExternalLink, 
+-  Package, 
+-  TrendingUp, 
+-  Award, 
+-  CheckCircle, 
++import {
++  LayoutGrid,
++  FolderKanban,
++  Calculator,
++  MessageSquareQuote,
++  ExternalLink,
++  Package,
++  TrendingUp,
++  Award,
++  CheckCircle,
+   Clock,
+   Search,
+   Send,
+@@ -18,10 +18,12 @@ import {
+   Files,
+   ArrowRight,
+   Hammer,
+-  Home
++  Home,
++  ClipboardList
+ } from 'lucide-react';
+ import ChainLinkCalculator from './components/ChainLinkCalc';
+ import InventoryManager from './components/InventoryManager';
++import BlindCountBoard from './components/BlindCountBoard';
+ 
+ // ?????? APP COMPONENTS ??????
+ 
+@@ -30,43 +32,50 @@ const Sidebar = ({ activeSection, setActiveSection }) => (
+     <div className="sidebar-brand-box">
+       <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp" alt="Superior Logo" />
+     </div>
+-    
++
+     <nav className="sidebar-menu">
+-      <button 
+-        className={`menu-item ${activeSection === 'dashboard' ? 'active' : ''}`} 
++      <button
++        className={`menu-item ${activeSection === 'dashboard' ? 'active' : ''}`}
+         onClick={() => setActiveSection('dashboard')}
+       >
+         <LayoutGrid />
+         <span>DASHBOARD</span>
+       </button>
+-      <button 
+-        className={`menu-item ${activeSection === 'documents' ? 'active' : ''}`} 
++      <button
++        className={`menu-item ${activeSection === 'documents' ? 'active' : ''}`}
+         onClick={() => setActiveSection('documents')}
+       >
+         <FolderKanban />
+         <span>SOP LIBRARY</span>
+       </button>
+-      <button 
+-        className={`menu-item ${activeSection === 'inventory' ? 'active' : ''}`} 
++      <button
++        className={`menu-item ${activeSection === 'inventory' ? 'active' : ''}`}
+         onClick={() => setActiveSection('inventory')}
+       >
+         <Package />
+         <span>INVENTORY</span>
+       </button>
+-      <button 
+-        className={`menu-item ${activeSection === 'tools' ? 'active' : ''}`} 
++      <button
++        className={`menu-item ${activeSection === 'tools' ? 'active' : ''}`}
+         onClick={() => setActiveSection('tools')}
+       >
+         <Calculator />
+         <span>SHOP TOOLS</span>
+       </button>
+-      <button 
+-        className={`menu-item assistant-trigger ${activeSection === 'assistant' ? 'active' : ''}`} 
++      <button
++        className={`menu-item assistant-trigger ${activeSection === 'assistant' ? 'active' : ''}`}
+         onClick={() => setActiveSection('assistant')}
+       >
+         <MessageSquareQuote />
+         <span>ASK BOB</span>
+       </button>
++      <button
++        className={`menu-item ${activeSection === 'yardcrew' ? 'active' : ''}`}
++        onClick={() => setActiveSection('yardcrew')}
++      >
++        <ClipboardList />
++        <span>YARD CREW</span>
++      </button>
+     </nav>
+ 
+     <div className="sidebar-utils">
+@@ -89,7 +98,7 @@ const Topbar = ({ sectionTitle, aiStatus, time }) => (
+     </div>
+     <div className="topbar-right">
+       <div className="status-badge">
+-        <span className="status-pulse" style={{ 
++        <span className="status-pulse" style={{
+           backgroundColor: aiStatus === 'ACTIVE' ? '#10b981' : '#f59e0b',
+           boxShadow: aiStatus === 'ACTIVE' ? '0 0 8px rgba(16, 185, 129, 0.4)' : 'none'
+         }}></span>
+@@ -139,8 +148,8 @@ const Dashboard = ({ setActiveSection, docCount, aiStatus }) => (
+           <button className="action-btn maroon-solid" onClick={() => setActiveSection('documents')}>
+             <Files size={18} /> BROWSE LIBRARY
+           </button>
+-          <button className="action-btn outline" onClick={() => setActiveSection('inventory')}>
+-            <TrendingUp size={18} /> SHIFT CHECKLIST
++          <button className="action-btn outline" onClick={() => setActiveSection('yardcrew')}>
++            <ClipboardList size={18} /> YARD CREW
+           </button>
+           <button className="action-btn outline" onClick={() => setActiveSection('tools')}>
+             <Calculator size={18} /> MATERIAL CALC
+@@ -186,7 +195,7 @@ const Assistant = ({ aiStatus }) => {
+ 
+   const handleSend = async () => {
+     if (!input.trim()) return;
+-    
++
+     const userMessage = input.trim();
+     setInput('');
+     setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
+@@ -194,7 +203,10 @@ const Assistant = ({ aiStatus }) => {
+     try {
+       const response = await fetch('/api/chat', {
+         method: 'POST',
+-        headers: { 'Content-Type': 'application/json' },
++        headers: {
++          'Content-Type': 'application/json',
++          'Bypass-Tunnel-Reminder': 'true'
++        },
+         body: JSON.stringify({
+           message: userMessage,
+           history: messages.map(m => ({ role: m.role === 'user' ? 'user' : 'model', text: m.text })).slice(-10)
+@@ -242,12 +254,12 @@ const Assistant = ({ aiStatus }) => {
+         </div>
+         <div className="chat-input-row">
+           <div className="input-shell">
+-            <textarea 
+-              value={input} 
++            <textarea
++              value={input}
+               onChange={(e) => setInput(e.target.value)}
+               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
+-              placeholder="Type command here..." 
+-              rows="1" 
++              placeholder="Type command here..."
++              rows="1"
+             />
+             <button className="btn-send" onClick={handleSend}><Send size={18} /></button>
+           </div>
+@@ -271,22 +283,23 @@ function App() {
+   useEffect(() => {
+     // Clock
+     const timer = setInterval(() => {
+-      setTime(new Date().toLocaleTimeString('en-US', { 
+-        hour: '2-digit', 
++      setTime(new Date().toLocaleTimeString('en-US', {
++        hour: '2-digit',
+         minute: '2-digit',
+-        hour12: true 
++        hour12: true
+       }).toUpperCase());
+     }, 1000);
+ 
+     // Initial Data
+     const fetchData = async () => {
+       try {
++        const headers = { 'Bypass-Tunnel-Reminder': 'true' };
+         const [docsRes, toolsRes, statusRes] = await Promise.all([
+-          fetch('/api/documents'),
+-          fetch('/api/tools'),
+-          fetch('/api/status')
++          fetch('/api/documents', { headers }),
++          fetch('/api/tools', { headers }),
++          fetch('/api/status', { headers })
+         ]);
+-        
++
+         const docsData = await docsRes.json();
+         const toolsData = await toolsRes.json();
+         const statusData = await statusRes.json();
+@@ -306,12 +319,13 @@ function App() {
+   }, []);
+ 
+   const getSectionTitle = () => {
+-    switch(activeSection) {
++    switch (activeSection) {
+       case 'dashboard': return 'COMMAND';
+       case 'documents': return 'LIBRARY';
+       case 'inventory': return 'LOGISTICS';
+       case 'tools': return 'TOOLS';
+       case 'assistant': return 'CONSULTATION';
++      case 'yardcrew': return 'DIGITAL CLIPBOARD';
+       default: return 'COMMAND';
+     }
+   };
+@@ -319,23 +333,32 @@ function App() {
+   return (
+     <div className="app-workspace">
+       <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+-      
++
+       <main className="app-main">
+         <Topbar sectionTitle={getSectionTitle()} aiStatus={aiStatus} time={time} />
+-        
++
+         <div className="app-viewport">
+           {activeSection === 'dashboard' && (
+             <div className="module active">
+               <Dashboard setActiveSection={setActiveSection} docCount={docCount} aiStatus={aiStatus} />
+             </div>
+           )}
+-          
++
+           {activeSection === 'assistant' && (
+             <div className="module active">
+               <Assistant aiStatus={aiStatus} />
+             </div>
+           )}
+ 
++          {activeSection === 'yardcrew' && (
++            <div className="module active" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
++              <div className="module-header">
++                <h1 className="oswald-title">YARD CREW DIGITAL CLIPBOARD</h1>
++              </div>
++              <BlindCountBoard counterName="Yard Supervisor" />
++            </div>
++          )}
++
+           {activeSection === 'inventory' && (
+             <div className="module active">
+               <InventoryManager />
+@@ -377,9 +400,9 @@ function App() {
+                   </div>
+                   <div className="app-grid">
+                     {tools.map((tool, i) => (
+-                      <div 
+-                        key={i} 
+-                        className="widget" 
++                      <div
++                        key={i}
++                        className="widget"
+                         style={{ cursor: tool.id === 'material-calc' ? 'pointer' : 'default' }}
+                         onClick={() => tool.id === 'material-calc' && setActiveTool('chain-link')}
+                       >
+@@ -409,6 +432,7 @@ function App() {
+         <button className={`m-btn ${activeSection === 'documents' ? 'active' : ''}`} onClick={() => setActiveSection('documents')}><FolderKanban /></button>
+         <button className={`m-btn ${activeSection === 'inventory' ? 'active' : ''}`} onClick={() => setActiveSection('inventory')}><Package /></button>
+         <button className={`m-btn ${activeSection === 'tools' ? 'active' : ''}`} onClick={() => setActiveSection('tools')}><Hammer /></button>
++        <button className={`m-btn ${activeSection === 'yardcrew' ? 'active' : ''}`} onClick={() => setActiveSection('yardcrew')}><ClipboardList /></button>
+         <button className={`m-btn ${activeSection === 'assistant' ? 'active' : ''}`} onClick={() => setActiveSection('assistant')}><MessageSquareQuote /></button>
+       </nav>
+     </div>
+diff --git a/fence-pro-react/src/components/BlindCountBoard.jsx b/fence-pro-react/src/components/BlindCountBoard.jsx
+index d3057ab..88e2133 100644
+--- a/fence-pro-react/src/components/BlindCountBoard.jsx
++++ b/fence-pro-react/src/components/BlindCountBoard.jsx
+@@ -29,9 +29,10 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
+   useEffect(() => {
+     const load = async () => {
+       try {
++        const headers = { 'Bypass-Tunnel-Reminder': 'true' };
+         const [sheetRes, assignRes] = await Promise.all([
+-          fetch('/api/inventory/count-sheet'),
+-          fetch('/api/inventory/daily-assignment'),
++          fetch('/api/inventory/count-sheet', { headers }),
++          fetch('/api/inventory/daily-assignment', { headers }),
+         ]);
+ 
+         if (!sheetRes.ok) throw new Error('Failed to load count sheet');
+@@ -65,7 +66,10 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
+       setStatus(prev => ({ ...prev, [sku]: 'submitting' }));
+       const response = await fetch('/api/inventory/reconcile', {
+         method: 'POST',
+-        headers: { 'Content-Type': 'application/json' },
++        headers: { 
++          'Content-Type': 'application/json',
++          'Bypass-Tunnel-Reminder': 'true'
++        },
+         body: JSON.stringify({ sku, actualCount, counterName }),
+       });
+       if (!response.ok) throw new Error('Reconciliation failed');
+@@ -86,7 +90,10 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
+     try {
+       const response = await fetch('/api/inventory/finish-day', {
+         method: 'POST',
+-        headers: { 'Content-Type': 'application/json' },
++        headers: { 
++          'Content-Type': 'application/json',
++          'Bypass-Tunnel-Reminder': 'true'
++        },
+         body: JSON.stringify({
+           category: categoryName,
+           countedSkus,
+diff --git a/fence-pro-react/src/components/InventoryManager.jsx b/fence-pro-react/src/components/InventoryManager.jsx
+index f32b499..4a06aad 100644
+--- a/fence-pro-react/src/components/InventoryManager.jsx
++++ b/fence-pro-react/src/components/InventoryManager.jsx
+@@ -23,7 +23,9 @@ export default function InventoryManager() {
+       const loadSkipped = async () => {
+         setSkippedLoading(true);
+         try {
+-          const res = await fetch('/api/inventory/not-counted');
++          const res = await fetch('/api/inventory/not-counted', {
++            headers: { 'Bypass-Tunnel-Reminder': 'true' }
++          });
+           if (res.ok) {
+             const data = await res.json();
+             setSkippedItems(data.items || []);
+@@ -45,7 +47,10 @@ export default function InventoryManager() {
+     try {
+       const response = await fetch('/api/inventory/add-item', {
+         method: 'POST',
+-        headers: { 'Content-Type': 'application/json' },
++        headers: { 
++          'Content-Type': 'application/json',
++          'Bypass-Tunnel-Reminder': 'true'
++        },
+         body: JSON.stringify({ sku, name, category, quantity: quantity || 0 })
+       });
+       const data = await response.json();
+diff --git a/fence-pro-react/src/components/SimpleCalculator.jsx b/fence-pro-react/src/components/SimpleCalculator.jsx
+index ccc3c2f..4bf5251 100644
+--- a/fence-pro-react/src/components/SimpleCalculator.jsx
++++ b/fence-pro-react/src/components/SimpleCalculator.jsx
+@@ -54,7 +54,7 @@ export default function SimpleCalculator() {
+ 
+   const handleEqual = () => {
+     if (!operator || previousVal == null) return;
+-    
++
+     const result = calculate(previousVal, parseFloat(display), operator);
+     setDisplay(String(result));
+     setPreviousVal(null);
+@@ -97,22 +97,22 @@ export default function SimpleCalculator() {
+           <button onClick={handleClear} className="col-span-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-xl font-black text-xl transition-all duration-75 active:scale-95 py-3 md:py-4">AC</button>
+           <button onClick={handleDel} className="bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-xl font-black text-xl transition-all duration-75 active:scale-95 py-3 md:py-4">DEL</button>
+           <button onClick={() => handleOp('??')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-2xl transition-all duration-75 active:scale-95 py-3 md:py-4 ${operator === '??' ? 'ring-2 ring-white z-10' : ''}`}>??</button>
+-          
++
+           <button onClick={() => handleNum(7)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">7</button>
+           <button onClick={() => handleNum(8)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">8</button>
+           <button onClick={() => handleNum(9)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">9</button>
+           <button onClick={() => handleOp('??')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5 ${operator === '??' ? 'ring-2 ring-white z-10' : ''}`}>??</button>
+-          
++
+           <button onClick={() => handleNum(4)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">4</button>
+           <button onClick={() => handleNum(5)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">5</button>
+           <button onClick={() => handleNum(6)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">6</button>
+           <button onClick={() => handleOp('-')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5 ${operator === '-' ? 'ring-2 ring-white z-10' : ''}`}>-</button>
+-          
++
+           <button onClick={() => handleNum(1)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">1</button>
+           <button onClick={() => handleNum(2)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">2</button>
+           <button onClick={() => handleNum(3)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">3</button>
+           <button onClick={() => handleOp('+')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5 ${operator === '+' ? 'ring-2 ring-white z-10' : ''}`}>+</button>
+-          
++
+           <button onClick={() => handleNum(0)} className="col-span-2 bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">0</button>
+           <button onClick={handleDecimal} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">.</button>
+           <button onClick={handleEqual} className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-2xl shadow-lg transition-all duration-75 active:scale-95 py-4 md:py-5">=</button>
+diff --git a/fence-pro-react/vite.config.js b/fence-pro-react/vite.config.js
+index 634a1d9..5f9f266 100644
+--- a/fence-pro-react/vite.config.js
++++ b/fence-pro-react/vite.config.js
+@@ -6,6 +6,9 @@ import tailwindcss from '@tailwindcss/vite'
+ export default defineConfig({
+   plugins: [react(), tailwindcss()],
+   server: {
++    port: 8000,
++    host: true,
++    allowedHosts: true,
+     proxy: {
+       '/api': 'http://localhost:3000',
+       '/docs': 'http://localhost:3000'
+diff --git a/fencepro-shop-app/server.js b/fencepro-shop-app/server.js
+index cb026d3..7c54c41 100644
+--- a/fencepro-shop-app/server.js
++++ b/fencepro-shop-app/server.js
+@@ -14,8 +14,7 @@ app.use(cors());
+ app.use(express.json());
+ app.use(express.static('public'));
+ 
+-// Initialize the Google GenAI client
+-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
++// const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+ 
+ // System prompt for the Shop Assistant
+ const SYSTEM_PROMPT = `You are "The Shop Boss" (Big Bob), the AI veteran shop assistant at Superior Fence & Rail. 
+@@ -218,7 +217,7 @@ const inventory = [
+   { category: 'Vinyl Linears', sku: '73052960', name: '1-1/2x1-1/2x192 WHITE PICKET PROFILE', quantity: 0 },
+   { category: 'Vinyl Linears', sku: '73053001', name: '.875x1.25x59 EXTRA U-CHANNEL WH', quantity: 0 },
+ ];
+-// Chat endpoint ??? Gemini AI
++// Chat endpoint ??? Gemini AI (MOCKED FOR BETA)
+ app.post('/api/chat', async (req, res) => {
+   try {
+     const { message, history } = req.body;
+@@ -227,55 +226,27 @@ app.post('/api/chat', async (req, res) => {
+       return res.status(400).json({ error: 'Message is required' });
+     }
+ 
+-    if (!process.env.GEMINI_API_KEY) {
+-      return res.status(503).json({
+-        error: 'AI not configured',
+-        reply: 'The AI assistant is not configured yet. Please add your GEMINI_API_KEY to the .env file.'
+-      });
+-    }
+-
+-    // Build conversation contents
+-    const contents = [];
+-
+-    // Add history if provided
+-    if (history && Array.isArray(history)) {
+-      history.forEach(msg => {
+-        contents.push({
+-          role: msg.role === 'user' ? 'user' : 'model',
+-          parts: [{ text: msg.text }]
+-        });
+-      });
+-    }
++    // Delay to simulate AI thinking
++    await new Promise(resolve => setTimeout(resolve, 800));
+ 
+-    // Add current message
+-    contents.push({
+-      role: 'user',
+-      parts: [{ text: message }]
+-    });
++    // Simple keyword matching for the Beta presentation
++    const msgLower = message.toLowerCase();
++    let reply = "Look here???I hear you, but right now I need you focused on the Yard Crew counts. Stop messing around and check the clipboard.";
+ 
+-    // Generate content using the new SDK
+-    const result = await genAI.models.generateContent({
+-      model: 'gemini-2.5-flash',
+-      contents: contents,
+-      config: {
+-        systemInstruction: SYSTEM_PROMPT
+-      }
+-    });
+-
+-    const text = result.text;
++    if (msgLower.includes("loading") || msgLower.includes("truck")) {
++      reply = "Listen up! The loading sequence is strictly reverse order of use. Posts first, pickets last. Make sure you get 80-90% weight over the axles and strap every pallet with two straps. Driver doesn't leave until you check tire pressure.";
++    } else if (msgLower.includes("staging") || msgLower.includes("color")) {
++      reply = "The Staging Color Code is non-negotiable: Orange for totes/hardware, Blue for concrete, Pink for gates/aluminum inserts, Green for job notes. Hardware must be in a tote with blue tape and the customer's name. Got it?";
++    } else if (msgLower.includes("ppe") || msgLower.includes("safety") || msgLower.includes("routing")) {
++      reply = "Right, here's the deal. For the vinyl routing stations, you mandatorily need eye protection and ear protection at all times. Zero exceptions. Put 'em on or clock out.";
++    }
+ 
+-    res.json({ reply: text });
++    res.json({ reply: reply });
+   } catch (error) {
+-    console.error('Error calling Gemini API:', error.status, error.message);
+-    if (error.status === 429) {
+-      return res.status(429).json({
+-        error: 'Rate limit exceeded',
+-        reply: "Hold on there ??? I'm getting too many questions at once. Give me a second and try again."
+-      });
+-    }
++    console.error('Error with mock AI handling:', error.message);
+     res.status(500).json({
+-      error: 'Failed to get response from AI',
+-      reply: 'Sorry, I had trouble processing that. Please try again.'
++      error: 'Failed to get response',
++      reply: 'Listen kid, the PA system is down, check back later.'
+     });
+   }
+ });
+@@ -642,14 +613,16 @@ async function sendCountReport({ category, counterName, countedItems, skippedIte
+   `;
+ 
+   try {
+-    await smtpTransport.sendMail({
+-      from: `"FencePro Shop" <${process.env.SMTP_USER}>`,
+-      to: REPORT_EMAILS.join(', '),
+-      subject: `Blind Count Report: ${category} ??? ${dateStr}`,
+-      html,
+-    });
+-    console.log(`[Count Report] Emailed to: ${REPORT_EMAILS.join(', ')}`);
+-    return { sent: true, recipients: REPORT_EMAILS };
++    // ---- BETA MODE: MOCK EMAIL SEND -----
++    // await smtpTransport.sendMail({
++    //   from: `"FencePro Shop" <${process.env.SMTP_USER}>`,
++    //   to: REPORT_EMAILS.join(', '),
++    //   subject: `Blind Count Report: ${category} ??? ${dateStr}`,
++    //   html,
++    // });
++    console.log(`[BETA MOCK] Simulated sending Count Report to: ${REPORT_EMAILS.join(', ')}`);
++    return { sent: true, recipients: REPORT_EMAILS, betaMock: true };
++    // -------------------------------------
+   } catch (err) {
+     console.error('[Count Report] Email failed:', err.message);
+     return { sent: false, reason: err.message };
+diff --git a/repo.json b/repo.json
+index 97b9778..1dd9604 100644
+--- a/repo.json
++++ b/repo.json
+@@ -1,5 +1,5 @@
+ {
+   "name": "FencePro-shop-App",
+-  "private": true,
++  "private": false,
+   "description": "FencePro Shop Application"
+-}
++}
+\ No newline at end of file

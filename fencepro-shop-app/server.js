@@ -14,8 +14,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// Initialize the Google GenAI client
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // System prompt for the Shop Assistant
 const SYSTEM_PROMPT = `You are "The Shop Boss" (Big Bob), the AI veteran shop assistant at Superior Fence & Rail. 
@@ -218,7 +217,7 @@ const inventory = [
   { category: 'Vinyl Linears', sku: '73052960', name: '1-1/2x1-1/2x192 WHITE PICKET PROFILE', quantity: 0 },
   { category: 'Vinyl Linears', sku: '73053001', name: '.875x1.25x59 EXTRA U-CHANNEL WH', quantity: 0 },
 ];
-// Chat endpoint — Gemini AI
+// Chat endpoint — Gemini AI (MOCKED FOR BETA)
 app.post('/api/chat', async (req, res) => {
   try {
     const { message, history } = req.body;
@@ -227,55 +226,27 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    if (!process.env.GEMINI_API_KEY) {
-      return res.status(503).json({
-        error: 'AI not configured',
-        reply: 'The AI assistant is not configured yet. Please add your GEMINI_API_KEY to the .env file.'
-      });
+    // Delay to simulate AI thinking
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    // Simple keyword matching for the Beta presentation
+    const msgLower = message.toLowerCase();
+    let reply = "Look here—I hear you, but right now I need you focused on the Yard Crew counts. Stop messing around and check the clipboard.";
+
+    if (msgLower.includes("loading") || msgLower.includes("truck")) {
+      reply = "Listen up! The loading sequence is strictly reverse order of use. Posts first, pickets last. Make sure you get 80-90% weight over the axles and strap every pallet with two straps. Driver doesn't leave until you check tire pressure.";
+    } else if (msgLower.includes("staging") || msgLower.includes("color")) {
+      reply = "The Staging Color Code is non-negotiable: Orange for totes/hardware, Blue for concrete, Pink for gates/aluminum inserts, Green for job notes. Hardware must be in a tote with blue tape and the customer's name. Got it?";
+    } else if (msgLower.includes("ppe") || msgLower.includes("safety") || msgLower.includes("routing")) {
+      reply = "Right, here's the deal. For the vinyl routing stations, you mandatorily need eye protection and ear protection at all times. Zero exceptions. Put 'em on or clock out.";
     }
 
-    // Build conversation contents
-    const contents = [];
-
-    // Add history if provided
-    if (history && Array.isArray(history)) {
-      history.forEach(msg => {
-        contents.push({
-          role: msg.role === 'user' ? 'user' : 'model',
-          parts: [{ text: msg.text }]
-        });
-      });
-    }
-
-    // Add current message
-    contents.push({
-      role: 'user',
-      parts: [{ text: message }]
-    });
-
-    // Generate content using the new SDK
-    const result = await genAI.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: contents,
-      config: {
-        systemInstruction: SYSTEM_PROMPT
-      }
-    });
-
-    const text = result.text;
-
-    res.json({ reply: text });
+    res.json({ reply: reply });
   } catch (error) {
-    console.error('Error calling Gemini API:', error.status, error.message);
-    if (error.status === 429) {
-      return res.status(429).json({
-        error: 'Rate limit exceeded',
-        reply: "Hold on there — I'm getting too many questions at once. Give me a second and try again."
-      });
-    }
+    console.error('Error with mock AI handling:', error.message);
     res.status(500).json({
-      error: 'Failed to get response from AI',
-      reply: 'Sorry, I had trouble processing that. Please try again.'
+      error: 'Failed to get response',
+      reply: 'Listen kid, the PA system is down, check back later.'
     });
   }
 });
@@ -642,14 +613,16 @@ async function sendCountReport({ category, counterName, countedItems, skippedIte
   `;
 
   try {
-    await smtpTransport.sendMail({
-      from: `"FencePro Shop" <${process.env.SMTP_USER}>`,
-      to: REPORT_EMAILS.join(', '),
-      subject: `Blind Count Report: ${category} — ${dateStr}`,
-      html,
-    });
-    console.log(`[Count Report] Emailed to: ${REPORT_EMAILS.join(', ')}`);
-    return { sent: true, recipients: REPORT_EMAILS };
+    // ---- BETA MODE: MOCK EMAIL SEND -----
+    // await smtpTransport.sendMail({
+    //   from: `"FencePro Shop" <${process.env.SMTP_USER}>`,
+    //   to: REPORT_EMAILS.join(', '),
+    //   subject: `Blind Count Report: ${category} — ${dateStr}`,
+    //   html,
+    // });
+    console.log(`[BETA MOCK] Simulated sending Count Report to: ${REPORT_EMAILS.join(', ')}`);
+    return { sent: true, recipients: REPORT_EMAILS, betaMock: true };
+    // -------------------------------------
   } catch (err) {
     console.error('[Count Report] Email failed:', err.message);
     return { sent: false, reason: err.message };
