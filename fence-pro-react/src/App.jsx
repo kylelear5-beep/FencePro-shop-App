@@ -86,7 +86,7 @@ const Sidebar = ({ activeSection, setActiveSection }) => (
         <Calendar />
         <span>CALENDAR</span>
       </button>
-      
+
       <div className="menu-divider" style={{ borderTop: '1px solid var(--border-color)', margin: '10px 0', opacity: 0.2 }}></div>
 
       <a href="https://live.sosinventory.com/" target="_blank" rel="noreferrer" className="menu-item">
@@ -338,7 +338,7 @@ function App() {
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!uploadData.file || !uploadData.name) return;
-    
+
     setUploading(true);
     const formData = new FormData();
     formData.append('file', uploadData.file);
@@ -549,10 +549,10 @@ function App() {
                     <span>SHOP CALENDAR</span>
                     <Calendar size={16} className="text-gray-400" />
                   </div>
-                  <iframe 
-                    src="https://calendar.google.com/calendar/embed?src=c_306fa480e8ee4933c418006de09bf678a6b867cf5d30963a45eaed292cb7f49a%40group.calendar.google.com&ctz=America%2FNew_York" 
-                    style={{ border: 0, width: '100%', flex: 1 }} 
-                    frameBorder="0" 
+                  <iframe
+                    src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FNew_York&showPrint=0&src=aHVkc29udmFsbGV5cHJvZHVjdGlvbkBzdXBlcmlvcmZlbmNlYW5kcmFpbC5jb20&src=Y18zMDZmYTQ4MGU4ZWU0OTMzYzQxODAwNmRlMDliZjY3OGE2Yjg2N2NmNWQzMDk2M2E0NWVhZWQyOTJjYjdmNDlhQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19mM2U4MWM0NzQyNTU4OTcwZjU2ZmY1ZjU1MzgwYWM2MWQwM2M5YzFhNGQxN2MwNjUzMDZiM2NjNzVlNjA4NjY1QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y182MTQ4YTE1ZDlhMDAzMWZjODA0N2RmNTIwZGZkMzU3ZDI3ZmJlMjM3YzgyYjFhNDEyMjVjNDlkNzc5ZTI2NmY1QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19mNWI5NjMwNDU2M2M2NzM3NDczZjJhNDQyZGE5ZDc3ZjhmOGQxNDIzMGQ3OGY5MmY2ZjFmZTg3MzFkZmI4OWU4QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19mODI0YTE1YzhjNDQ0NTY3ZTVlN2I3YmExYjYxM2I4MTFhOGVjMjhmNmQ5MTc5NWFmOWRkYmQwNDRlM2E1MzBlQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y18zMzU2ODgyMDUwZDkzY2U2ODNiZjc1NDAzZDA2MDhhY2RkNDYzOTcxYTRkNmZmMjg3ZTBkMTliN2RkNWY5ZTRiQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19kMzIxY2Y5MGVhZWZlZGE1NTM3Y2JlZDA3MzVjM2UyZDM2ODI1Y2RjODZkNjMxNzg4YmNmNDBkOTg3ZTAxNGZiQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19jNzgyZTllNjk3NmE2MTA0NDFjYmI1OGM5M2E2ZDAxOWExYzZmZTE3YzdmNmJjZTg5OGExODc3NjhhZWYyODQ2QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=YXJ0LmZpc2hlckBzdXBlcmlvcmZlbmNlYW5kcmFpbC5jb20&src=Y19iZThjMGZhYWU2NzZlZGEzODFlMmY4M2UwY2FkNDA0ZTkzZjhlMmNkNjRkYmEzMGRmMWM4Y2YxNTI2OWFmZDIxQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23039be5&color=%233f51b5&color=%23e9e7e4&color=%23795548&color=%23c0ca33&color=%23ad1457&color=%23e4c441&color=%23d50000&color=%23ad1457&color=%238e24aa&color=%23616161"
+                    style={{ border: 0, width: '100%', flex: 1 }}
+                    frameBorder="0"
                     scrolling="auto"
                     title="Google Calendar"
                   ></iframe>
@@ -563,13 +563,13 @@ function App() {
                   <div className="bg-amber-600 text-white px-4 py-2 font-black uppercase text-sm flex items-center justify-between">
                     <span>FENCE 360 CRM</span>
                     <span className="w-4 h-4 rounded-sm bg-white flex items-center justify-center">
-                       <img src="https://www.google.com/s2/favicons?domain=fence360.net&sz=32" alt="F360" style={{ width: '12px', height: '12px' }} />
+                      <img src="https://www.google.com/s2/favicons?domain=fence360.net&sz=32" alt="F360" style={{ width: '12px', height: '12px' }} />
                     </span>
                   </div>
-                  <iframe 
-                    src="https://www.fence360.net/login" 
-                    style={{ border: 0, width: '100%', flex: 1 }} 
-                    frameBorder="0" 
+                  <iframe
+                    src="https://www.fence360.net/login"
+                    style={{ border: 0, width: '100%', flex: 1 }}
+                    frameBorder="0"
                     scrolling="auto"
                     title="Fence 360"
                   ></iframe>

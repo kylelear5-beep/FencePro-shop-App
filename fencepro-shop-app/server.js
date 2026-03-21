@@ -39,11 +39,11 @@ const SYSTEM_PROMPT = `You are "The Shop Boss" (Big Bob), the AI veteran shop as
 You are a seasoned, no-nonsense fencing expert who has been building and installing fences for 20 years. 
 
 Your Personality:
-- You are gruff but deeply reliable, always focusing on doing the job right the first time.
-- You talk like a seasoned blue-collar foreman. Use phrases like "Look here," "Let me tell ya," "Listen up," or "Right, here's the deal."
+- You are gruff, a bit impatient, but deeply reliable, always focusing on doing the job right the first time.
+- You talk like a seasoned blue-collar foreman. You MUST always use phrases like "Look here," "Let me tell ya," "Listen up," or "Right, here's the deal."
 - You take pride in Superior Fence & Rail's high standards. Quality control and safety are your top priorities.
-- You have zero patience for taking shortcuts or ignoring safety gear (PPE).
-- You keep answers incredibly practical, direct, and actionable. You don't use fluffy corporate jargon.
+- You have zero patience for taking shortcuts, making messes, or ignoring safety gear (PPE).
+- You keep answers incredibly practical, direct, and actionable. You NEVER use polite corporate fluff or generic AI responses. You're the boss, act like it.
 
 Core Principles & Priorities:
 - "Do one thing to 100% until it's done."
@@ -88,7 +88,7 @@ Instructions:
 - Always give answers using bullet points if there are steps involved.
 - If they ask "What should I be doing?", use the current time to suggest the appropriate task from the Daily Rhythm. 
 - If they are missing material, tell them to "Notify the GM immediately."
-- Start your first response with a brief, in-character greeting perfectly suited for a rugged shop foreman.`;
+- Start EVERY single response with a brief, in-character greeting perfectly suited for a rugged, slightly annoyed shop foreman. (e.g. "Look here," or "Listen up kid,")`;
 
 // ─── Inventory Data (in-memory store — from Blind Count Sheet) ───
 const inventory = [
@@ -510,7 +510,7 @@ const inventory = [
   { category: 'Wood Trim', sku: '15004', name: '1x4x8 PT TRIM', quantity: 0 },
   { category: 'Wood Trim', sku: '15004-NWC', name: '1x4x8 NWC Trim', quantity: 0 },
 ];
-// Chat endpoint — Gemini AI (MOCKED FOR BETA)
+// Chat endpoint — Gemini AI Implementation
 app.post('/api/chat', async (req, res) => {
   try {
     const { message, history } = req.body;
@@ -519,24 +519,62 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    // Delay to simulate AI thinking
+    // Attempt real Gemini API call if key is present
+    if (process.env.GEMINI_API_KEY) {
+      try {
+        const fetchUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+        
+        // Format history for REST API
+        const formattedHistory = [];
+        if (history && Array.isArray(history)) {
+          for (const msg of history) {
+             formattedHistory.push({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] });
+          }
+        }
+        
+        const contents = [...formattedHistory, { role: 'user', parts: [{ text: message }] }];
+
+        const apiRes = await fetch(fetchUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+            contents: contents
+          })
+        });
+        
+        const data = await apiRes.json();
+        
+        if (data && data.candidates && data.candidates[0].content) {
+          return res.json({ reply: data.candidates[0].content.parts[0].text });
+        }
+      } catch (err) {
+        console.error("Gemini API error, falling back to mock:", err.message);
+      }
+    }
+
+    // Delay to simulate AI thinking for fallback
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    // Simple keyword matching for the Beta presentation
+    // Smarter fallback keywords if API is unavailable
     const msgLower = message.toLowerCase();
-    let reply = "Look here—I hear you, but right now I need you focused on the Yard Crew counts. Stop messing around and check the clipboard.";
+    let reply = "Look here—my connection to the mainframe is acting up, so I'm flyin' blind today. But I'm still the boss here. If you need to do a count, just head over to the Digital Clipboard and pick whatever category you want. Now grab a tool and get back to work. What else do you need?";
 
     if (msgLower.includes("loading") || msgLower.includes("truck")) {
-      reply = "Listen up! The loading sequence is strictly reverse order of use. Posts first, pickets last. Make sure you get 80-90% weight over the axles and strap every pallet with two straps. Driver doesn't leave until you check tire pressure.";
+      reply = "Listen up! The loading sequence is strictly reverse order of use. Posts first, pickets last. Make sure you get 80-90% weight over the axles and strap every pallet with two straps. I swear, if that driver leaves before you check tire pressure, I'm sending you home!";
     } else if (msgLower.includes("staging") || msgLower.includes("color")) {
-      reply = "The Staging Color Code is non-negotiable: Orange for totes/hardware, Blue for concrete, Pink for gates/aluminum inserts, Green for job notes. Hardware must be in a tote with blue tape and the customer's name. Got it?";
+      reply = "Are you deaf? The Staging Color Code is non-negotiable: Orange for totes/hardware, Blue for concrete, Pink for gates and aluminum inserts, Green for job notes. Put that hardware in a tote with blue tape and the customer's name, or don't bother staging it at all. Got it?";
     } else if (msgLower.includes("ppe") || msgLower.includes("safety") || msgLower.includes("routing")) {
-      reply = "Right, here's the deal. For the vinyl routing stations, you mandatorily need eye protection and ear protection at all times. Zero exceptions. Put 'em on or clock out.";
+      reply = "Right, here's the deal. For the vinyl routing stations, you mandatorily need eye protection and ear protection at all times. Zero exceptions. Put 'em on or clock out and go home.";
+    } else if (msgLower.includes("gate") || msgLower.includes("build")) {
+      reply = "Alright, listen to me carefully. When you build a gate, you always start with checking your uprights and corners for square. If you're building a wood frame, use a Z-brace. If that gate is over 4 feet wide, you absolutely MUST use a truss rod or it's gonna sag and make us look like amateurs. Build it right the first time so we don't have to send a repair crew out there to fix your mess!";
+    } else if (msgLower.includes("count") || msgLower.includes("inventory")) {
+      reply = "Look, inventory counts ain't my main concern right now—but if you want to do one, head over to the Digital Clipboard. You can select any category from the list to count yourself. Just make sure you do it blind, count 'em right, and don't try to guess the numbers!";
     }
 
     res.json({ reply: reply });
   } catch (error) {
-    console.error('Error with mock AI handling:', error.message);
+    console.error('Error with AI handling:', error.message);
     res.status(500).json({
       error: 'Failed to get response',
       reply: 'Listen kid, the PA system is down, check back later.'
