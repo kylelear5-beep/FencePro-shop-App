@@ -550,7 +550,7 @@ function App() {
                     <Calendar size={16} className="text-gray-400" />
                   </div>
                   <iframe 
-                    src="https://calendar.google.com/calendar/embed?src=en.usa%23holiday%40group.v.calendar.google.com&ctz=America%2FNew_York&showTitle=0&showPrint=0&mode=WEEK" 
+                    src="https://calendar.google.com/calendar/embed?src=c_306fa480e8ee4933c418006de09bf678a6b867cf5d30963a45eaed292cb7f49a%40group.calendar.google.com&ctz=America%2FNew_York" 
                     style={{ border: 0, width: '100%', flex: 1 }} 
                     frameBorder="0" 
                     scrolling="auto"
