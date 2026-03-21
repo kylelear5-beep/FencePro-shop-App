@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  LayoutGrid, 
-  FolderKanban, 
-  Calculator, 
-  MessageSquareQuote, 
-  ExternalLink, 
-  Package, 
-  TrendingUp, 
-  Award, 
-  CheckCircle, 
+import {
+  LayoutGrid,
+  FolderKanban,
+  Calculator,
+  MessageSquareQuote,
+  ExternalLink,
+  Package,
+  TrendingUp,
+  Award,
+  CheckCircle,
   Clock,
   Search,
   Send,
@@ -18,10 +18,12 @@ import {
   Files,
   ArrowRight,
   Hammer,
-  Home
+  Home,
+  ClipboardList
 } from 'lucide-react';
 import ChainLinkCalculator from './components/ChainLinkCalc';
 import InventoryManager from './components/InventoryManager';
+import BlindCountBoard from './components/BlindCountBoard';
 
 // ── APP COMPONENTS ──
 
@@ -30,42 +32,49 @@ const Sidebar = ({ activeSection, setActiveSection }) => (
     <div className="sidebar-brand-box">
       <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp" alt="Superior Logo" />
     </div>
-    
+
     <nav className="sidebar-menu">
-      <button 
-        className={`menu-item ${activeSection === 'dashboard' ? 'active' : ''}`} 
+      <button
+        className={`menu-item ${activeSection === 'dashboard' ? 'active' : ''}`}
         onClick={() => setActiveSection('dashboard')}
       >
         <LayoutGrid />
         <span>DASHBOARD</span>
       </button>
-      <button 
-        className={`menu-item ${activeSection === 'documents' ? 'active' : ''}`} 
+      <button
+        className={`menu-item ${activeSection === 'documents' ? 'active' : ''}`}
         onClick={() => setActiveSection('documents')}
       >
         <FolderKanban />
         <span>SOP LIBRARY</span>
       </button>
-      <button 
-        className={`menu-item ${activeSection === 'inventory' ? 'active' : ''}`} 
+      <button
+        className={`menu-item ${activeSection === 'inventory' ? 'active' : ''}`}
         onClick={() => setActiveSection('inventory')}
       >
         <Package />
         <span>INVENTORY</span>
       </button>
-      <button 
-        className={`menu-item ${activeSection === 'tools' ? 'active' : ''}`} 
+      <button
+        className={`menu-item ${activeSection === 'tools' ? 'active' : ''}`}
         onClick={() => setActiveSection('tools')}
       >
         <Calculator />
         <span>SHOP TOOLS</span>
       </button>
-      <button 
-        className={`menu-item assistant-trigger ${activeSection === 'assistant' ? 'active' : ''}`} 
+      <button
+        className={`menu-item assistant-trigger ${activeSection === 'assistant' ? 'active' : ''}`}
         onClick={() => setActiveSection('assistant')}
       >
         <MessageSquareQuote />
         <span>ASK BOB</span>
+      </button>
+      <button
+        className={`menu-item ${activeSection === 'yardcrew' ? 'active' : ''}`}
+        onClick={() => setActiveSection('yardcrew')}
+      >
+        <ClipboardList />
+        <span>YARD CREW</span>
       </button>
     </nav>
 
@@ -89,7 +98,7 @@ const Topbar = ({ sectionTitle, aiStatus, time }) => (
     </div>
     <div className="topbar-right">
       <div className="status-badge">
-        <span className="status-pulse" style={{ 
+        <span className="status-pulse" style={{
           backgroundColor: aiStatus === 'ACTIVE' ? '#10b981' : '#f59e0b',
           boxShadow: aiStatus === 'ACTIVE' ? '0 0 8px rgba(16, 185, 129, 0.4)' : 'none'
         }}></span>
@@ -139,8 +148,8 @@ const Dashboard = ({ setActiveSection, docCount, aiStatus }) => (
           <button className="action-btn maroon-solid" onClick={() => setActiveSection('documents')}>
             <Files size={18} /> BROWSE LIBRARY
           </button>
-          <button className="action-btn outline" onClick={() => setActiveSection('inventory')}>
-            <TrendingUp size={18} /> SHIFT CHECKLIST
+          <button className="action-btn outline" onClick={() => setActiveSection('yardcrew')}>
+            <ClipboardList size={18} /> YARD CREW
           </button>
           <button className="action-btn outline" onClick={() => setActiveSection('tools')}>
             <Calculator size={18} /> MATERIAL CALC
@@ -171,7 +180,7 @@ const Dashboard = ({ setActiveSection, docCount, aiStatus }) => (
   </div>
 );
 
-const Assistant = ({ aiStatus }) => {
+const Assistant = () => {
   const [messages, setMessages] = useState([
     { role: 'assistant', text: "Listen up! 👋 I'm Big Bob. I run this shop and make sure we build 'em right and build 'em safe. What do you need?" }
   ]);
@@ -186,7 +195,7 @@ const Assistant = ({ aiStatus }) => {
 
   const handleSend = async () => {
     if (!input.trim()) return;
-    
+
     const userMessage = input.trim();
     setInput('');
     setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
@@ -194,7 +203,10 @@ const Assistant = ({ aiStatus }) => {
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Bypass-Tunnel-Reminder': 'true'
+        },
         body: JSON.stringify({
           message: userMessage,
           history: messages.map(m => ({ role: m.role === 'user' ? 'user' : 'model', text: m.text })).slice(-10)
@@ -204,7 +216,7 @@ const Assistant = ({ aiStatus }) => {
       const data = await response.json();
       const reply = data.reply || data.error || 'System error. Recalibrate and try again.';
       setMessages(prev => [...prev, { role: 'assistant', text: reply }]);
-    } catch (error) {
+    } catch {
       setMessages(prev => [...prev, { role: 'assistant', text: 'No handshake with Superior Core. Connection failed.' }]);
     }
   };
@@ -242,12 +254,12 @@ const Assistant = ({ aiStatus }) => {
         </div>
         <div className="chat-input-row">
           <div className="input-shell">
-            <textarea 
-              value={input} 
+            <textarea
+              value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
-              placeholder="Type command here..." 
-              rows="1" 
+              placeholder="Type command here..."
+              rows="1"
             />
             <button className="btn-send" onClick={handleSend}><Send size={18} /></button>
           </div>
@@ -271,22 +283,23 @@ function App() {
   useEffect(() => {
     // Clock
     const timer = setInterval(() => {
-      setTime(new Date().toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
+      setTime(new Date().toLocaleTimeString('en-US', {
+        hour: '2-digit',
         minute: '2-digit',
-        hour12: true 
+        hour12: true
       }).toUpperCase());
     }, 1000);
 
     // Initial Data
     const fetchData = async () => {
       try {
+        const headers = { 'Bypass-Tunnel-Reminder': 'true' };
         const [docsRes, toolsRes, statusRes] = await Promise.all([
-          fetch('/api/documents'),
-          fetch('/api/tools'),
-          fetch('/api/status')
+          fetch('/api/documents', { headers }),
+          fetch('/api/tools', { headers }),
+          fetch('/api/status', { headers })
         ]);
-        
+
         const docsData = await docsRes.json();
         const toolsData = await toolsRes.json();
         const statusData = await statusRes.json();
@@ -306,12 +319,13 @@ function App() {
   }, []);
 
   const getSectionTitle = () => {
-    switch(activeSection) {
+    switch (activeSection) {
       case 'dashboard': return 'COMMAND';
       case 'documents': return 'LIBRARY';
       case 'inventory': return 'LOGISTICS';
       case 'tools': return 'TOOLS';
       case 'assistant': return 'CONSULTATION';
+      case 'yardcrew': return 'DIGITAL CLIPBOARD';
       default: return 'COMMAND';
     }
   };
@@ -319,20 +333,29 @@ function App() {
   return (
     <div className="app-workspace">
       <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
-      
+
       <main className="app-main">
         <Topbar sectionTitle={getSectionTitle()} aiStatus={aiStatus} time={time} />
-        
+
         <div className="app-viewport">
           {activeSection === 'dashboard' && (
             <div className="module active">
               <Dashboard setActiveSection={setActiveSection} docCount={docCount} aiStatus={aiStatus} />
             </div>
           )}
-          
+
           {activeSection === 'assistant' && (
             <div className="module active">
               <Assistant aiStatus={aiStatus} />
+            </div>
+          )}
+
+          {activeSection === 'yardcrew' && (
+            <div className="module active" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div className="module-header">
+                <h1 className="oswald-title">YARD CREW DIGITAL CLIPBOARD</h1>
+              </div>
+              <BlindCountBoard counterName="Yard Supervisor" />
             </div>
           )}
 
@@ -377,9 +400,9 @@ function App() {
                   </div>
                   <div className="app-grid">
                     {tools.map((tool, i) => (
-                      <div 
-                        key={i} 
-                        className="widget" 
+                      <div
+                        key={i}
+                        className="widget"
                         style={{ cursor: tool.id === 'material-calc' ? 'pointer' : 'default' }}
                         onClick={() => tool.id === 'material-calc' && setActiveTool('chain-link')}
                       >
@@ -409,6 +432,7 @@ function App() {
         <button className={`m-btn ${activeSection === 'documents' ? 'active' : ''}`} onClick={() => setActiveSection('documents')}><FolderKanban /></button>
         <button className={`m-btn ${activeSection === 'inventory' ? 'active' : ''}`} onClick={() => setActiveSection('inventory')}><Package /></button>
         <button className={`m-btn ${activeSection === 'tools' ? 'active' : ''}`} onClick={() => setActiveSection('tools')}><Hammer /></button>
+        <button className={`m-btn ${activeSection === 'yardcrew' ? 'active' : ''}`} onClick={() => setActiveSection('yardcrew')}><ClipboardList /></button>
         <button className={`m-btn ${activeSection === 'assistant' ? 'active' : ''}`} onClick={() => setActiveSection('assistant')}><MessageSquareQuote /></button>
       </nav>
     </div>

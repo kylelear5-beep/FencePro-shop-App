@@ -1,0 +1,30 @@
+
+C:\Users\kylel\OneDrive\Desktop\FencePro-shop-App\fence-pro-react\src\App.jsx
+  183:22  error  'aiStatus' is defined but never used  no-unused-vars
+  219:14  error  'error' is defined but never used     no-unused-vars
+
+C:\Users\kylel\OneDrive\Desktop\FencePro-shop-App\fence-pro-react\src\__tests__\components\BlindCountBoard.test.jsx
+    6:1   error  'global' is not defined      no-undef
+    6:16  error  'jest' is not defined        no-undef
+   34:1   error  'describe' is not defined    no-undef
+   36:3   error  'beforeEach' is not defined  no-undef
+   47:3   error  'it' is not defined          no-undef
+   53:5   error  'expect' is not defined      no-undef
+   59:5   error  'expect' is not defined      no-undef
+   60:5   error  'expect' is not defined      no-undef
+   64:5   error  'expect' is not defined      no-undef
+   67:3   error  'it' is not defined          no-undef
+   93:7   error  'expect' is not defined      no-undef
+   93:70  error  'expect' is not defined      no-undef
+  104:5   error  'expect' is not defined      no-undef
+
+C:\Users\kylel\OneDrive\Desktop\FencePro-shop-App\fence-pro-react\src\components\BlindCountBoard.jsx
+   81:14  error  'err' is defined but never used                                                           no-unused-vars
+  107:14  error  'err' is defined but never used                                                           no-unused-vars
+  423:17  error  'variance' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\kylel\OneDrive\Desktop\FencePro-shop-App\fence-pro-react\src\components\ChainLinkCalc.jsx
+  8:16  error  'setEnds' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+??? 19 problems (19 errors, 0 warnings)
+

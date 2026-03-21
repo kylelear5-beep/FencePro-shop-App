@@ -1,3 +1,4 @@
+/* eslint-env jest */
 // src/__tests__/components/BlindCountBoard.test.jsx
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import BlindCountBoard from '../../components/BlindCountBoard';

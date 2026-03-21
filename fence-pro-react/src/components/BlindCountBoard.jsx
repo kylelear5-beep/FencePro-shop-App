@@ -29,9 +29,10 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
   useEffect(() => {
     const load = async () => {
       try {
+        const headers = { 'Bypass-Tunnel-Reminder': 'true' };
         const [sheetRes, assignRes] = await Promise.all([
-          fetch('/api/inventory/count-sheet'),
-          fetch('/api/inventory/daily-assignment'),
+          fetch('/api/inventory/count-sheet', { headers }),
+          fetch('/api/inventory/daily-assignment', { headers }),
         ]);
 
         if (!sheetRes.ok) throw new Error('Failed to load count sheet');
@@ -65,7 +66,10 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
       setStatus(prev => ({ ...prev, [sku]: 'submitting' }));
       const response = await fetch('/api/inventory/reconcile', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Bypass-Tunnel-Reminder': 'true'
+        },
         body: JSON.stringify({ sku, actualCount, counterName }),
       });
       if (!response.ok) throw new Error('Reconciliation failed');
@@ -74,7 +78,7 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
         ...prev,
         [sku]: { done: true, variance: result.variance, message: result.message },
       }));
-    } catch (err) {
+    } catch {
       setStatus(prev => ({ ...prev, [sku]: 'error' }));
     }
   };
@@ -86,7 +90,10 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
     try {
       const response = await fetch('/api/inventory/finish-day', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Bypass-Tunnel-Reminder': 'true'
+        },
         body: JSON.stringify({
           category: categoryName,
           countedSkus,
@@ -97,7 +104,7 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
       if (!response.ok) throw new Error('Failed to finish day');
       const result = await response.json();
       setDayFinished(result);
-    } catch (err) {
+    } catch {
       // silently fail — could add error handling later
     }
   };
@@ -413,7 +420,7 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
           const isSubmitting = status[item.sku] === 'submitting';
           const isError = status[item.sku] === 'error';
           const itemStatus = status[item.sku];
-          const variance = itemDone ? (itemStatus?.variance ?? 0) : null;
+          const _variance = itemDone ? (itemStatus?.variance ?? 0) : null;
 
           return (
             <div

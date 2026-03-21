@@ -5,7 +5,7 @@ const ChainLinkCalculator = ({ onBack }) => {
   const [footage, setFootage] = useState(100);
   const [height, setHeight] = useState(6);
   const [corners, setCorners] = useState(2);
-  const [ends, setEnds] = useState(2);
+  const [ends, _setEnds] = useState(2);
   const [singleGates, setSingleGates] = useState(0);
   const [doubleGates, setDoubleGates] = useState(0);
   const [spacing, setSpacing] = useState(10);

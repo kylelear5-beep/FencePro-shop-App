@@ -23,7 +23,9 @@ export default function InventoryManager() {
       const loadSkipped = async () => {
         setSkippedLoading(true);
         try {
-          const res = await fetch('/api/inventory/not-counted');
+          const res = await fetch('/api/inventory/not-counted', {
+            headers: { 'Bypass-Tunnel-Reminder': 'true' }
+          });
           if (res.ok) {
             const data = await res.json();
             setSkippedItems(data.items || []);
@@ -45,7 +47,10 @@ export default function InventoryManager() {
     try {
       const response = await fetch('/api/inventory/add-item', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Bypass-Tunnel-Reminder': 'true'
+        },
         body: JSON.stringify({ sku, name, category, quantity: quantity || 0 })
       });
       const data = await response.json();

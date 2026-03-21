@@ -54,7 +54,7 @@ export default function SimpleCalculator() {
 
   const handleEqual = () => {
     if (!operator || previousVal == null) return;
-    
+
     const result = calculate(previousVal, parseFloat(display), operator);
     setDisplay(String(result));
     setPreviousVal(null);
@@ -97,22 +97,22 @@ export default function SimpleCalculator() {
           <button onClick={handleClear} className="col-span-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-xl font-black text-xl transition-all duration-75 active:scale-95 py-3 md:py-4">AC</button>
           <button onClick={handleDel} className="bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-xl font-black text-xl transition-all duration-75 active:scale-95 py-3 md:py-4">DEL</button>
           <button onClick={() => handleOp('÷')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-2xl transition-all duration-75 active:scale-95 py-3 md:py-4 ${operator === '÷' ? 'ring-2 ring-white z-10' : ''}`}>÷</button>
-          
+
           <button onClick={() => handleNum(7)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">7</button>
           <button onClick={() => handleNum(8)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">8</button>
           <button onClick={() => handleNum(9)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">9</button>
           <button onClick={() => handleOp('×')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5 ${operator === '×' ? 'ring-2 ring-white z-10' : ''}`}>×</button>
-          
+
           <button onClick={() => handleNum(4)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">4</button>
           <button onClick={() => handleNum(5)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">5</button>
           <button onClick={() => handleNum(6)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">6</button>
           <button onClick={() => handleOp('-')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5 ${operator === '-' ? 'ring-2 ring-white z-10' : ''}`}>-</button>
-          
+
           <button onClick={() => handleNum(1)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">1</button>
           <button onClick={() => handleNum(2)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">2</button>
           <button onClick={() => handleNum(3)} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">3</button>
           <button onClick={() => handleOp('+')} className={`bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5 ${operator === '+' ? 'ring-2 ring-white z-10' : ''}`}>+</button>
-          
+
           <button onClick={() => handleNum(0)} className="col-span-2 bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">0</button>
           <button onClick={handleDecimal} className="bg-gray-800 hover:bg-gray-700 text-white border border-gray-700 rounded-xl font-bold text-2xl transition-all duration-75 active:scale-95 py-4 md:py-5">.</button>
           <button onClick={handleEqual} className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-2xl shadow-lg transition-all duration-75 active:scale-95 py-4 md:py-5">=</button>
