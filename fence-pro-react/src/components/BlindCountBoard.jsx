@@ -167,6 +167,33 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
             .map(item => {
               const itemStatus = status[item.sku];
               const variance = itemStatus?.variance ?? 0;
+              const actualCount = Number(counts[item.sku] || 0);
+              const expectedCount = Math.max(0, actualCount - variance);
+              
+              const isBulk = ['Shop Consumables', 'Chain Link - Misc/Tools', 'Vinyl Caps', 'Vinyl Hardware', 'Aluminum Hardware'].includes(activeCategory) || expectedCount > 100;
+              const greenPct = isBulk ? 0.02 : 0.05;
+              const orangePct = isBulk ? 0.05 : 0.10;
+
+              const minGreen = -Math.ceil(expectedCount * greenPct);
+              const maxGreen = Math.ceil(expectedCount * greenPct);
+              const maxOrange = Math.ceil(expectedCount * orangePct);
+
+              let varClass = 'text-emerald-700 bg-emerald-100 border-emerald-300';
+              let varLabel = 'GOOD';
+
+              if (variance !== 0) {
+                if (variance >= minGreen && variance <= maxGreen) {
+                   varClass = 'text-emerald-700 bg-emerald-100 border-emerald-300';
+                   varLabel = `${variance > 0 ? '+' : ''}${variance}`;
+                } else if (variance > maxGreen && variance <= maxOrange) {
+                   varClass = 'text-orange-700 bg-orange-100 border-orange-300';
+                   varLabel = `+${variance}`;
+                } else {
+                   varClass = 'text-red-700 bg-red-100 border-red-300';
+                   varLabel = `${variance > 0 ? '+' : ''}${variance}`;
+                }
+              }
+
               return (
                 <div key={item.sku} className="px-6 py-3 flex items-center justify-between border-b border-gray-100">
                   <div>
@@ -177,12 +204,8 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
                     <span className="text-sm font-bold text-gray-600">
                       Counted: {counts[item.sku]}
                     </span>
-                    <span className={`text-xs font-black px-3 py-1.5 rounded-md border-2 ${
-                      variance === 0 ? 'text-emerald-700 bg-emerald-100 border-emerald-300'
-                      : variance > 0 ? 'text-blue-700 bg-blue-100 border-blue-300'
-                      : 'text-red-700 bg-red-100 border-red-300'
-                    }`}>
-                      {variance === 0 ? 'MATCH' : `${variance > 0 ? '+' : ''}${variance}`}
+                    <span className={`text-xs font-black px-3 py-1.5 rounded-md border-2 ${varClass}`}>
+                      {varLabel}
                     </span>
                   </div>
                 </div>

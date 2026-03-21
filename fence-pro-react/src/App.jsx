@@ -19,7 +19,10 @@ import {
   ArrowRight,
   Hammer,
   Home,
-  ClipboardList
+  ClipboardList,
+  Upload,
+  X,
+  Calendar
 } from 'lucide-react';
 import ChainLinkCalculator from './components/ChainLinkCalc';
 import InventoryManager from './components/InventoryManager';
@@ -76,16 +79,25 @@ const Sidebar = ({ activeSection, setActiveSection }) => (
         <ClipboardList />
         <span>YARD CREW</span>
       </button>
-    </nav>
+      <button
+        className={`menu-item ${activeSection === 'calendar' ? 'active' : ''}`}
+        onClick={() => setActiveSection('calendar')}
+      >
+        <Calendar />
+        <span>CALENDAR</span>
+      </button>
+      
+      <div className="menu-divider" style={{ borderTop: '1px solid var(--border-color)', margin: '10px 0', opacity: 0.2 }}></div>
 
-    <div className="sidebar-utils">
-      <a href="https://www.fence360.net/login" target="_blank" rel="noreferrer" className="util-btn" title="Fence360">
-        <ExternalLink />
+      <a href="https://live.sosinventory.com/" target="_blank" rel="noreferrer" className="menu-item">
+        <img src="https://www.google.com/s2/favicons?domain=sosinventory.com&sz=128" alt="SOS Inventory" style={{ width: '24px', height: '24px', borderRadius: '4px' }} />
+        <span>SOS INVENTORY</span>
       </a>
-      <a href="https://live.sosinventory.com/" target="_blank" rel="noreferrer" className="util-btn" title="SOS Inventory">
-        <Package />
+      <a href="https://www.fence360.net/login" target="_blank" rel="noreferrer" className="menu-item">
+        <img src="https://www.google.com/s2/favicons?domain=fence360.net&sz=128" alt="Fence 360" style={{ width: '24px', height: '24px', borderRadius: '4px' }} />
+        <span>FENCE 360</span>
       </a>
-    </div>
+    </nav>
   </aside>
 );
 
@@ -280,6 +292,11 @@ function App() {
   const [tools, setTools] = useState([]);
   const [activeTool, setActiveTool] = useState(null);
 
+  // Document Upload State
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadData, setUploadData] = useState({ name: '', category: 'Standard Operating Procedures', file: null });
+  const [uploading, setUploading] = useState(false);
+
   useEffect(() => {
     // Clock
     const timer = setInterval(() => {
@@ -318,6 +335,39 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    if (!uploadData.file || !uploadData.name) return;
+    
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', uploadData.file);
+    formData.append('name', uploadData.name);
+    formData.append('category', uploadData.category);
+
+    try {
+      const res = await fetch('/api/documents/upload', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Bypass-Tunnel-Reminder': 'true'
+        }
+      });
+      const data = await res.json();
+      if (data.categories) {
+        const flatDocs = data.categories.flatMap(c => c.docs);
+        setDocuments(flatDocs);
+        setDocCount(flatDocs.length);
+      }
+      setShowUploadModal(false);
+      setUploadData({ name: '', category: 'Standard Operating Procedures', file: null });
+    } catch (err) {
+      console.error('Upload failed:', err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const getSectionTitle = () => {
     switch (activeSection) {
       case 'dashboard': return 'COMMAND';
@@ -326,6 +376,7 @@ function App() {
       case 'tools': return 'TOOLS';
       case 'assistant': return 'CONSULTATION';
       case 'yardcrew': return 'DIGITAL CLIPBOARD';
+      case 'calendar': return 'SCHEDULE';
       default: return 'COMMAND';
     }
   };
@@ -369,9 +420,14 @@ function App() {
             <div className="module active">
               <div className="module-header">
                 <h1 className="oswald-title">DOCUMENT LIBRARY</h1>
-                <div className="utility-search">
-                  <Search size={18} />
-                  <input type="text" placeholder="Filter Superior SOPs..." />
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button className="action-btn green-solid" onClick={() => setShowUploadModal(true)}>
+                    <Upload size={18} /> UPLOAD DOC
+                  </button>
+                  <div className="utility-search">
+                    <Search size={18} />
+                    <input type="text" placeholder="Filter Superior SOPs..." />
+                  </div>
                 </div>
               </div>
               <div className="app-grid">
@@ -388,6 +444,60 @@ function App() {
                   </div>
                 ))}
               </div>
+
+              {/* Upload Modal */}
+              {showUploadModal && (
+                <div className="modal-overlay">
+                  <div className="modal-content" style={{ maxWidth: '500px' }}>
+                    <div className="modal-header">
+                      <h2 className="oswald-title">UPLOAD NEW DOCUMENT</h2>
+                      <button className="icon-btn" onClick={() => setShowUploadModal(false)}>
+                        <X size={24} />
+                      </button>
+                    </div>
+                    <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                      <div className="form-group">
+                        <label>DOCUMENT NAME</label>
+                        <input
+                          type="text"
+                          required
+                          value={uploadData.name}
+                          onChange={e => setUploadData({ ...uploadData, name: e.target.value })}
+                          placeholder="e.g. New Safety Protocol"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>CATEGORY</label>
+                        <select
+                          value={uploadData.category}
+                          onChange={e => setUploadData({ ...uploadData, category: e.target.value })}
+                        >
+                          <option value="Standard Operating Procedures">Standard Operating Procedures</option>
+                          <option value="Training & Onboarding">Training & Onboarding</option>
+                          <option value="CMM Documents">CMM Documents</option>
+                          <option value="Reference">Reference</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label>FILE</label>
+                        <input
+                          type="file"
+                          required
+                          onChange={e => setUploadData({ ...uploadData, file: e.target.files[0] })}
+                        />
+                      </div>
+                      <div className="button-rack" style={{ justifyContent: 'flex-end', marginTop: '10px' }}>
+                        <button type="button" className="action-btn outline" onClick={() => setShowUploadModal(false)}>
+                          CANCEL
+                        </button>
+                        <button type="submit" className="action-btn green-solid" disabled={uploading}>
+                          {uploading ? 'UPLOADING...' : 'UPLOAD'}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -423,17 +533,61 @@ function App() {
               )}
             </div>
           )}
+
+          {activeSection === 'calendar' && (
+            <div className="module active" style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '600px' }}>
+              <div className="module-header pb-4 border-b border-gray-200 mb-6 flex justify-between items-end">
+                <div>
+                  <h1 className="oswald-title text-3xl font-black text-gray-900 uppercase">COMMAND CENTER</h1>
+                  <p className="text-gray-500 font-bold uppercase tracking-wider text-sm mt-1">Calendar & Fence 360 Integration</p>
+                </div>
+              </div>
+              <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ minHeight: '600px' }}>
+                {/* Google Calendar Panel */}
+                <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm flex flex-col relative">
+                  <div className="bg-gray-900 text-white px-4 py-2 font-black uppercase text-sm flex items-center justify-between">
+                    <span>SHOP CALENDAR</span>
+                    <Calendar size={16} className="text-gray-400" />
+                  </div>
+                  <iframe 
+                    src="https://calendar.google.com/calendar/embed?src=en.usa%23holiday%40group.v.calendar.google.com&ctz=America%2FNew_York&showTitle=0&showPrint=0&mode=WEEK" 
+                    style={{ border: 0, width: '100%', flex: 1 }} 
+                    frameBorder="0" 
+                    scrolling="auto"
+                    title="Google Calendar"
+                  ></iframe>
+                </div>
+
+                {/* Fence 360 Panel */}
+                <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm flex flex-col relative">
+                  <div className="bg-amber-600 text-white px-4 py-2 font-black uppercase text-sm flex items-center justify-between">
+                    <span>FENCE 360 CRM</span>
+                    <span className="w-4 h-4 rounded-sm bg-white flex items-center justify-center">
+                       <img src="https://www.google.com/s2/favicons?domain=fence360.net&sz=32" alt="F360" style={{ width: '12px', height: '12px' }} />
+                    </span>
+                  </div>
+                  <iframe 
+                    src="https://www.fence360.net/login" 
+                    style={{ border: 0, width: '100%', flex: 1 }} 
+                    frameBorder="0" 
+                    scrolling="auto"
+                    title="Fence 360"
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
       {/* Mobile Nav */}
       <nav className="mobile-app-bar">
         <button className={`m-btn ${activeSection === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveSection('dashboard')}><Home /></button>
-        <button className={`m-btn ${activeSection === 'documents' ? 'active' : ''}`} onClick={() => setActiveSection('documents')}><FolderKanban /></button>
         <button className={`m-btn ${activeSection === 'inventory' ? 'active' : ''}`} onClick={() => setActiveSection('inventory')}><Package /></button>
-        <button className={`m-btn ${activeSection === 'tools' ? 'active' : ''}`} onClick={() => setActiveSection('tools')}><Hammer /></button>
         <button className={`m-btn ${activeSection === 'yardcrew' ? 'active' : ''}`} onClick={() => setActiveSection('yardcrew')}><ClipboardList /></button>
-        <button className={`m-btn ${activeSection === 'assistant' ? 'active' : ''}`} onClick={() => setActiveSection('assistant')}><MessageSquareQuote /></button>
+        <button className={`m-btn ${activeSection === 'calendar' ? 'active' : ''}`} onClick={() => setActiveSection('calendar')}><Calendar /></button>
+        <button className={`m-btn ${activeSection === 'documents' ? 'active' : ''}`} onClick={() => setActiveSection('documents')}><FolderKanban /></button>
+        <button className={`m-btn ${activeSection === 'tools' ? 'active' : ''}`} onClick={() => setActiveSection('tools')}><Hammer /></button>
       </nav>
     </div>
   );
