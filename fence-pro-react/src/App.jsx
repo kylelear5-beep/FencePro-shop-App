@@ -192,11 +192,12 @@ const Dashboard = ({ setActiveSection, docCount, aiStatus }) => (
   </div>
 );
 
-const Assistant = () => {
+const Assistant = ({ aiStatus, pendingMessage, clearPendingMessage }) => {
   const [messages, setMessages] = useState([
     { role: 'assistant', text: "Listen up! 👋 I'm Big Bob. I run this shop and make sure we build 'em right and build 'em safe. What do you need?" }
   ]);
   const [input, setInput] = useState('');
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const chatEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -205,12 +206,29 @@ const Assistant = () => {
 
   useEffect(scrollToBottom, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  const speak = (text) => {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    // Find a 'gruff' sounding voice if possible, or just use default
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice = voices.find(v => v.name.includes('Google US English')) || voices[0];
+    if (preferredVoice) utterance.voice = preferredVoice;
+    
+    utterance.pitch = 0.8; // Lower pitch for Bob's gruffness
+    utterance.rate = 0.9;  // Slightly slower
+    
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    
+    window.speechSynthesis.speak(utterance);
+  };
 
-    const userMessage = input.trim();
-    setInput('');
-    setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
+  const handleSend = async (overrideMsg) => {
+    const msgToSend = overrideMsg || input.trim();
+    if (!msgToSend) return;
+
+    if (!overrideMsg) setInput('');
+    setMessages(prev => [...prev, { role: 'user', text: msgToSend }]);
 
     try {
       const response = await fetch('/api/chat', {
@@ -220,7 +238,7 @@ const Assistant = () => {
           'Bypass-Tunnel-Reminder': 'true'
         },
         body: JSON.stringify({
-          message: userMessage,
+          message: msgToSend,
           history: messages.map(m => ({ role: m.role === 'user' ? 'user' : 'model', text: m.text })).slice(-10)
         }),
       });
@@ -228,29 +246,48 @@ const Assistant = () => {
       const data = await response.json();
       const reply = data.reply || data.error || 'System error. Recalibrate and try again.';
       setMessages(prev => [...prev, { role: 'assistant', text: reply }]);
+      
+      // Auto-read if it's an SOP explanation (optional improvement)
+      // speak(reply); 
     } catch {
       setMessages(prev => [...prev, { role: 'assistant', text: 'No handshake with Superior Core. Connection failed.' }]);
     }
   };
 
+  // Handle message from document library
+  useEffect(() => {
+    if (pendingMessage) {
+      handleSend(pendingMessage);
+      clearPendingMessage();
+    }
+  }, [pendingMessage]);
+
   return (
     <div className="assistant-ui">
       <div className="assistant-pane-left">
         <div className="bob-card">
-          <div className="bob-avatar">BB</div>
+          <div className="bob-avatar" onClick={() => speak(messages[messages.length-1].text)}>BB</div>
           <h3 className="oswald-title">THE SHOP BOSS</h3>
           <p>Big Bob</p>
+          {isSpeaking && <div className="speaking-indicator">VOICE ACTIVE</div>}
         </div>
         <div className="quick-prompts">
           <span className="label">QUICK TASKS</span>
-          <button className="p-btn" onClick={() => setInput("Show morning loading sequence.")}>TRUCK LOADING</button>
-          <button className="p-btn" onClick={() => setInput("What is the vinyl staging color code?")}>STAGING CODES</button>
-          <button className="p-btn" onClick={() => setInput("What PPE is needed for routing?")}>PPE REQS</button>
+          <button className="p-btn" onClick={() => handleSend("Show morning loading sequence.")}>TRUCK LOADING</button>
+          <button className="p-btn" onClick={() => handleSend("What is the vinyl staging color code?")}>STAGING CODES</button>
+          <button className="p-btn" onClick={() => handleSend("What PPE is needed for routing?")}>PPE REQS</button>
         </div>
       </div>
       <div className="assistant-pane-main">
         <div className="chat-header-bar">
           <h3 className="oswald-title">VETERAN CONSULTATION</h3>
+           <button 
+            className="action-btn outline btn-sm" 
+            onClick={() => window.speechSynthesis.cancel()}
+            style={{ fontSize: '10px', height: '24px' }}
+          >
+            MUTE BOB
+          </button>
         </div>
         <div className="chat-viewport">
           <div className="message-stack">
@@ -258,6 +295,11 @@ const Assistant = () => {
               <div key={i} className={`message ${m.role === 'user' ? 'outgoing' : 'incoming'}`}>
                 <div className="bubble">
                   {m.text}
+                  {m.role === 'assistant' && (
+                    <button className="speak-msg-btn" onClick={() => speak(m.text)}>
+                      <MessageSquareQuote size={12} />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -273,7 +315,7 @@ const Assistant = () => {
               placeholder="Type command here..."
               rows="1"
             />
-            <button className="btn-send" onClick={handleSend}><Send size={18} /></button>
+            <button className="btn-send" onClick={() => handleSend()}><Send size={18} /></button>
           </div>
         </div>
       </div>
@@ -291,6 +333,7 @@ function App() {
   const [documents, setDocuments] = useState([]);
   const [tools, setTools] = useState([]);
   const [activeTool, setActiveTool] = useState(null);
+  const [pendingBobMessage, setPendingBobMessage] = useState(null);
 
   // Document Upload State
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -397,7 +440,11 @@ function App() {
 
           {activeSection === 'assistant' && (
             <div className="module active">
-              <Assistant aiStatus={aiStatus} />
+              <Assistant 
+                aiStatus={aiStatus} 
+                pendingMessage={pendingBobMessage} 
+                clearPendingMessage={() => setPendingBobMessage(null)}
+              />
             </div>
           )}
 
@@ -432,14 +479,25 @@ function App() {
               </div>
               <div className="app-grid">
                 {documents.map((doc, i) => (
-                  <div key={i} className="widget" style={{ cursor: 'pointer' }} onClick={() => window.open(doc.url, '_blank')}>
+                  <div key={i} className="widget" style={{ cursor: 'pointer' }}>
                     <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                      <Files color="#821302" size={24} />
-                      <div style={{ flex: 1 }}>
+                      <Files color="#821302" size={24} onClick={() => window.open(doc.url, '_blank')} />
+                      <div style={{ flex: 1 }} onClick={() => window.open(doc.url, '_blank')}>
                         <strong style={{ textTransform: 'uppercase', fontFamily: 'var(--font-heading)', fontSize: '0.9rem' }}>{doc.name}</strong>
                         <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '2px' }}>SOP REFERENCE • {doc.status}</p>
                       </div>
-                      <ArrowRight size={16} color="#ccc" />
+                      <button 
+                        className="action-btn outline btn-sm" 
+                        style={{ fontSize: '10px', padding: '4px 8px' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPendingBobMessage(`Explain the ${doc.name} to me like I'm new here.`);
+                          setActiveSection('assistant');
+                        }}
+                      >
+                        ASK BOB
+                      </button>
+                      <ArrowRight size={16} color="#ccc" onClick={() => window.open(doc.url, '_blank')} />
                     </div>
                   </div>
                 ))}

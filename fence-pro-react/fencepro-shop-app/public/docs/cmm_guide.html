@@ -126,10 +126,73 @@
             text-transform: uppercase;
             letter-spacing: 2px;
         }
+
+        .print-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: var(--maroon);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 100;
+            letter-spacing: 1px;
+        }
+
+        .print-btn:hover {
+            background: var(--maroon-dark);
+        }
+
+        .video-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: var(--cream);
+            border: 1px solid var(--border-light);
+            border-left: 4px solid var(--green);
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+
+        .video-link:hover {
+            background: #ece9e2;
+        }
+
+        .video-link .play-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--maroon);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: white;
+            font-size: 10px;
+        }
+
+        @media print {
+            .print-btn { display: none !important; }
+            body { background: white !important; }
+            .page { box-shadow: none !important; margin: 0 !important; }
+            .video-link { border-color: #ccc; }
+        }
     </style>
 </head>
 
 <body>
+    <button class="print-btn" onclick="window.print()">Print</button>
     <div class="page">
         <div class="page-header">
             <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
@@ -174,6 +237,25 @@
             <li><strong>Mechanical E-Stop:</strong> Use the red cabinet button for mechanical issues or reaching inside.
             </li>
         </ul>
+
+        <h3 class="section-title">Training Videos</h3>
+
+        <a class="video-link" href="PASTE_VIDEO_URL_HERE" target="_blank">
+            <span class="play-icon">&#9654;</span>
+            ABC Wizard — Alphanumeric Routing Tutorial
+        </a>
+        <a class="video-link" href="PASTE_VIDEO_URL_HERE" target="_blank">
+            <span class="play-icon">&#9654;</span>
+            Angles Wizard — Rise &amp; Side Angle Setup
+        </a>
+        <a class="video-link" href="PASTE_VIDEO_URL_HERE" target="_blank">
+            <span class="play-icon">&#9654;</span>
+            Machine Configuration &amp; Import Setup
+        </a>
+        <a class="video-link" href="PASTE_VIDEO_URL_HERE" target="_blank">
+            <span class="play-icon">&#9654;</span>
+            Dry Run &amp; Safety Procedures
+        </a>
 
         <div class="page-footer">
             <p>Superior Fence & Rail — Hudson Valley H.Q.</p>

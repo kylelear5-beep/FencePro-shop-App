@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Safety Training Manual — Superior Fence & Rail</title>
+    <title>Chain Link Fittings Guide — Superior Fence & Rail</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap"
         rel="stylesheet">
@@ -15,14 +15,7 @@
             --green: #689689;
             --cream: #F5F3EF;
             --text-dark: #231F20;
-            --text-mid: #555555;
             --border-light: #D2CFC7;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
 
         body {
@@ -74,11 +67,11 @@
             color: var(--maroon-dark);
             margin-top: 24px;
             margin-bottom: 10px;
-            border-left: 4px solid var(--maroon);
+            border-left: 4px solid var(--green);
             padding-left: 12px;
         }
 
-        .safety-rule {
+        .spec-card {
             background: var(--cream);
             padding: 18px;
             border-radius: 6px;
@@ -86,15 +79,10 @@
             margin-bottom: 14px;
         }
 
-        .safety-rule strong {
-            display: block;
+        .spec-card strong {
             color: var(--maroon);
+            display: block;
             margin-bottom: 4px;
-        }
-
-        .safety-rule p {
-            font-size: 13px;
-            margin-bottom: 0;
         }
 
         .page-footer {
@@ -102,67 +90,91 @@
             margin-top: 50px;
             padding-top: 16px;
             border-top: 2px solid var(--maroon);
-        }
-
-        .page-footer p {
             font-size: 11px;
             font-weight: 600;
             color: var(--maroon);
             text-transform: uppercase;
-            letter-spacing: 2px;
+        }
+
+        .important-note {
+            background: #FFF9C4;
+            border: 1px solid #FBC02D;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0;
+        }
+
+        .print-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: var(--maroon);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 100;
+            letter-spacing: 1px;
+        }
+
+        .print-btn:hover { background: var(--maroon-dark); }
+
+        @media print {
+            .print-btn { display: none !important; }
+            body { background: white !important; }
+            .page { box-shadow: none !important; margin: 0 !important; }
         }
     </style>
 </head>
 
 <body>
+    <button class="print-btn" onclick="window.print()">Print</button>
     <div class="page">
         <div class="page-header">
             <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
-                alt="Superior Fence & Rail" class="header-logo">
-            <h2>Safety Training Manual</h2>
+                alt="Superior Fence & Rail" style="height:30px;">
+            <h2>Chain Link Fittings Guide</h2>
+        </div>
+        <h3 class="section-title">Fittings & Sizing</h3>
+
+        <div class="important-note">
+            ⚠️ CRITICAL: Distinguish between Outer Diameter (OD) and Inner Diameter (ID) for proper fitting.
         </div>
 
-        <h3 class="section-title">Shop & Yard Safety</h3>
+        <h4>Outer Diameter (OD) Fittings</h4>
+        <p>The following fittings depend on the <strong>outside</strong> measurement of the post:</p>
+        <ul>
+            <li>Post Caps (Dome, Acorn)</li>
+            <li>Tension Bands & Brace Bands</li>
+            <li>Post Hinges (Male/Female)</li>
+        </ul>
 
-        <h4>Personal Protective Equipment (PPE)</h4>
-        <div class="safety-rule">
-            <strong>Eye Protection</strong>
-            <p>Safety glasses must be worn at all times when operating the CNC router, saw, or handling hardware.</p>
-        </div>
-        <div class="safety-rule">
-            <strong>Footwear</strong>
-            <p>Steel-toed or composite-toed boots are required in the yard and shop areas.</p>
-        </div>
-        <div class="safety-rule">
-            <strong>Hearing Protection</strong>
-            <p>Earplugs or muffs must be worn during high-decibel operations (routing, sawing).</p>
-        </div>
+        <h4>Inner Diameter (ID) Fittings</h4>
+        <p>The following fittings rely on the <strong>inside</strong> measurement or fit <strong>inside</strong> the
+            pipe:</p>
+        <ul>
+            <li>Rail End Caps</li>
+            <li>Sleeves / Couplers</li>
+        </ul>
 
-        <h4>Machine Safety</h4>
-        <div class="safety-rule">
-            <strong>CNC Operations</strong>
-            <p>Never reach inside the CNC envelope while the machine is powered. Use the E-Stop for any mechanical
-                adjustments.</p>
+        <h4>Gate Frame Sizing</h4>
+        <div class="spec-card">
+            <strong>Residential Frames</strong>
+            <p>Typically 1 3/8" to 1 5/8" tubing.</p>
         </div>
-        <div class="safety-rule">
-            <strong>Forklift Safety</strong>
-            <p>Only certified operators are permitted to drive. Always yield to pedestrians. Lower forks to ground when
-                parked.</p>
+        <div class="spec-card">
+            <strong>Commercial Frames</strong>
+            <p>Typically 1 5/8" to 1 7/8" tubing.</p>
         </div>
 
-        <h4>Loading & Road Safety</h4>
-        <div class="safety-rule">
-            <strong>Trailer Weights</strong>
-            <p>Ensure 80-90% of weight is over the axles. Never overload the tongue or the rear.</p>
-        </div>
-        <div class="safety-rule">
-            <strong>Strapping</strong>
-            <p>Minimum of two straps per pallet. Check straps after the first 5 miles of transport.</p>
-        </div>
-
-        <div class="page-footer">
-            <p>Superior Fence & Rail — Hudson Valley H.Q.</p>
-        </div>
+        <div class="page-footer">Superior Fence & Rail — Hudson Valley H.Q.</div>
     </div>
 </body>
 

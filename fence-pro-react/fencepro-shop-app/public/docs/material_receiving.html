@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading Procedures SOP — Superior Fence & Rail</title>
+    <title>Material Receiving SOP — Superior Fence & Rail</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap"
         rel="stylesheet">
@@ -119,48 +119,55 @@
             color: var(--text-dark);
         }
 
-        .load-method {
-            background: var(--cream);
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            padding: 20px 24px;
-            margin-bottom: 16px;
-        }
-
-        .load-method h4 {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--maroon);
-            margin-bottom: 12px;
-        }
-
-        .load-method .load-icon {
-            font-size: 20px;
-            margin-right: 8px;
-        }
-
-        .load-method ol {
-            padding-left: 20px;
-        }
-
-        .load-method ol li {
-            font-size: 12.5px;
-            margin-bottom: 8px;
-            line-height: 1.65;
-        }
-
-        .load-method .strap-list {
+        .sop-steps {
             list-style: none;
-            padding-left: 0;
-            margin-top: 6px;
+            padding: 0;
+            counter-reset: sop-counter;
         }
 
-        .load-method .strap-list li {
-            padding-left: 18px;
+        .sop-steps>li {
+            counter-increment: sop-counter;
+            padding: 14px 18px 14px 56px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-light);
+            border-left: 4px solid var(--maroon);
+            border-radius: 0 6px 6px 0;
+            font-size: 13px;
+            line-height: 1.65;
             position: relative;
         }
 
-        .load-method .strap-list li::before {
+        .sop-steps>li::before {
+            content: counter(sop-counter);
+            position: absolute;
+            left: 16px;
+            top: 14px;
+            width: 26px;
+            height: 26px;
+            background: var(--maroon);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .sop-steps .sub-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 8px;
+        }
+
+        .sop-steps .sub-list li {
+            font-size: 12.5px;
+            padding: 3px 0 3px 18px;
+            position: relative;
+            color: var(--text-dark);
+        }
+
+        .sop-steps .sub-list li::before {
             content: '▸';
             position: absolute;
             left: 0;
@@ -221,60 +228,97 @@
             text-transform: uppercase;
             margin-bottom: 0;
         }
+
+        .print-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: var(--maroon);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 100;
+            letter-spacing: 1px;
+        }
+
+        .print-btn:hover { background: var(--maroon-dark); }
+
+        @media print {
+            .print-btn { display: none !important; }
+            body { background: white !important; }
+            .page { box-shadow: none !important; margin: 0 !important; }
+        }
     </style>
 </head>
 
 <body>
+    <button class="print-btn" onclick="window.print()">Print</button>
     <div class="page">
         <div class="page-header">
             <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
                 alt="Superior Fence & Rail" class="header-logo">
-            <h2>Loading Procedures SOP</h2>
+            <h2>Material Receiving SOP</h2>
         </div>
 
-        <h3 class="section-title">Loading</h3>
-        <p class="section-subtitle">Vehicle & Trailer Safety</p>
-        <p class="goal-line">Goal: Load material securely and safely. Material is balanced and easy to unload at the
-            site.</p>
+        <h3 class="section-title">Running Tasks &amp; Receiving</h3>
+        <p class="section-subtitle">Warehouse Operations</p>
+        <p class="goal-line">Goal: All material is received for accounting and stored within 24 hours of delivery.</p>
 
         <div class="why-box">
             <h5>💡 Why This Matters</h5>
-            <p>A badly loaded trailer is a <strong>safety hazard</strong>. Improper weight distribution causes trailer
-                sway at highway speeds. Loose material can shift or fall off. Loading it right the first time protects
-                people, product, and the schedule.</p>
+            <p>Receiving is the <strong>front door</strong> of every job. If material isn’t checked in accurately,
+                accounting can’t reconcile costs, the office can’t schedule installations, and crews show up to a job
+                site missing what they need. Every hour material sits un-received increases the risk of lost, damaged,
+                or misattributed inventory.</p>
         </div>
 
-        <div class="load-method">
-            <h4><span class="load-icon">🚛</span> Loading Rules &amp; Safety</h4>
-            <ol>
-                <li><strong>Safety Checks:</strong> Trailer brake check, Tire pressure check.
-                    <ul class="strap-list">
-                        <li><em>Reason:</em> Brakes and tires are non-negotiable. A brake failure with 3,000+ lbs of
-                            material is catastrophic.</li>
-                    </ul>
-                </li>
-                <li><strong>Weight Distribution:</strong>
-                    <ul class="strap-list">
-                        <li>80-90% of weight over the axle(s).</li>
-                        <li>10% - 20% on the tongue. No significant weight behind the axle.</li>
-                        <li>Tongue down is okay. <strong>Never tongue up.</strong></li>
-                        <li><em>Reason:</em> Tongue-heavy is stable; tongue-light causes dangerous fish-tailing.</li>
-                    </ul>
-                </li>
-                <li><strong>Placement &amp; Strapping:</strong>
-                    <ul class="strap-list">
-                        <li>Parallel deck from wheels to front of trailer.</li>
-                        <li>Load in reverse order of use (e.g. posts first, pickets last).</li>
-                        <li>Two straps per pallet. All ratchets on same side.</li>
-                    </ul>
-                </li>
-            </ol>
-        </div>
+        <p><strong>Running Tasks:</strong> Receiving hours are 9am to 12pm. Receive any material that comes in. Inspect
+            when it arrives. If obviously damaged OR the wrong material, call supplier directly and don’t take off from
+            truck.</p>
+
+        <h4 style="color: var(--maroon); margin-bottom: 8px; margin-top: 16px;">Receiving Checklist</h4>
+        <ol class="sop-steps">
+            <li><strong>Find PO:</strong> Find purchase order for the delivery. If none, contact buyer.
+                <ul class="sub-list">
+                    <li><em>Reason:</em> The PO is our single source of truth for what we actually ordered.</li>
+                </ul>
+            </li>
+            <li><strong>Match PO:</strong> Match purchase order to delivery slip. If issue, contact vendor.
+                <ul class="sub-list">
+                    <li><em>Reason:</em> Vendors make mistakes — wrong quantities, substituted items, partial shipments.
+                    </li>
+                </ul>
+            </li>
+            <li><strong>Truck Inspection:</strong> On flat bed, in box truck, or “delivered good”.
+                <ul class="sub-list">
+                    <li><strong>Good:</strong> All material matches delivery slip and is not broken. Put in its
+                        location.</li>
+                    <li><strong>Wrong material:</strong> Contact vendor asap.</li>
+                    <li><strong>Broken material:</strong> Take photos, write down damage on BOL, contact vendor asap.
+                    </li>
+                </ul>
+            </li>
+            <li><strong>Unload &amp; Load:</strong> Unload, perform further inspection if needed. For stock material,
+                put in appropriate bay. For job lot material, put in free location or bay for staging.
+            </li>
+            <li><strong>Sign Off:</strong>
+                <ul class="sub-list">
+                    <li><strong>Received:</strong> Initial PO with Date, initials, ‘all good’. Staple delivery slip/BOL
+                        to back, put in ‘received folder’.</li>
+                    <li><strong>Received error:</strong> Describe error on PO, put in Error folder.</li>
+                </ul>
+            </li>
+        </ol>
 
         <div class="outcome-box">
             <h5>✅ Expected Outcome</h5>
-            <p>Every trailer leaves the yard road-safe and load-balanced. Zero material damage in transit and zero
-                safety incidents on the road.</p>
+            <p>Every delivery is verified against its PO, inspected for damage, stored in the correct location, and
+                signed off within 24 hours.</p>
         </div>
 
         <div class="page-footer">

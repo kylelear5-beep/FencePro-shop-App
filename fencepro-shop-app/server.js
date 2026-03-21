@@ -1,7 +1,6 @@
 // server.js
 require('dotenv').config();
 const express = require('express');
-const { GoogleGenAI } = require('@google/genai');
 const cors = require('cors');
 const path = require('path');
 const nodemailer = require('nodemailer');
@@ -15,11 +14,11 @@ if (!fs.existsSync(uploadDir)) {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, uploadDir)
+    cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null, uniqueSuffix + '-' + file.originalname)
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname);
   }
 });
 const upload = multer({ storage: storage });

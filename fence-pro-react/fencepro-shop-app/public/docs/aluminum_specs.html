@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chain Link Fittings Guide — Superior Fence & Rail</title>
+    <title>Aluminum Fence Specifications — Superior Fence & Rail</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap"
         rel="stylesheet">
@@ -96,58 +96,55 @@
             text-transform: uppercase;
         }
 
-        .important-note {
-            background: #FFF9C4;
-            border: 1px solid #FBC02D;
-            padding: 14px;
-            border-radius: 6px;
+        .print-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: var(--maroon);
+            color: white;
+            border: none;
+            padding: 8px 18px;
             font-size: 13px;
             font-weight: 600;
-            color: #333;
-            margin: 20px 0;
+            font-family: inherit;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 100;
+            letter-spacing: 1px;
+        }
+
+        .print-btn:hover { background: var(--maroon-dark); }
+
+        @media print {
+            .print-btn { display: none !important; }
+            body { background: white !important; }
+            .page { box-shadow: none !important; margin: 0 !important; }
         }
     </style>
 </head>
 
 <body>
+    <button class="print-btn" onclick="window.print()">Print</button>
     <div class="page">
         <div class="page-header">
             <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
                 alt="Superior Fence & Rail" style="height:30px;">
-            <h2>Chain Link Fittings Guide</h2>
+            <h2>Aluminum Fence Specifications</h2>
         </div>
-        <h3 class="section-title">Fittings & Sizing</h3>
-
-        <div class="important-note">
-            ⚠️ CRITICAL: Distinguish between Outer Diameter (OD) and Inner Diameter (ID) for proper fitting.
-        </div>
-
-        <h4>Outer Diameter (OD) Fittings</h4>
-        <p>The following fittings depend on the <strong>outside</strong> measurement of the post:</p>
-        <ul>
-            <li>Post Caps (Dome, Acorn)</li>
-            <li>Tension Bands & Brace Bands</li>
-            <li>Post Hinges (Male/Female)</li>
-        </ul>
-
-        <h4>Inner Diameter (ID) Fittings</h4>
-        <p>The following fittings rely on the <strong>inside</strong> measurement or fit <strong>inside</strong> the
-            pipe:</p>
-        <ul>
-            <li>Rail End Caps</li>
-            <li>Sleeves / Couplers</li>
-        </ul>
-
-        <h4>Gate Frame Sizing</h4>
+        <h3 class="section-title">Aluminum Standards</h3>
         <div class="spec-card">
-            <strong>Residential Frames</strong>
-            <p>Typically 1 3/8" to 1 5/8" tubing.</p>
+            <strong>Material: 6000 Series Aluminum</strong>
+            <p>High-strength alloy with powder-coating for maximum corrosion resistance.</p>
         </div>
         <div class="spec-card">
-            <strong>Commercial Frames</strong>
-            <p>Typically 1 5/8" to 1 7/8" tubing.</p>
+            <strong>Wall Thickness</strong>
+            <p>Residential posts: 0.060" to 0.125". Commercial: 0.125" and up.</p>
         </div>
-
+        <div class="spec-card">
+            <strong>Common Styles</strong>
+            <p>Flat Top, Spear Top, and Alternating Spear. Available in multiple heights and colors (Black, Bronze,
+                White).</p>
+        </div>
         <div class="page-footer">Superior Fence & Rail — Hudson Valley H.Q.</div>
     </div>
 </body>

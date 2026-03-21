@@ -659,10 +659,36 @@
             margin-bottom: 8px;
             font-style: normal;
         }
+
+        .print-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: var(--maroon);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 100;
+            letter-spacing: 1px;
+        }
+
+        .print-btn:hover { background: var(--maroon-dark); }
+
+        @media print {
+            .print-btn { display: none !important; }
+            body { background: white !important; }
+            .page { box-shadow: none !important; margin: 0 !important; }
+        }
     </style>
 </head>
 
 <body>
+    <button class="print-btn" onclick="window.print()">Print</button>
 
     <!-- ==================== COVER PAGE ==================== -->
     <div class="page cover">

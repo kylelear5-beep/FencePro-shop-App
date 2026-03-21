@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chain Link Fence Guide — Superior Fence & Rail</title>
+    <title>Vinyl Fence Specifications — Superior Fence & Rail</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap"
         rel="stylesheet">
@@ -96,78 +96,54 @@
             text-transform: uppercase;
         }
 
-        .stat-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .stat-box {
-            background: white;
-            border: 1px solid var(--border-light);
-            padding: 12px;
-            text-align: center;
+        .print-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: var(--maroon);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
             border-radius: 4px;
-        }
-
-        .stat-box .val {
-            font-weight: 800;
-            color: var(--maroon);
-        }
-
-        .stat-box .lab {
-            font-size: 10px;
-            text-transform: uppercase;
+            cursor: pointer;
+            z-index: 100;
             letter-spacing: 1px;
+        }
+
+        .print-btn:hover { background: var(--maroon-dark); }
+
+        @media print {
+            .print-btn { display: none !important; }
+            body { background: white !important; }
+            .page { box-shadow: none !important; margin: 0 !important; }
         }
     </style>
 </head>
 
 <body>
+    <button class="print-btn" onclick="window.print()">Print</button>
     <div class="page">
         <div class="page-header">
             <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
                 alt="Superior Fence & Rail" style="height:30px;">
-            <h2>Chain Link Fence Guide</h2>
+            <h2>Vinyl Fence Specifications</h2>
         </div>
-        <h3 class="section-title">Tubing & Wire Standards</h3>
-
-        <h4>Post Sizes (OD)</h4>
-        <div class="stat-grid">
-            <div class="stat-box">
-                <div class="val">1 5/8" - 2"</div>
-                <div class="lab">Line Posts (Res)</div>
-            </div>
-            <div class="stat-box">
-                <div class="val">1 7/8" - 2 3/8"</div>
-                <div class="lab">Terminal Posts (Res)</div>
-            </div>
-            <div class="stat-box">
-                <div class="val">3" +</div>
-                <div class="lab">Commercial Posts</div>
-            </div>
-        </div>
-
-        <h4>Rail Sizes</h4>
+        <h3 class="section-title">Vinyl Standards</h3>
         <div class="spec-card">
-            <strong>Top Rail</strong>
-            <p>Typically 1 3/8" or 1 5/8". Sold in 21ft lengths.</p>
+            <strong>Material: Polyvinyl Chloride (PVC)</strong>
+            <p>High-quality, UV-resistant vinyl. SolarShield™ technology to prevent fading and brittleness.</p>
         </div>
-
-        <h4>Wall Thickness (Weight)</h4>
-        <ul>
-            <li><strong>.065:</strong> Standard Residential weight.</li>
-            <li><strong>SS20:</strong> Commercial grade weight.</li>
-            <li><strong>SS40:</strong> Industrial / Heavy Commercial weight.</li>
-        </ul>
-
-        <h4>Fabric (Mesh)</h4>
         <div class="spec-card">
-            <strong>Gauge & Square</strong>
-            <p>11.5 to 9 gauge for residential. 9 to 6 gauge for commercial. Standard mesh size is 2".</p>
+            <strong>Wall Thickness</strong>
+            <p>Post thickness: 0.135" to 0.150" depending on style. Rail thickness: 0.080" to 0.120".</p>
         </div>
-
+        <div class="spec-card">
+            <strong>Common Styles</strong>
+            <p>Privacy (Tongue & Groove), Semi-Privacy, Picket, and Post-and-Rail.</p>
+        </div>
         <div class="page-footer">Superior Fence & Rail — Hudson Valley H.Q.</div>
     </div>
 </body>
