@@ -27,6 +27,8 @@ import {
 import ChainLinkCalculator from './components/ChainLinkCalc';
 import InventoryManager from './components/InventoryManager';
 import BlindCountBoard from './components/BlindCountBoard';
+import WeightCalculator from './components/WeightCalculator';
+import WeatherWidget from './components/WeatherWidget';
 
 // ── APP COMPONENTS ──
 
@@ -79,13 +81,6 @@ const Sidebar = ({ activeSection, setActiveSection }) => (
         <ClipboardList />
         <span>YARD CREW</span>
       </button>
-      <button
-        className={`menu-item ${activeSection === 'calendar' ? 'active' : ''}`}
-        onClick={() => setActiveSection('calendar')}
-      >
-        <Calendar />
-        <span>CALENDAR</span>
-      </button>
 
       <div className="menu-divider" style={{ borderTop: '1px solid var(--border-color)', margin: '10px 0', opacity: 0.2 }}></div>
 
@@ -101,7 +96,7 @@ const Sidebar = ({ activeSection, setActiveSection }) => (
   </aside>
 );
 
-const Topbar = ({ sectionTitle, aiStatus, time }) => (
+const Topbar = ({ sectionTitle, aiStatus, time, weather }) => (
   <header className="app-topbar">
     <div className="topbar-left">
       <h2 className="current-module-title oswald-title">
@@ -109,6 +104,18 @@ const Topbar = ({ sectionTitle, aiStatus, time }) => (
       </h2>
     </div>
     <div className="topbar-right">
+      {weather && (
+        <div className="topbar-weather">
+          <div className="weather-item">
+            <span className="weather-val">{Math.round(weather.current.temperature_2m)}°</span>
+            <span className="weather-label">TEMP</span>
+          </div>
+          <div className="weather-item hidden-mobile">
+            <span className="weather-val">{Math.round(weather.current.wind_speed_10m)}</span>
+            <span className="weather-label">MPH</span>
+          </div>
+        </div>
+      )}
       <div className="status-badge">
         <span className="status-pulse" style={{
           backgroundColor: aiStatus === 'ACTIVE' ? '#10b981' : '#f59e0b',
@@ -121,7 +128,10 @@ const Topbar = ({ sectionTitle, aiStatus, time }) => (
   </header>
 );
 
-const Dashboard = ({ setActiveSection, docCount, aiStatus }) => (
+const Dashboard = ({ setActiveSection, docCount, aiStatus }) => {
+  const [panelTab, setPanelTab] = useState('calendar');
+
+  return (
   <div className="dashboard-content">
     <div className="dashboard-head">
       <div className="greeting-box">
@@ -169,28 +179,49 @@ const Dashboard = ({ setActiveSection, docCount, aiStatus }) => (
         </div>
       </div>
 
-      <div className="widget big-widget">
-        <h3 className="widget-title oswald-title">OPERATIONAL ADVISORY</h3>
-        <div className="advisory-feed">
-          <div className="adv-card">
-            <ShieldAlert size={20} />
-            <div className="adv-info">
-              <strong>PPE PROTOCOL</strong>
-              <p>Confirming eye and ear protection across all vinyl routing stations.</p>
-            </div>
-          </div>
-          <div className="adv-card">
-            <Truck size={20} />
-            <div className="adv-info">
-              <strong>LOAD SEQUENCE</strong>
-              <p>Trailers must be verified and strapped by 06:30 AM local time.</p>
-            </div>
-          </div>
+      <div className="widget big-widget" style={{ padding: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="flex bg-gray-100 border-b border-gray-200">
+          <button 
+            className={`flex-1 py-3 text-sm font-black uppercase tracking-wider transition-colors ${panelTab === 'calendar' ? 'bg-gray-900 text-white' : 'text-gray-400 hover:bg-gray-200'}`}
+            onClick={() => setPanelTab('calendar')}
+          >
+            SHOP CALENDAR
+          </button>
+          <button 
+            className={`flex-1 py-3 text-sm font-black uppercase tracking-wider transition-colors ${panelTab === 'fence360' ? 'bg-amber-600 text-white' : 'text-gray-400 hover:bg-gray-200'}`}
+            onClick={() => setPanelTab('fence360')}
+          >
+            FENCE 360 CRM
+          </button>
         </div>
+        <div className="flex-1 w-full relative" style={{ minHeight: '450px' }}>
+          {panelTab === 'calendar' ? (
+            <iframe
+              src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FNew_York&showPrint=0&src=aHVkc29udmFsbGV5cHJvZHVjdGlvbkBzdXBlcmlvcmZlbmNlYW5kcmFpbC5jb20&src=Y18zMDZmYTQ4MGU4ZWU0OTMzYzQxODAwNmRlMDliZjY3OGE2Yjg2N2NmNWQzMDk2M2E0NWVhZWQyOTJjYjdmNDlhQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19mM2U4MWM0NzQyNTU4OTcwZjU2ZmY1ZjU1MzgwYWM2MWQwM2M5YzFhNGQxN2MwNjUzMDZiM2NjNzVlNjA4NjY1QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y182MTQ4YTE1ZDlhMDAzMWZjODA0N2RmNTIwZGZkMzU3ZDI3ZmJlMjM3YzgyYjFhNDEyMjVjNDlkNzc5ZTI2NmY1QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19mNWI5NjMwNDU2M2M2NzM3NDczZjJhNDQyZGE5ZDc3ZjhmOGQxNDIzMGQ3OGY5MmY2ZjFmZTg3MzFkZmI4OWU4QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19mODI0YTE1YzhjNDQ0NTY3ZTVlN2I3YmExYjYxM2I4MTFhOGVjMjhmNmQ5MTc5NWFmOWRkYmQwNDRlM2E1MzBlQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y18zMzU2ODgyMDUwZDkzY2U2ODNiZjc1NDAzZDA2MDhhY2RkNDYzOTcxYTRkNmZmMjg3ZTBkMTliN2RkNWY5ZTRiQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19kMzIxY2Y5MGVhZWZlZGE1NTM3Y2JlZDA3MzVjM2UyZDM2ODI1Y2RjODZkNjMxNzg4YmNmNDBkOTg3ZTAxNGZiQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19jNzgyZTllNjk3NmE2MTA0NDFjYmI1OGM5M2E2ZDAxOWExYzZmZTE3YzdmNmJjZTg5OGExODc3NjhhZWYyODQ2QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=YXJ0LmZpc2hlckBzdXBlcmlvcmZlbmNlYW5kcmFpbC5jb20&src=Y19iZThjMGZhYWU2NzZlZGEzODFlMmY4M2UwY2FkNDA0ZTkzZjhlMmNkNjRkYmEzMGRmMWM4Y2YxNTI2OWFmZDIxQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23039be5&color=%233f51b5&color=%23e9e7e4&color=%23795548&color=%23c0ca33&color=%23ad1457&color=%23e4c441&color=%23d50000&color=%23ad1457&color=%238e24aa&color=%23616161"
+              style={{ border: 0, width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
+              frameBorder="0"
+              scrolling="auto"
+              title="Google Calendar"
+            ></iframe>
+          ) : (
+            <iframe
+              src="https://www.fence360.net/login"
+              style={{ border: 0, width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
+              frameBorder="0"
+              scrolling="auto"
+              title="Fence 360 CRM"
+            ></iframe>
+          )}
+        </div>
+      </div>
+
+      <div className="widget big-widget" style={{ padding: 0 }}>
+         <WeightCalculator />
       </div>
     </div>
   </div>
-);
+  );
+};
 
 const Assistant = ({ aiStatus, pendingMessage, clearPendingMessage }) => {
   const [messages, setMessages] = useState([
@@ -208,14 +239,21 @@ const Assistant = ({ aiStatus, pendingMessage, clearPendingMessage }) => {
 
   const speak = (text) => {
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    // Find a 'gruff' sounding voice if possible, or just use default
+
+    // Clean out markdown and typographical symbols so he speaks naturally
+    const cleanText = text.replace(/[*_#`]/g, '').replace(/\[|\]|\(|\)/g, '');
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    // Find a deeper/gruffer voice if available
     const voices = window.speechSynthesis.getVoices();
-    const preferredVoice = voices.find(v => v.name.includes('Google US English')) || voices[0];
+    const preferredVoice = voices.find(v => v.name.toLowerCase().includes('en-us') && v.name.toLowerCase().includes('male')) 
+      || voices.find(v => v.name.includes('Google US English')) 
+      || voices[0];
+      
     if (preferredVoice) utterance.voice = preferredVoice;
     
-    utterance.pitch = 0.8; // Lower pitch for Bob's gruffness
-    utterance.rate = 0.9;  // Slightly slower
+    utterance.pitch = 0.6; // Even lower pitch for a gruff voice
+    utterance.rate = 0.85; // Speak more deliberately
     
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
@@ -334,6 +372,7 @@ function App() {
   const [tools, setTools] = useState([]);
   const [activeTool, setActiveTool] = useState(null);
   const [pendingBobMessage, setPendingBobMessage] = useState(null);
+  const [weather, setWeather] = useState(null);
 
   // Document Upload State
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -374,8 +413,24 @@ function App() {
       }
     };
 
+    // Weather
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=41.9270&longitude=-73.9974&current=temperature_2m,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FNew_York`);
+        const data = await res.json();
+        setWeather(data);
+      } catch (err) {
+        console.error("Weather failed", err);
+      }
+    };
+
     fetchData();
-    return () => clearInterval(timer);
+    fetchWeather();
+    const weatherTimer = setInterval(fetchWeather, 30 * 60 * 1000);
+    return () => {
+      clearInterval(timer);
+      clearInterval(weatherTimer);
+    };
   }, []);
 
   const handleUpload = async (e) => {
@@ -429,7 +484,7 @@ function App() {
       <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
 
       <main className="app-main">
-        <Topbar sectionTitle={getSectionTitle()} aiStatus={aiStatus} time={time} />
+        <Topbar sectionTitle={getSectionTitle()} aiStatus={aiStatus} time={time} weather={weather} />
 
         <div className="app-viewport">
           {activeSection === 'dashboard' && (
@@ -592,49 +647,7 @@ function App() {
             </div>
           )}
 
-          {activeSection === 'calendar' && (
-            <div className="module active" style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '600px' }}>
-              <div className="module-header pb-4 border-b border-gray-200 mb-6 flex justify-between items-end">
-                <div>
-                  <h1 className="oswald-title text-3xl font-black text-gray-900 uppercase">COMMAND CENTER</h1>
-                  <p className="text-gray-500 font-bold uppercase tracking-wider text-sm mt-1">Calendar & Fence 360 Integration</p>
-                </div>
-              </div>
-              <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6" style={{ minHeight: '600px' }}>
-                {/* Google Calendar Panel */}
-                <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm flex flex-col relative">
-                  <div className="bg-gray-900 text-white px-4 py-2 font-black uppercase text-sm flex items-center justify-between">
-                    <span>SHOP CALENDAR</span>
-                    <Calendar size={16} className="text-gray-400" />
-                  </div>
-                  <iframe
-                    src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FNew_York&showPrint=0&src=aHVkc29udmFsbGV5cHJvZHVjdGlvbkBzdXBlcmlvcmZlbmNlYW5kcmFpbC5jb20&src=Y18zMDZmYTQ4MGU4ZWU0OTMzYzQxODAwNmRlMDliZjY3OGE2Yjg2N2NmNWQzMDk2M2E0NWVhZWQyOTJjYjdmNDlhQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19mM2U4MWM0NzQyNTU4OTcwZjU2ZmY1ZjU1MzgwYWM2MWQwM2M5YzFhNGQxN2MwNjUzMDZiM2NjNzVlNjA4NjY1QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y182MTQ4YTE1ZDlhMDAzMWZjODA0N2RmNTIwZGZkMzU3ZDI3ZmJlMjM3YzgyYjFhNDEyMjVjNDlkNzc5ZTI2NmY1QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19mNWI5NjMwNDU2M2M2NzM3NDczZjJhNDQyZGE5ZDc3ZjhmOGQxNDIzMGQ3OGY5MmY2ZjFmZTg3MzFkZmI4OWU4QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19mODI0YTE1YzhjNDQ0NTY3ZTVlN2I3YmExYjYxM2I4MTFhOGVjMjhmNmQ5MTc5NWFmOWRkYmQwNDRlM2E1MzBlQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y18zMzU2ODgyMDUwZDkzY2U2ODNiZjc1NDAzZDA2MDhhY2RkNDYzOTcxYTRkNmZmMjg3ZTBkMTliN2RkNWY5ZTRiQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19kMzIxY2Y5MGVhZWZlZGE1NTM3Y2JlZDA3MzVjM2UyZDM2ODI1Y2RjODZkNjMxNzg4YmNmNDBkOTg3ZTAxNGZiQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=Y19jNzgyZTllNjk3NmE2MTA0NDFjYmI1OGM5M2E2ZDAxOWExYzZmZTE3YzdmNmJjZTg5OGExODc3NjhhZWYyODQ2QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=YXJ0LmZpc2hlckBzdXBlcmlvcmZlbmNlYW5kcmFpbC5jb20&src=Y19iZThjMGZhYWU2NzZlZGEzODFlMmY4M2UwY2FkNDA0ZTkzZjhlMmNkNjRkYmEzMGRmMWM4Y2YxNTI2OWFmZDIxQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23039be5&color=%233f51b5&color=%23e9e7e4&color=%23795548&color=%23c0ca33&color=%23ad1457&color=%23e4c441&color=%23d50000&color=%23ad1457&color=%238e24aa&color=%23616161"
-                    style={{ border: 0, width: '100%', flex: 1 }}
-                    frameBorder="0"
-                    scrolling="auto"
-                    title="Google Calendar"
-                  ></iframe>
-                </div>
 
-                {/* Fence 360 Panel */}
-                <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm flex flex-col relative">
-                  <div className="bg-amber-600 text-white px-4 py-2 font-black uppercase text-sm flex items-center justify-between">
-                    <span>FENCE 360 CRM</span>
-                    <span className="w-4 h-4 rounded-sm bg-white flex items-center justify-center">
-                      <img src="https://www.google.com/s2/favicons?domain=fence360.net&sz=32" alt="F360" style={{ width: '12px', height: '12px' }} />
-                    </span>
-                  </div>
-                  <iframe
-                    src="https://www.fence360.net/login"
-                    style={{ border: 0, width: '100%', flex: 1 }}
-                    frameBorder="0"
-                    scrolling="auto"
-                    title="Fence 360"
-                  ></iframe>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </main>
 
@@ -643,7 +656,7 @@ function App() {
         <button className={`m-btn ${activeSection === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveSection('dashboard')}><Home /></button>
         <button className={`m-btn ${activeSection === 'inventory' ? 'active' : ''}`} onClick={() => setActiveSection('inventory')}><Package /></button>
         <button className={`m-btn ${activeSection === 'yardcrew' ? 'active' : ''}`} onClick={() => setActiveSection('yardcrew')}><ClipboardList /></button>
-        <button className={`m-btn ${activeSection === 'calendar' ? 'active' : ''}`} onClick={() => setActiveSection('calendar')}><Calendar /></button>
+
         <button className={`m-btn ${activeSection === 'documents' ? 'active' : ''}`} onClick={() => setActiveSection('documents')}><FolderKanban /></button>
         <button className={`m-btn ${activeSection === 'tools' ? 'active' : ''}`} onClick={() => setActiveSection('tools')}><Hammer /></button>
       </nav>

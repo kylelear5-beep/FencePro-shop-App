@@ -60,7 +60,6 @@ function VarianceBadge({ variance, actualCount, category }) {
  *   3. After each "Submit", the system-stored count is compared and a
  *      GREEN / ORANGE / RED variance badge appears immediately.
  *      The old system count stays HIDDEN — true blind count.
- *   4. Items can be removed (×) from either side — syncs to server.
  *   5. Quick-add panel lets shop crew add missing items on the fly.
  *   6. "Finish Section" logs skipped items + emails variance report.
  */
@@ -84,8 +83,6 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
   const [addForm, setAddForm]           = useState({ sku: '', name: '', category: '', quantity: '0' });
   const [addStatus, setAddStatus]       = useState(null);
 
-  // Remove per SKU
-  const [removing, setRemoving] = useState({});
 
   // ── Data load ────────────────────────────────────────────────────────────
   const load = async () => {
@@ -127,15 +124,26 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
       });
       if (!res.ok) throw new Error('Reconciliation failed');
       const result = await res.json();
-      setStatus(prev => ({ ...prev, [sku]: { done: true, variance: result.variance, actualCount } }));
+      
+      const newStatus = { ...status, [sku]: { done: true, variance: result.variance, actualCount } };
+      setStatus(newStatus);
+
+      // ── AUTO-FINISH LOGIC ──
+      // If this was the last item in the active category, trigger the report automatically
+      const currentCatItems = categories.find(c => c.name === activeCategory)?.items || [];
+      const doneCount = currentCatItems.filter(i => (i.sku === sku) || (newStatus[i.sku] && newStatus[i.sku].done)).length;
+      
+      if (doneCount === currentCatItems.length && currentCatItems.length > 0) {
+        handleFinishDay(activeCategory, newStatus);
+      }
     } catch {
       setStatus(prev => ({ ...prev, [sku]: 'error' }));
     }
   };
 
-  const handleFinishDay = async (categoryName) => {
+  const handleFinishDay = async (categoryName, currentStatus = status) => {
     const catItems   = categories.find(c => c.name === categoryName)?.items || [];
-    const countedSkus = catItems.filter(i => isDone(i.sku)).map(i => i.sku);
+    const countedSkus = catItems.filter(i => currentStatus[i.sku] && currentStatus[i.sku].done).map(i => i.sku);
     const startTime = startTimes[categoryName] || new Date().toISOString();
     const finishTime = new Date().toISOString();
     try {
@@ -145,26 +153,11 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
         body: JSON.stringify({ category: categoryName, countedSkus, counterName, sendReport: true, startTime, finishTime }),
       });
       if (!res.ok) throw new Error('Failed to finish');
-      setDayFinished(await res.json());
+      const summary = await res.json();
+      setDayFinished(summary);
     } catch { /* silently ignore */ }
   };
 
-  const handleRemoveItem = async (sku, name) => {
-    if (!window.confirm(`Remove "${name}" from inventory?\nThis syncs to management.`)) return;
-    setRemoving(prev => ({ ...prev, [sku]: true }));
-    try {
-      const res = await fetch(`/api/inventory/item/${encodeURIComponent(sku)}`, {
-        method: 'DELETE',
-        headers: { 'Bypass-Tunnel-Reminder': 'true' },
-      });
-      if (!res.ok) throw new Error('Remove failed');
-      await load();
-    } catch (err) {
-      alert(`Could not remove: ${err.message}`);
-    } finally {
-      setRemoving(prev => ({ ...prev, [sku]: false }));
-    }
-  };
 
   const handleAddItem = async (e) => {
     e.preventDefault();
@@ -564,15 +557,6 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
                     <span className="text-xs font-black text-red-600 uppercase bg-red-100 px-2 py-1 rounded-md">⚠ Failed</span>
                   )}
 
-                  {/* Remove button */}
-                  <button
-                    onClick={() => handleRemoveItem(item.sku, item.name)}
-                    disabled={isRemoving}
-                    title="Remove from inventory (syncs to management)"
-                    className="h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-red-100 text-gray-400 hover:text-red-600 transition-colors text-xl font-black"
-                  >
-                    {isRemoving ? '…' : '×'}
-                  </button>
                 </div>
               </div>
             </div>

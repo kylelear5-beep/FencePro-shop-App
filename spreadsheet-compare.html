@@ -1,0 +1,2570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FencePro — Spreadsheet Comparator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: #0f0f13; color: #e5e7eb; min-height: 100vh; }
+  header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-bottom: 2px solid #f59e0b; padding: 20px 32px; display: flex; align-items: center; gap: 16px; }
+  header h1 { font-family: 'Oswald', sans-serif; font-size: 28px; color: #f59e0b; letter-spacing: 2px; }
+  header p { color: #9ca3af; font-size: 13px; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 28px 24px; }
+
+  .step-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  @media(max-width:900px){ .step-row { grid-template-columns: 1fr; } }
+
+  .card { background: #1a1a27; border: 1px solid #2d2d44; border-radius: 12px; overflow: hidden; }
+  .card-header { background: #141420; padding: 14px 20px; border-bottom: 1px solid #2d2d44; display: flex; align-items: center; gap: 10px; }
+  .card-header .badge { background: #f59e0b; color: #000; font-size: 11px; font-weight: 900; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; }
+  .card-header h2 { font-size: 14px; font-weight: 700; color: #f3f4f6; }
+  .card-body { padding: 16px; }
+
+  textarea {
+    width: 100%; height: 180px; background: #0f0f1a; border: 2px solid #2d2d44; border-radius: 8px;
+    color: #e5e7eb; font-family: 'Inter', monospace; font-size: 12px; padding: 10px; resize: vertical;
+    outline: none; transition: border-color .2s;
+  }
+  textarea:focus { border-color: #f59e0b; }
+  textarea::placeholder { color: #4b5563; }
+
+  .hint { font-size: 11px; color: #6b7280; margin-top: 6px; }
+
+  .col-map { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+  .col-select { display: flex; flex-direction: column; gap: 4px; }
+  .col-select label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; }
+  select { background: #0f0f1a; border: 1px solid #2d2d44; border-radius: 6px; color: #e5e7eb; padding: 6px 8px; font-size: 12px; outline: none; width: 100%; }
+  select:focus { border-color: #f59e0b; }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  button { cursor: pointer; border: none; border-radius: 8px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; padding: 10px 22px; transition: all .15s; }
+  .btn-primary { background: #f59e0b; color: #000; }
+  .btn-primary:hover { background: #d97706; }
+  .btn-secondary { background: #2d2d44; color: #e5e7eb; }
+  .btn-secondary:hover { background: #3d3d5a; }
+  .btn-danger { background: #ef4444; color: #fff; }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-sm { padding: 5px 12px; font-size: 11px; }
+
+  /* Stats bar */
+  .stats { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat-card { flex: 1; min-width: 120px; background: #1a1a27; border: 1px solid #2d2d44; border-radius: 10px; padding: 14px 16px; }
+  .stat-card .num { font-size: 28px; font-weight: 900; }
+  .stat-card .lbl { font-size: 11px; color: #6b7280; font-weight: 600; text-transform: uppercase; margin-top: 2px; }
+  .stat-card.green .num { color: #10b981; }
+  .stat-card.red .num { color: #ef4444; }
+  .stat-card.yellow .num { color: #f59e0b; }
+  .stat-card.blue .num { color: #60a5fa; }
+
+  /* Filter bar */
+  .filter-bar { display: flex; gap: 10px; margin-bottom: 14px; align-items: center; flex-wrap: wrap; }
+  .filter-bar input { background: #1a1a27; border: 1px solid #2d2d44; border-radius: 8px; color: #e5e7eb; padding: 8px 12px; font-size: 13px; outline: none; flex: 1; min-width: 180px; }
+  .filter-bar input:focus { border-color: #f59e0b; }
+  .filter-pill { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 2px solid transparent; cursor: pointer; transition: all .15s; background: #2d2d44; color: #9ca3af; }
+  .filter-pill.active { background: transparent; }
+  .filter-pill.all.active { border-color: #6b7280; color: #e5e7eb; }
+  .filter-pill.match.active { border-color: #10b981; color: #10b981; }
+  .filter-pill.only-a.active { border-color: #f59e0b; color: #f59e0b; }
+  .filter-pill.only-b.active { border-color: #60a5fa; color: #60a5fa; }
+  .filter-pill.diff.active { border-color: #ef4444; color: #ef4444; }
+
+  /* Table */
+  .table-wrap { border: 1px solid #2d2d44; border-radius: 10px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead { background: #141420; }
+  thead th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid #2d2d44; }
+  tbody tr { border-bottom: 1px solid #1f1f30; transition: background .1s; }
+  tbody tr:hover { background: #1f1f30; }
+  tbody tr:last-child { border-bottom: none; }
+  td { padding: 8px 14px; vertical-align: middle; }
+  .tag { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
+  .tag-match { background: #064e3b; color: #34d399; }
+  .tag-only-a { background: #78350f; color: #fbbf24; }
+  .tag-only-b { background: #1e3a5f; color: #60a5fa; }
+  .tag-diff { background: #450a0a; color: #f87171; }
+  .old { opacity: .5; text-decoration: line-through; }
+  .diff-val { display: flex; gap: 4px; align-items: center; }
+
+  .empty-state { padding: 60px 20px; text-align: center; color: #4b5563; }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  .export-btn { margin-left: auto; }
+  .progress-bar { height: 4px; background: #2d2d44; border-radius: 2px; overflow: hidden; margin-bottom: 20px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #10b981); transition: width .4s; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>⚖️ SPREADSHEET COMPARATOR</h1>
+    <p>FencePro Inventory — Compare system data vs. your paste-in sheet</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Step 1 & 2 -->
+  <div class="step-row">
+    <!-- Sheet A: System Inventory (yesterday's) -->
+    <div class="card">
+      <div class="card-header">
+        <span class="badge">Sheet A</span>
+        <h2>FencePro System Inventory (Yesterday's)</h2>
+      </div>
+      <div class="card-body">
+        <p class="hint" style="margin-bottom:8px;">✅ Pre-loaded with <strong id="sysCount">0</strong> items from the FencePro inventory list. You can also replace it by pasting custom data below.</p>
+        <textarea id="sheetA" placeholder="Pre-loaded — paste custom data here to override (tab-separated rows from Excel/Google Sheets)"></textarea>
+        <div class="col-map" id="mapA" style="display:none">
+          <div class="col-select"><label>SKU Column</label><select id="skuA"><option>--</option></select></div>
+          <div class="col-select"><label>Name Column</label><select id="nameA"><option>--</option></select></div>
+          <div class="col-select"><label>Category Column</label><select id="catA"><option>--</option></select></div>
+          <div class="col-select"><label>Qty Column</label><select id="qtyA"><option>--</option></select></div>
+        </div>
+        <div class="hint" id="hintA">Using system inventory snapshot.</div>
+      </div>
+    </div>
+
+    <!-- Sheet B: Paste-in -->
+    <div class="card">
+      <div class="card-header">
+        <span class="badge" style="background:#60a5fa">Sheet B</span>
+        <h2>Your Paste-in Spreadsheet</h2>
+      </div>
+      <div class="card-body">
+        <p class="hint" style="margin-bottom:8px;">📋 Copy cells from Excel or Google Sheets and paste them here.</p>
+        <textarea id="sheetB" placeholder="Paste your spreadsheet here (Ctrl+C from Excel / Google Sheets, then Ctrl+V here)..."></textarea>
+        <div class="col-map" id="mapB" style="display:none">
+          <div class="col-select"><label>SKU Column</label><select id="skuB"><option>--</option></select></div>
+          <div class="col-select"><label>Name Column</label><select id="nameB"><option>--</option></select></div>
+          <div class="col-select"><label>Category Column</label><select id="catB"><option>--</option></select></div>
+          <div class="col-select"><label>Qty Column</label><select id="qtyB"><option>--</option></select></div>
+        </div>
+        <div class="hint" id="hintB">No data yet — paste your sheet above.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Run -->
+  <div class="btn-row" style="margin-bottom:24px">
+    <button class="btn-primary" onclick="runCompare()">⚡ Run Comparison</button>
+    <button class="btn-secondary" onclick="resetAll()">🔄 Reset</button>
+    <button class="btn-secondary export-btn" onclick="exportCSV()">⬇ Export Results CSV</button>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-bar" id="progress" style="display:none"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+  <!-- Stats -->
+  <div class="stats" id="stats" style="display:none">
+    <div class="stat-card green"><div class="num" id="sMatched">0</div><div class="lbl">✅ Matched</div></div>
+    <div class="stat-card yellow"><div class="num" id="sOnlyA">0</div><div class="lbl">🟡 Only in A</div></div>
+    <div class="stat-card blue"><div class="num" id="sOnlyB">0</div><div class="lbl">🔵 Only in B</div></div>
+    <div class="stat-card red"><div class="num" id="sDiff">0</div><div class="lbl">🔴 Value Diffs</div></div>
+  </div>
+
+  <!-- Filter + Table -->
+  <div id="resultsSection" style="display:none">
+    <div class="filter-bar">
+      <input type="text" id="searchBox" placeholder="🔍 Search SKU, name, or category..." oninput="renderTable()">
+      <button class="filter-pill all active" data-filter="all" onclick="setFilter(this)">All</button>
+      <button class="filter-pill match" data-filter="match" onclick="setFilter(this)">Matched</button>
+      <button class="filter-pill only-a" data-filter="only-a" onclick="setFilter(this)">Only in A</button>
+      <button class="filter-pill only-b" data-filter="only-b" onclick="setFilter(this)">Only in B</button>
+      <button class="filter-pill diff" data-filter="diff" onclick="setFilter(this)">Differences</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>SKU</th>
+            <th>Name — A</th>
+            <th>Name — B</th>
+            <th>Category</th>
+            <th>Qty A</th>
+            <th>Qty B</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+    <div id="emptyMsg" class="empty-state" style="display:none">
+      <div class="icon">🔎</div>
+      <p>No rows match the current filter or search.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── Embedded System Inventory ───────────────────────────────
+const SYSTEM_INVENTORY = [
+  {
+    category: "Aluminum Hardware-Shop",
+    sku: "73022006",
+    name: "BRACKET-WALL RES/GDN BK - Aluminum Step Joint",
+    quantity: 0
+  },
+  {
+    category: "Aluminum Hardware-Shop",
+    sku: "73022594",
+    name: "BRACKET-BALL SWVL RES BK - Aluminum Swivel Joint",
+    quantity: 0
+  },
+  {
+    category: "Aluminum Hardware-Shop",
+    sku: "73045677",
+    name: "2\" SURFACE MOUNT BLACK - Aluminum Flange",
+    quantity: 0
+  },
+  {
+    category: "Aluminum Hardware-Shop",
+    sku: "73050575",
+    name: "19.5x35 Res Puppy Picket Addon Kit Black",
+    quantity: 0
+  },
+  {
+    category: "Aluminum Hardware-Shop",
+    sku: "AD1005-B",
+    name: "DFB \"Best Grip\" Gate Handle ( Black ) 100 per box 22lbs",
+    quantity: 0
+  },
+  {
+    category: "Aluminum Hardware-Shop",
+    sku: "AD1006B",
+    name: "SS Self Closing Aluminum Hinge",
+    quantity: 0
+  },
+  {
+    category: "Aluminum Hardware-Shop",
+    sku: "AD2011SSB",
+    name: "Aluminum Drop DROP RODS BLACK 24'",
+    quantity: 0
+  },
+  {
+    category: "Aluminum Hardware-Shop",
+    sku: "KLTRV-200",
+    name: "Aluminum Traverse Latch 2\" Post, Key Lockable, Black",
+    quantity: 0
+  },
+  {
+    category: "Aluminum Hardware-Shop",
+    sku: "SGSS-B",
+    name: "Aluminum SMALL GATE STOPPER (BLK) 100 PER BOX 19LBS (GS3)",
+    quantity: 0
+  },
+  {
+    category: "Aluminum Hardware-Shop",
+    sku: "SHG-90LB",
+    name: "Black Self Closing Alum Hinges",
+    quantity: 0
+  },
+  {
+    category: "Aluminum Hardware-Shop",
+    sku: "VIPERX1-B",
+    name: "Aluminum BLACK LOCKABLE ONE-SIDED LATCH",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-7/8\" Black Tension Band (F360)",
+    name: "1-7/8\" Black Tension Band",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "2\" Dome Cap Black",
+    name: "2 Black Aluminum Dome Cap",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "48x50x9g Black (2\" Mesh) KK Chain Link Fabric (F360)",
+    name: "48x50x9g Black (2\" Mesh) KK Chain Link Fabric / 513162",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "48x50x9g Galvi (2\" Mesh) KK Chain Link Fabric (F360)",
+    name: "48x50x9g Galvi (2\" Mesh) KK Chain Link Fabric (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "60x50x9g Black (2\" Mesh) KK Chain Link Fabric (F360)",
+    name: "60x50x9g Black (2\" Mesh) KK Chain Link Fabric - 513172",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "72x50x9g Black (2\" Mesh) KK Chain Link Fabric (F360)",
+    name: "72x50x9g Black (2\" Mesh) KK Chain Link Fabric - 513182",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "72x50x9g Galvi (2\" Mesh) KT Chain Link Fabric (F360)",
+    name: "72x50x9g Galvi (2\" Mesh) KT Chain Link Fabric (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "96x50x9g Black (2\" Mesh) KK Chain Link Fabric (F360)",
+    name: "96x50x9g Black (2\" Mesh) KK Chain Link Fabric",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "96x50x9g Galvanized (2\" Mesh) KT Chain Link Fabric (F360)",
+    name: "96x50x9g Galvanized (2\" Mesh) KT Chain Link Fabric",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "Industrial 180D Offset Gate Hinge 4\"x1-5/8x2 Frame - GALVI",
+    name: "Industrial 180D Offset Gate Hinge 4\"x1-5/8x2 Frame - GALVI",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "ROLL. 48x50x9g Black (2\" Mesh) KK Chain Link Fabric (F360)",
+    name: "ROLL: 48x50x9g Black (2\" Mesh) KK Chain Link Fabric",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "ROLL. 48x50x9g Galvi (2\" Mesh) KK Chain Link Fabric (F360)",
+    name: "ROLL. 48x50x9g Galvi (2\" Mesh) KK Chain Link Fabric (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "ROLL. 60x50x9g Black (2\" Mesh) KK Chain Link Fabric (F360)",
+    name: "ROLL: 60x50x9g Black (2\" Mesh) KK Chain Link Fabric (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "ROLL. 72x50x9g Black (2\" Mesh) KK Chain Link Fabric (F360)",
+    name: "ROLL: 72x50x9g Black (2\" Mesh) KK Chain Link Fabric (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "ROLL. 72x50x9g Galvi (2\" Mesh) KT Chain Link Fabric (F360)",
+    name: "ROLL. 72x50x9g Galvi (2\" Mesh) KT Chain Link Fabric (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "ROLL: 96x50x9g Galvanized (2\" Mesh) KT Chain Link Fabric (Fence360)",
+    name: "ROLL: 96x50x9g Galvanized (2\" Mesh) KT Chain Link Fabric (Fence360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "2",
+    name: "5/16x1-1/4 carriage bolt w/nut (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5",
+    name: "5/16x2-1/2 galvi w/nut carriage bolt (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "34",
+    name: "6-1/2 9g Aluminum Tie Wire - 1-3/8 - 2 posts",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "37",
+    name: "Hog Rings 2lb 9a Alum (500 qty)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "258",
+    name: "1-5/8 to 1-3/8 Mid Rail T-Clamp - GALVI",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "0555-2-1/2",
+    name: "GALVI Box Hinge 2-1/2\"x1-5/8x2 Frame",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "555",
+    name: "GALVI Box Hinge 4\"x1-5/8x2 Frame",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "764",
+    name: "GALVI Strong Arm Latch 4\"x1-5/8-1-7/8\" Frame - Single Drive Latch",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "766",
+    name: "GALVI Strong Arm Latch -1-5/8-2 Post X 1-5/8x-2 Frame - Double Drive Gate Latch",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "810",
+    name: "1-5/8x1-5/8 Galvi Loop Cap",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "811",
+    name: "1-5/8x1-5/8 Galvi Loop Cap",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "814",
+    name: "2-1/2x1-5/8 Loop Cap - Galvi PS",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "822",
+    name: "1-5/8 Rail End Half Moon Galvi PS",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "844",
+    name: "2-1/2 Dome Cap - Galvi PS",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "890",
+    name: "4 Dome Cap - Galvi PS",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "0890B",
+    name: "4 Dome Cap - Steel Black",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "902",
+    name: "1-5/8 Tension Band",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "904",
+    name: "2-1/2 Tension Band",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "907",
+    name: "4 Tension Band",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "924",
+    name: "2-1/2 Brace Band",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "955",
+    name: "48x5/8 Steel Tension Bar",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "957",
+    name: "60x5/8 Steel Tension Bar",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "958",
+    name: "70x5/8 Steel Tension Bar - 013705",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "965",
+    name: "94x5/8 Galvi Tension Bar",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-3/8 8g x 1-1/4 black Collar (F360)",
+    name: "1-3/8 8g x 1-1/4 black Collar",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-3/8 8g x 1-1/4 GALVI Collar (F360)",
+    name: "1-3/8 8g x 1-1/4 GALVI Collar",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-3/8 Black Aluminum Rail End (F360)",
+    name: "1-3/8 Black Aluminum Rail End",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-3/8 black drop fork (F360)",
+    name: "1-3/8 black drop fork",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-3/8 black female hinge (F360)",
+    name: "1-3/8 black female hinge",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-3/8 Chain Link Gate Cap Black (F360)",
+    name: "Chain Link Gate dome Cap Black",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-3/8 Chain Link Gate Cap Galvi (F360)",
+    name: "1-3/8 Chain Link Gate Cap Galvi (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-3/8 galvi drop fork (F360)",
+    name: "1-3/8 galvi drop fork",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-3/8 galvi female hinge (F360)",
+    name: "1-3/8 galvi female hinge",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-3/8 Pipe Corner - Black",
+    name: "1-3/8 Pipe Corner - Black",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-3/8 to 1-3/8 End Rail Clamp",
+    name: "1-3/8 to 1-3/8 End Rail Clamp",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-3/8 x 2-3/8 Auto Latch",
+    name: "1-3/8 x 2-3/8 Auto Latch - For CL WGs",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-5/8 Black Aluminum Dome Cap (F360)",
+    name: "1-5/8 Black Aluminum Dome Cap",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-5/8 Black steel male hinge (F360)",
+    name: "1-5/8 Black steel male hinge",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-5/8 Drop Fork (F360)",
+    name: "1-5/8 Drop Fork",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "1-5/8 Galvi Dome Cap (F360)",
+    name: "1-5/8 Galvi Dome Cap",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "158158tclamp",
+    name: "1-5/8 to 1-5/8 Mid Rail T-Clamp - Galvi",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "158BB",
+    name: "1-5/8 Brace Band",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "2-1/2 Black Drop Fork (F360)",
+    name: "2-1/2 Black Drop Fork",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "2-1/2 Black steel male hinge (F360)",
+    name: "2-1/2 black steel male hinge",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "2-1/2 Galvi Drop Fork (F360)",
+    name: "2-1/2 Galvi Drop Fork",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "2-1/2 galvi steel male hinge (F360)",
+    name: "2-1/2 galvi steel male hinge",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "2-3/8 x 1-3/8 Staklos Gate Closer",
+    name: "2-3/8 x 1-3/8 Staklos Gate Closer",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "204542",
+    name: "6' Top Lock Slat 2\" Mesh Blk 82 Pcs Per Bag - 10' Coverage",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "212158BTC",
+    name: "2-1/2 to 1-5/8 Mid Rail T-Clamp - Black",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "2801",
+    name: "1-3/8 Galvi Offset Rail End Cup PS",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "3/8x2 black w/nut carriage bolt (F360)",
+    name: "3/8x2 black w/nut carriage bolt",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "3/8x2 carriage bolt w/nut (F360)",
+    name: "3/8x2 carriage bolt w/nut",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "3/8x3 black w/nut carriage bolt (F360)",
+    name: "3/8x3 black w/nut carriage bolt",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "3/8x3 carriage bolt w/nut (F360)",
+    name: "3/8x3 carriage bolt w/nut",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "4 Brace Band",
+    name: "4 Brace Band",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "4Wx4Hx1-3/8x.065 CL Single Swing Gate BLACK (F360)",
+    name: "4Wx4Hx1-3/8x.055 CL Single Swing Gate BLACK (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "4Wx4Hx1-3/8x.065 CL Single Swing Gate GALVI (F360)",
+    name: "4Wx4Hx1-3/8x.055 CL Single Swing Gate Galvi (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "4Wx5Hx1-3/8x.065 CL Single Swing Gate BLACK (F360)",
+    name: "4Wx5Hx1-3/8x.055 CL Single Swing Gate BLACK (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "4Wx6Hx1-3/8x.065 CL Single Swing Gate BLACK (F360)",
+    name: "4Wx6Hx1-3/8x.055 CL Single Swing Gate BLACK (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "4Wx6Hx1-5/8xSS40 Comm CL Single Swing Gate Galvi (F360)",
+    name: "4Wx6Hx1-5/8xSS40 Comm CL Single Swing Gate Galvi (F360) Actual dimension is 44\"Wx69\"H",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "4Wx8Hx1-5/8xSS40 Comm CL Single Swing Gate Galvi (F360)",
+    name: "4Wx8Hx1-5/8xSS40 Comm CL Single Swing Gate Galvi (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5/16x2-1/2 black w/nut carriage bolt (F360)",
+    name: "5/16x2-1/2 black w/nut carriage bolt",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5/8x24 Resi Black Chain-link Drop Rod",
+    name: "Chain-link Drop Rod 5/8x24 Resi - Black",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5002",
+    name: "5/16x1-1/4 black w/nut carriage bolt - 622012",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5034",
+    name: "6-1/2 9g Black Aluminum Tie Wire - 1-3/8 - 2\" posts",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5037",
+    name: "Hog Rings 9g Alum 2lb bag BLACK (500 rings)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5051",
+    name: "1-5/8x1-3/8 Black Aluminum Loop Cap",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5058",
+    name: "2-1/2 Black Aluminum Dome Cap",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5258",
+    name: "1-5/8 to 1-3/8 Mid Rail T-Clamp - Black",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5358-black",
+    name: "Rail Sleeve Black 1-5/8in",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5358",
+    name: "Rail Sleeve Galvi 1-5/8in",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5814",
+    name: "2-1/2x1-5/8 Black Loop Cap",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5822",
+    name: "BLK 1-5/8 Rail End Combo Half Room",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5904",
+    name: "2-1/2 Black Tension Band",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5924",
+    name: "2-1/2 Black Brace Band",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5955",
+    name: "48x5/8 Steel Black Tension Bar",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5957",
+    name: "60x5/8 Steel Black Tension Bar",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5958",
+    name: "70x5/8 Steel Black Tension Bar - 609342",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5965",
+    name: "94x5/8 Steel Black Tension Bar",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5Wx4Hx1-3/8x.065 CL Single Swing Gate BLACK (F360)",
+    name: "5Wx4Hx1-3/8x.055 CL Single Swing Gate BLACK (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5Wx5Hx1-3/8x.065 CL Single Swing Gate BLACK (F360)",
+    name: "5Wx5Hx1-3/8x.055 CL Single Swing Gate BLACK (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5Wx6Hx1-3/8x.065 CL Single Swing Gate BLACK (F360)",
+    name: "5Wx6Hx1-3/8x.055 CL Single Swing Gate BLACK (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "5Wx6Hx1-5/8xSS40 Comm CL Single Swing Gate Galvi (F360)",
+    name: "5Wx6Hx1-5/8xSS40 Comm CL Single Swing Gate Galvi (F360) - Actual Dimension is 56\"Wx69\"H",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "6Wx4Hx1-3/8x.065 CL Single Swing Gate BLACK (F360)",
+    name: "6Wx4Hx1-3/8x.055 CL Single Swing Gate BLACK (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "6Wx5Hx1-3/8x.065 CL Single Swing Gate BLACK (F360)",
+    name: "6Wx5Hx1-3/8x.055 CL Single Swing Gate BLACK (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "6Wx6Hx1-3/8x.065 CL Single Swing Gate BLACK (F360)",
+    name: "6Wx6Hx1-3/8x.055 CL Single Swing Gate BLACK (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "6Wx6Hx1-5/8xSS40 Comm CL Single Swing Gate Galvi (F360)",
+    name: "6Wx6Hx1-5/8xSS40 Comm CL Single Swing Gate Galvi (F360) Actual dimension is 68\"Wx69\"H",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "8x5 Gate Leaf for 8'H Deer Fence",
+    name: "8x5 WG Leaf for 8'H Deer Fence. Actual dimensions: 93\"Hx56'W",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "8x6 Gate Leaf for 8'H Deer Fence",
+    name: "8x6 WG Leaf for 8'H Deer Fence. Actual dimensions: 93\"Hx68'W",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "ATIE25",
+    name: "8-1/4 9g Aluminum Tie Wire - 2-1/2 posts",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "ATIE25B",
+    name: "8-1/4 9g Black Aluminum Tie Wire - 2-1/2\" posts",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "BA2515",
+    name: "Chain Link 2 1/2\" [2 3/8\" OD] x 1 5/8\" Line Post 3-Strand 45 Degree Barb Wire Arm (Galvanized Steel)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "Blk Ply Dom Truss Rod 3/8x11'",
+    name: "Blk Ply Dom Truss Rod 3/8x11'",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "BLK Ply Sleeve 1-3/8in",
+    name: "BLK Ply Sleeve 1-3/8in",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "Blk Ply Truss Rod Tightener",
+    name: "Blk Ply Truss Rod Tightener",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "BSAL-212",
+    name: "BLACK - Strong Arm Latch 2-1/2\"x1-5/8-2 Frame - Walk Gates",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "BW3",
+    name: "Chain Link 1320' 4-Point Barb Wire Roll w/ 5\" Coil Spacing - 12.5 GA Class 3 Barbed Wire (Galvanized Steel) Made in USA",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "CBA25",
+    name: "Chain Link 2 1/2\" [2 3/8\" OD] Corner Post 3-Strand 45 Degree Barb Wire Arm - Terminal Post Barb Arm (Galvanized Steel)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "DE2820-0333",
+    name: "Monofilament Wire 8ga black smooth (330')",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "DE2840-1",
+    name: "Large Gripple For Monofilament 7.5-10 Gauge",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "DE2842-100",
+    name: "Medium Gripple: Wire 10-14 Gauge",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "DE2845",
+    name: "Gripple T-Clip",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "DE2872",
+    name: "9/16'' Hog Rings Class I Galvanized (5,000) pack for deer fence",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "DE2876",
+    name: "11/16'' Black Hog Rings - 2500 pk (deer fence w/mono wire)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "DE2878-30",
+    name: "Ground Stakes 12in Kinked",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "DE8196",
+    name: "Ground Sleeve Black 1-5/8in",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "DFC15",
+    name: "1-5/8 Galvi Drop Fork Collar",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "DROPROD-24",
+    name: "Commercial Chain Link 24\" Drop Rod Assembly Kit - Galvi",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "EZTT138X9-BLACK",
+    name: "BLK VNL EZ TWIST TIE 1-3/8",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "EZTT158X9-BLACK",
+    name: "BLK VNL EZ TWIST TIE 1-5/8",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "EZTT158X9",
+    name: "EZ TWIST TIE 1-5/8",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "EZTT212X9-BLACK",
+    name: "BLK VNL EZ TWIST TIE 2-1/2",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "EZTT212X9",
+    name: "EZ TWIST TIE 2-1/2",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "FMH15",
+    name: "1-5/8 galvi female hinge",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "GALVI Sleeve 1-3/8",
+    name: "GALVI Ply Sleeve 1-3/8in",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "Galvi Truss Rod + Tightener",
+    name: "Galvi Truss Rod + Tightener",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "L40",
+    name: "36\" Steel Drop Rod HDG - Cane Bolt for Galvi Chain Link Fence Gates",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "ML3RPK",
+    name: "Magnalatch Round Post Adapter Kit",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "ML3TPKA",
+    name: "Magnalatch, Top Pull, Black",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "SAL-212",
+    name: "GALVI - Strong Arm Latch 2-1/2\"x1-5/8-2 Frame - Walk Gates",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "TB158B",
+    name: "1-5/8\" Black Tension Band",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "Tension Wire 13C/9F black smooth (1000') (F360)",
+    name: "Tension Wire 13C/9F black smooth (1000') (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link",
+    sku: "Tension Wire 9ga straight Galvi (1000') (F360)",
+    name: "Tension Wire 9ga straight (1000') (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "1-3/8x21x.065 Black Tubing Top Rail (F360)",
+    name: "1-3/8x21x.065 Black Tubing Top Rail - 660012",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "1-3/8x21x.065 Galvi Tubing Top Rail (F360)",
+    name: "1-3/8x21x.065 Galvi Tubing Top Rail (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "1-5/8x21xSS40 Galvi Pipe (F360)",
+    name: "1-5/8x21xSS40 Galvi Pipe (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "1-5/8x24xSS40 Black Pipe (F360)",
+    name: "1-5/8x24xSS40 Black Pipe / 695022",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "1-5/8x24xSS40 Galvi Pipe (F360)",
+    name: "1-5/8x24xSS40 Galvi Pipe / 033007",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "1-5/8x7x065 Black Tubing Line Post (F360)",
+    name: "1-5/8x7x065 Black Tubing Line Post - 650452",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "1-5/8x8x.065 Black Tubing Line Post (F360)",
+    name: "1-5/8x8x.065 Black Tubing Line Post",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "1-5/8x8xSS40 Black Pipe (F360)",
+    name: "1-5/8x8xSS40 Black Pipe (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "1-5/8x9x.065 Black Tubing Line Post (F360)",
+    name: "1-5/8x9x.065 Black Tubing Line Post",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "2-1/2x24xSS40 Black Pipe (F360)",
+    name: "2-1/2x24xSS40 Black Pipe (F360) / 695212",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "2-1/2x24xSS40 Galvi Pipe (F360)",
+    name: "2-1/2x24xSS40 Galvi Pipe (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "2-1/2x7x.065 Black Tubing Terminal Post (F360)",
+    name: "2-1/2x7x.065 Black Tubing Terminal Post / 650652",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "2-1/2x8x.065 Black Tubing Terminal Post (F360)",
+    name: "2-1/2x8x.065 Black Tubing Terminal Post - 650672",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "2-1/2x8xSS40 Galvi Pipe (F360)",
+    name: "2-1/2x8xSS40 Galvi Pipe",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "2-1/2x9x.065 Black Tubing Terminal Post (F360)",
+    name: "2-1/2x9x.065 Black Tubing Terminal Post (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "4x24xSS40 Black Pipe (F360)",
+    name: "4x24xSS40 Black Pipe (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Pipe",
+    sku: "4x24xSS40 Galvi Pipe (F360)",
+    name: "4x24xSS40 Galvi Pipe (F360)",
+    quantity: 0
+  },
+  {
+    category: "Chain Link-Shop",
+    sku: "HillMaster Anti-Sag Gate Kits Black",
+    name: "HillMaster Anti-Sag Gate Kits Black",
+    quantity: 0
+  },
+  {
+    category: "Fence Wire",
+    sku: "47\"H Cattle Fixed Knot Wire - 330' rolls",
+    name: "47\"H Catte Fixed Knot Wire - 330' rolls",
+    quantity: 0
+  },
+  {
+    category: "Fence Wire",
+    sku: "48\"H 1.5x4x100' Welded Wire Black - POOL CODE",
+    name: "48\"H 1.5x4x100' Welded Wire Black - POOL CODE",
+    quantity: 0
+  },
+  {
+    category: "Fence Wire",
+    sku: "60\"H 2x4 No Climb Horse Fence - S Knot - 100'",
+    name: "60\"H 2x4 No Climb Horse Fence - S Knot - 100'",
+    quantity: 0
+  },
+  {
+    category: "Fence Wire",
+    sku: "DE6026",
+    name: "8' x 330' Fixed Knot 12.5 ga 20/96/6 - Blk Coated",
+    quantity: 0
+  },
+  {
+    category: "Fence Wire",
+    sku: "W14410024B",
+    name: "48\"H 2x4x100' 14ga Welded Wire Black (SFRHV)",
+    quantity: 0
+  },
+  {
+    category: "Fence Wire",
+    sku: "W16410011B",
+    name: "48\"H 1x1x50' 14ga Welded Wire Black - POOL CODE",
+    quantity: 0
+  },
+  {
+    category: "Other Fence-Shop",
+    sku: "DDF225BL",
+    name: "Dig Defence: Small/Med Black Powder Coated. 32” in length and 8” in depth, 2\" space",
+    quantity: 0
+  },
+  {
+    category: "Other Fence-Shop",
+    sku: "DDFGP4",
+    name: "Dig Defence: Gate Plate: 32\" wide",
+    quantity: 0
+  },
+  {
+    category: "Other Fence-Shop",
+    sku: "DDXL15",
+    name: "Dig Defence XL. 24\" in length, 15\" in depth, 1.5\" apart",
+    quantity: 0
+  },
+  {
+    category: "Outher Fence-Shop",
+    sku: "3609120",
+    name: "6-1/2 ft. Studded T-Post, 1.25 lb. per ft. with Anchor Plate",
+    quantity: 0
+  },
+  {
+    category: "Outher Fence-Shop",
+    sku: "3609146",
+    name: "8 ft. Studded T-Post, 1.25 lb. per ft. with anchor plate",
+    quantity: 0
+  },
+  {
+    category: "Shop",
+    sku: "Consumables",
+    name: "#10 - 1\" hex head self tapping screws black head",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "1-5/8 Drive Caps",
+    name: "1-5/8 Drive Caps - Used for driving no dig posts.",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "1141-60",
+    name: "60# Bag of Concrete",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "#14 - 3\" zinc self tapper",
+    name: "#14 - 3\" zinc self tapper",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "1 3/4\" x .113 15⁰ scrails",
+    name: "1 3/4\" x .113 15⁰ scrails",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "1\" drive pins with washer",
+    name: "1\" drive pins with washer",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "3\" drive pins",
+    name: "3\" drive pins",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "6\" #15 screws",
+    name: "6\" #15 screws",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "Black 3/16\" Pop Rivets Aluminum Large Head Exploding",
+    name: "Black 3/16\" Pop Rivets Aluminum Large Head Exploding",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "GPI - 9\" x 12\" Ultra Heavy-Duty Zip Bags",
+    name: "GPI - 9\" x 12\" Ultra Heavy-Duty Zip Bags",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "White 3/16\" Pop Rivets Aluminum Large Head",
+    name: "White 3/16\" Pop Rivets Aluminum Large Head",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "#14 - 1-1/2 black oxide self tapper",
+    name: "#14 - 1-1/2 black oxide self tapper",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "5/6x6 Structural Wood Screw",
+    name: "5/6x6 Structural Wood Screw",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "Freeman 10.5 gauge fence staple",
+    name: "Freeman 10.5 gauge fence staple",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "Metabo ¼” x ¾” staples 1000ct $5.25/box",
+    name: "Metabo ¼” x ¾” staples 1000ct $5.25/box",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "Plastic Hinged Screws",
+    name: "Plastic Hinged Screws",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "PVC Cement",
+    name: "PVC Cement",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "Silicone",
+    name: "Silicone",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "Small zip ties",
+    name: "Small zip ties",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "Strap Guards: 2-1/2x1-3/4",
+    name: "Strap Guards: 2-1/2x1-3/4",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "Trash Bags",
+    name: "Trash Bags",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "Wood Glue",
+    name: "Wood Glue",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "131180",
+    name: "3/4\" x 2150' - 1350lb composite strap",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "131630",
+    name: "3/4\" strapping buckle - 1,000",
+    quantity: 0
+  },
+  {
+    category: "Shop Consumables",
+    sku: "319359",
+    name: "R4 #9 x 2\" Screws 3700CT",
+    quantity: 25
+  },
+  {
+    category: "Shop Consumables",
+    sku: "320590",
+    name: "R4 #9 x 3-1/8\" Screws 1900CT",
+    quantity: 3
+  },
+  {
+    category: "Shop Consumables",
+    sku: "367275",
+    name: "3\" x .120 Hot Galv Screw Round Head Plastic Collated 21dg Nails",
+    quantity: 2
+  },
+  {
+    category: "Shop Consumables",
+    sku: "468439",
+    name: "1-3/4\" x .092 Hot Galv Ring Round Head Wire Collated 15dg Nails",
+    quantity: 6
+  },
+  {
+    category: "Shop Consumables",
+    sku: "474374",
+    name: "5\"x1000' 90ga banding film with handle",
+    quantity: 25
+  },
+  {
+    category: "Shop Consumables",
+    sku: "526020",
+    name: "#8 x 3/4\" Square Drive Screw (8000/Pack) - Tek Screws",
+    quantity: 25
+  },
+  {
+    category: "Shop Consumables",
+    sku: "1\" Concrete Drive Pin",
+    name: "1\" Concrete Drive Pin With Washer",
+    quantity: 50
+  },
+  {
+    category: "Vinyl Caps",
+    sku: "1641",
+    name: "5x5 Square Cap May Downward Solar Light Post Cap - LMT",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Caps",
+    sku: "1859",
+    name: "5x5 Square Cap May Halo Solar Light Post Cap - LMT",
+    quantity: 2
+  },
+  {
+    category: "Vinyl Caps",
+    sku: "61104673",
+    name: "2.75\"X4.70\"X.935\" POST GATE CAP CYPRESS",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Caps",
+    sku: "73003093",
+    name: "5x5 PYRAMID WHITE POST TOP",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Caps",
+    sku: "73003919",
+    name: "7/8x3 DOGEAR CAP WHITE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Caps",
+    sku: "73013829",
+    name: "5\"X5\" PYRAMID POST TOP CYPRESS",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Caps",
+    sku: "73045003",
+    name: "5x5 NEW ENGLAND WHITE POST TOP",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Caps",
+    sku: "73045768",
+    name: "2.75x4.70x.935 VFG UR CAP WHITE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Caps",
+    sku: "73053067",
+    name: "5x5 Pyramid Post Top Dark Walnut",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Caps",
+    sku: "C55PYRA-T (F360)",
+    name: "5x5 PYRAMID TAN POST TOP",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Caps",
+    sku: "P1515SH-W (F360) / Catalyst. 73003920",
+    name: "1-1/2x1-1/2 SHARP WHITE PICKET TOP",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Caps",
+    sku: "P7815SH-W (F360)",
+    name: "7/8x1 1/2 SHARP WHITE PICKET TOP",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Gate Kits",
+    sku: "VIGK",
+    name: "Vinyl Insta-gate kits - 6H Hamilton/56uchannel",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Gate Kits",
+    sku: "WIGK",
+    name: "Wood Insta-gate kits - King+ 4WG",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Gate Pockets",
+    sku: "73044477",
+    name: "1.75x7 Internal Gate Pocket VFCOM",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Gate Pockets",
+    sku: "73044478",
+    name: "2x3.5 & 2x6 Internal Gate Pocket VFCOM",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "AD1001B (F360)",
+    name: "STAINLESS STEEL BLACK SELF CLOSING GATE HINGE PAIR",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "AD1002B (F360)",
+    name: "STAINLESS STEEL BLACK TWO WAY LATCH",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "AD1003B (F360)",
+    name: "Vinyl Drop Rod - BLACK SS DROP RODS 24\" Pad-lockable Drop Rod.",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "AD1004B (F360)",
+    name: "BLACK SS TWO WAY LATCH SMALL - Vinyl DD gates, Wood DD gates, Aluminum WG and DDs",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "AD1009B",
+    name: "GATE BRACE BLACK",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "AD1KRIVET",
+    name: "3/16 white rivet",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "AD3010B",
+    name: "Gate Stop with Handle (BLK) (Extra Knuckle Room)",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "APSB5",
+    name: "5\" STRAIGHT N LEVEL COLLAR - BLACK -  Vinyl Donut - 2\" pipe",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "Full XWing",
+    name: "Full X-Wing for 2-3/8\" Round",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "Half XWing",
+    name: "Half X-Wing for 2-3/8\" Round",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "PLC",
+    name: "5\" King Nut Post Leveling Collar Donut- Use for latch post on PND SS gates",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "PM178ZBASE",
+    name: "Vinyl Flange Mount - SUMMIT® POST MOUNT BASE COMPONENT with 3/8 concrete anchors",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "SKDONUTS",
+    name: "5\" Vinyl Donut for 2-1/2 PIPE (+#14 H 1\" Hex SS Self Tapping Screw vinyl core drill + tree hole)",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Hardware-Shop",
+    sku: "uni5",
+    name: "Uni-5: 2-1/2 SS40 for 5x5 Vinyl Posts",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Inserts",
+    sku: "65-63-003",
+    name: "P Stiffener - FOR 1-3/4\" X 3-1/2\" RAIL -- 72\"Long",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Inserts",
+    sku: "65-63-072",
+    name: "L Stiffener - FOR 2\" X 3-1/2\" RAIL - Cut to 96\"",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Inserts",
+    sku: "AD6002",
+    name: "5x5x108 ALUMINUM POST INSERT",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Inserts",
+    sku: "G3REM147-18-94 (F360)",
+    name: "1-1/2\" X 94\" STEEL insert 18 GAUGE RAIL INSERT /Ea..",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Inserts",
+    sku: "G3RFP225-18-62 (F360)",
+    name: "1.00\" X .715\" Steel Picket Insert 18 Gauge 62\"",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Lattice",
+    sku: "LPRECUTW (F360)",
+    name: "11.75x95 Pre-Cut Classic Lattice PALLET - White",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Panels",
+    sku: "73043089 / 6X8 5.5\" PRIVACY PANEL CYPRESS WG (DF)",
+    name: "6X8 5.5\" PRIVACY PANEL CYPRESS WG (DF)",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "1-1/2x1-1/2x47 WHITE PICKET PROFILE",
+    name: "1-1/2x1-1/2x47 WHITE PICKET PROFILE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "73050843",
+    name: "7/8X11.3X62.25 .045 SG T&G Dark Walnut WG",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "73050962",
+    name: "BRT - T&G Picket, Gray, 0.875\" x 6\", 59.25\", 3 ribs, .040\" wall",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "73050963-48",
+    name: "0.875x6x37.25 (.040) SAND T&G Picket (4H Hamilton)",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "73050964",
+    name: ".875x6x62.25 (.040) WHITE T&G PICKET",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "73052867",
+    name: ".875x3x47.75 PKT (.070) White",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "73052960",
+    name: "1-1/2x1-1/2x192 WHITE PICKET PROFILE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "73052998",
+    name: ".875X1.25X59 EXTR U-CHANNEL Dark Walnut",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "73053000",
+    name: "0.875x1.25x59 U-Channel SAND",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "73053001 (48)",
+    name: ".875x1.25x34.25\" EXTRA U-CHANNEL White  (4'H Hamilton)",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "73053001",
+    name: ".875x1.25x59 EXTRA U-CHANNEL WH",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "73055284",
+    name: ".875X6X59.5 .040 T&G WH",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "73055292",
+    name: ".875X1.25X56 EXTR U-CHANNEL WH",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "F54C-I-64",
+    name: "7/8\" X 6\" Homewood T&G Chai Gray 64\" Plt- 346",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "F54G-T-64",
+    name: "7/8\"x6\"x64\" (.050w) TAN T&G PICKET.",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "F54G-W-48 (F360)",
+    name: "7/8x6x48 WHITE T&G PICKET",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "F57C-T-45G (F360)",
+    name: "7/8x3x45-7/8 TAN PICKET PROFILE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "F65S-W-31B (F360)",
+    name: "7/8x1-1/2x31-1/2 WHITE  PICKET PROFILE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "F83S-I-61 (F360)",
+    name: "7/8x1-3/8x61 Chai Gray U-CHANNEL",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Pickets",
+    sku: "F83U-T-122",
+    name: "7/8\" X 1 3/8\" X 122\" TAN U-CHANNEL.",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Posts",
+    sku: "2-1/2x8xSS40 Galvi Pipe (F360) - Non-Primed",
+    name: "2-1/2x8xSS40 Galvi Pipe - Non-Primed",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Posts",
+    sku: "61119541",
+    name: "2.75X4.70X73.5 SGLRT 1.75X5.5X2 CYPRESS W/UPI - Gate Upright w/Pocket",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Posts",
+    sku: "73003694",
+    name: "5X5X102 PST (.135W) WHT",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Posts",
+    sku: "73013858",
+    name: "5X5X108 BLANK POST CYPRESS",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Posts",
+    sku: "73014090",
+    name: "5X5X84 POST (.250 WALL) WHI TE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Posts",
+    sku: "73014091",
+    name: "5X5X108 POST (.250 WALL) WHI TE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Posts",
+    sku: "73014237",
+    name: "2.75x4.7x73.5 GATE UPRIGHT WHITE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Posts",
+    sku: "73051715",
+    name: "5X5X108 (.150W) POST Dark Walnut",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Posts",
+    sku: "73052001",
+    name: "5x5x78 (.135W) Post White",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Posts",
+    sku: "F10C-I-108 (F360)",
+    name: "5x5x108 Chai Gray POST",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "73003713",
+    name: "2X6X94 RL (.090W) WHT",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "73012399",
+    name: "1.5X5.5X96 Hollow Rail W/Locktabs(.080W)WHITE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "73013916",
+    name: "1.75x7x94 RAIL W/BARB WHITE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "73051194",
+    name: "1.5X5.5X95 (.090W) Channel Rail Dark Walnut",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "73053576",
+    name: "2X3.5X94 (.090W) RL WHITE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "73053578-bottom",
+    name: "2x3.5x72 (.090W) WHITE RAIL PROFILE - Kirkwall Bottom Rail",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "73053578-mid",
+    name: "2x3.5x72 (.090W) WHITE RAIL PROFILE - Kirkwall Mid Rail - Rackable Cut on bottom",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "73053578",
+    name: "2x3.5x72 (.090W) WHITE RAIL PROFILE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "F24E-T-192 (F360)",
+    name: "2x3 1/2x192 TAN RAIL PROFILE",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "F25B-T-144 (F360)",
+    name: "1-3/4x3-1/2x144 TAN HOLLOW STANDARD",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "F25B-W-144 (F360)",
+    name: "1-3/4x3-1/2x144 White HOLLOW STANDARD",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "F37C-T-94 (F360)",
+    name: "1-3/4x5-1/2x94 TAN VINYL SLOTTED RAIL",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "F37C-W-94 (F360)",
+    name: "1-3/4x5-1/2x94 WHITE VINYL SLOTTED RAIL",
+    quantity: 0
+  },
+  {
+    category: "Vinyl Rails",
+    sku: "F3P5-I-94 (F360)",
+    name: "1-3/4x5-1/2x94 Chai Gray CHANNEL RAIL PROFILE - preinserted steel insert",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "4/5x10 round post pine PT",
+    name: "4 - 5\" x10' round pine PT: Corner, end, gate post for 6'H field fence and deer fence",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "4041024",
+    name: "4x6.5 PT Round pine pt Post - Line, corner, end + brace posts",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "4041082",
+    name: "4x8 PT Round pine pt Post - Line posts for 5'H, 6'H Field Fence",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "404109099",
+    name: "5x8 PT Round Post - Gate Post",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "4x4x10 PT Post (F360)",
+    name: "4x4x10 PT Post",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "4x4x10 WC Post (F360)",
+    name: "4x4x10 White Cedar Post",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "4x6x8 Post",
+    name: "4x6x8 PT POST - Used for gate posts for 5'H and 6'H stockade fence",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "DSR4HC",
+    name: "4' 3-Hole Diamond Split Rail Corner Post - 5x5x7 White Cedar",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "DSR4HE",
+    name: "4' 3-Hole Diamond Split Rail End Post - 5x5x7 White Cedar",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "DSR4HL",
+    name: "4' 3-Hole Diamond Split Rail Line Post - 5x5x7 White Cedar",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "FEZZ154",
+    name: "4'H 3-HOLE PINE PRESSURE TREATED POST - CORNER (Split Rail)",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "FEZZ155-WRC",
+    name: "4'H 3-HOLE POST - Line/End (Split Rail) - WRC",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "FEZZ155",
+    name: "4'H 3-HOLE LINE/END PINE PRESSURE TREATED POST (Split Rail)",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "PRS5",
+    name: "4x4 Post Saver",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "SH20615011B",
+    name: "6' x 150' Steel Hex Web Blk PVC Coated Fence",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "056529-WRC",
+    name: "10' Jumbo Split Rail WRC",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "15002 (F360)",
+    name: "2X4X8 PT Stringer",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "15002WC (F360)",
+    name: "2X4X8 PT Stringer - NWC - White Cedar",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "15003 (F360)",
+    name: "2X6X8 PT Stringer",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "15005 (F360)",
+    name: "2X4X10 PT Stringer",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "5/4x6x16 pine PT",
+    name: "16' 1X6 #2 DECK BOARD /Ea. OR 5/4x6x16 PT Deck Board OR 1x6x16 PT Deck Board",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "8DSR",
+    name: "8' Diamond Split Rail - WC",
+    quantity: 0
+  },
+  {
+    category: "wood",
+    sku: "FEZZ156",
+    name: "11' PINE FACE RAILS PRESSURE TREATED (Split Rail)",
+    quantity: 0
+  },
+  {
+    category: "Wood",
+    sku: "1x4x4 French Gothic Picket - Cedar",
+    name: "1x4x4 French Gothic Picket - Cedar",
+    quantity: 0
+  },
+  {
+    category: "Wood",
+    sku: "050588-WRC",
+    name: "4' 3-Hole Split Rail End Post - WRC",
+    quantity: 0
+  },
+  {
+    category: "Wood",
+    sku: "12001 (F360)",
+    name: "4x4x8 PT POST",
+    quantity: 0
+  },
+  {
+    category: "Wood",
+    sku: "12001WC (F360)",
+    name: "4x4x8 White Cedar POST",
+    quantity: 0
+  },
+  {
+    category: "Wood",
+    sku: "12002 (F360)",
+    name: "4x6x10 PT POST",
+    quantity: 0
+  },
+  {
+    category: "Wood",
+    sku: "120022",
+    name: "4x6x6",
+    quantity: 0
+  },
+  {
+    category: "Wood",
+    sku: "12003 (F360)",
+    name: "4x4x12 PT POST",
+    quantity: 0
+  },
+  {
+    category: "Wood",
+    sku: "12004 (F360)",
+    name: "6x6x10 PT POST",
+    quantity: 0
+  },
+  {
+    category: "Wood",
+    sku: "12006 (F360)",
+    name: "4x4x6 PT POST",
+    quantity: 0
+  },
+  {
+    category: "Wood",
+    sku: "12304 (F360)",
+    name: "3'H SPLIT RAIL 2 HOLE LINE POST - Pine PT",
+    quantity: 0
+  },
+  {
+    category: "Wood",
+    sku: "12306 (F360)",
+    name: "3' SPLIT RAIL 2 HOLE CORNER POST",
+    quantity: 0
+  },
+  {
+    category: "Wood (metal frame)",
+    sku: "21001-F",
+    name: "Metal Gate Frame -36\"h x Adjustable Standard Wood 4'H - Use with hinges: AD1006B",
+    quantity: 0
+  },
+  {
+    category: "Wood (metal frame)",
+    sku: "21002-F",
+    name: "Metal Gate Frame - 48\"h x Adjustable Cap & Trim / Horizontal - Use with hinges: AD1006B",
+    quantity: 0
+  },
+  {
+    category: "Wood (metal frame)",
+    sku: "21003-F",
+    name: "Metal Gate Frame (60\"H x Adjustable) Stockade Wood 6'H - Use with hinges: AD1006B",
+    quantity: 0
+  },
+  {
+    category: "Wood (metal frame)",
+    sku: "21004-F",
+    name: "Metal Gate Frame (69'h x Adjustable)Cap N Trim / Horizontal - Use with hinges: AD1006B",
+    quantity: 0
+  },
+  {
+    category: "Wood Caps",
+    sku: "1856blackhammertone",
+    name: "3.625\" SQ. SOLAR CAPE MAY HALO POST CAP SOLAR LIGHT BLACKHAMMERTONE",
+    quantity: 0
+  },
+  {
+    category: "Wood Caps",
+    sku: "55WCFT",
+    name: "5x5 Flat Post Cap - White Cedar",
+    quantity: 0
+  },
+  {
+    category: "Wood Caps",
+    sku: "CPY04X6W",
+    name: "4x6 Copper Pyramid",
+    quantity: 0
+  },
+  {
+    category: "Wood Caps",
+    sku: "CPY0534W",
+    name: "6x6 Wood Copper Pyramid Cap",
+    quantity: 0
+  },
+  {
+    category: "Wood Caps",
+    sku: "FC-4x4-BLACK-10",
+    name: "4x4 Black Plastic Post Cap",
+    quantity: 0
+  },
+  {
+    category: "Wood Caps",
+    sku: "FC-4x6-BLACK-10",
+    name: "4x6 Black Plastic Post Cap",
+    quantity: 0
+  },
+  {
+    category: "Wood Caps",
+    sku: "FC-6x6-BLACK-10",
+    name: "6x6 Black Plastic Post Cap",
+    quantity: 0
+  },
+  {
+    category: "Wood Caps",
+    sku: "PYTB0358M",
+    name: "4x4 Mitterless Wood Post Cap - New England",
+    quantity: 0
+  },
+  {
+    category: "Wood Caps",
+    sku: "PYTB04X6M",
+    name: "4x6 Mitterless Wood Post Cap - New England - Used for Gate Posts ONLY",
+    quantity: 0
+  },
+  {
+    category: "Wood Caps",
+    sku: "PYTB0614M",
+    name: "True 6x6 Mitterless Wood Post Cap - New England",
+    quantity: 0
+  },
+  {
+    category: "Wood Hardware-Shop",
+    sku: "3\" Concrete Drive Pin w/o washer",
+    name: "3\" Concrete Drive Pin w/o Washer",
+    quantity: 0
+  },
+  {
+    category: "Wood Hardware-Shop",
+    sku: "AD2005",
+    name: "8\" Contemporary \"T\" Hinge",
+    quantity: 0
+  },
+  {
+    category: "Wood Hardware-Shop",
+    sku: "AD2006",
+    name: "AD2006 - BUTTERFLY HINGE PAIR BLACK CONTEMPORARY",
+    quantity: 0
+  },
+  {
+    category: "Wood Hardware-Shop",
+    sku: "AD2007SSB",
+    name: "8” SELF CLOSING HORIZONTAL ADJUSTABLE STAINLESS STEEL T HINGE",
+    quantity: 0
+  },
+  {
+    category: "Wood Hardware-Shop",
+    sku: "AD2010",
+    name: "Self Closing Wood Latch - Use with ALL SD wood gate frames",
+    quantity: 0
+  },
+  {
+    category: "Wood Hardware-Shop",
+    sku: "AD2011-42",
+    name: "WOOD DROP RODS BLACK 42\"",
+    quantity: 0
+  },
+  {
+    category: "Wood Hardware-Shop",
+    sku: "AD2011",
+    name: "WOOD DROP RODS BLACK 24'",
+    quantity: 0
+  },
+  {
+    category: "Wood Hardware-Shop",
+    sku: "AD2020",
+    name: "AD2020 - GATE SPRING BLACK 10'",
+    quantity: 0
+  },
+  {
+    category: "Wood Hardware-Shop",
+    sku: "AD2021",
+    name: "Steel Gate Wood Handle",
+    quantity: 0
+  },
+  {
+    category: "Wood Hardware-Shop",
+    sku: "NWSS-HD-SC-BK",
+    name: "NW HEAVY DUTY SS ADJUSTABLE SELF CLOSING WOOD HINGE",
+    quantity: 0
+  },
+  {
+    category: "Wood Hardware-Shop",
+    sku: "SL-50H",
+    name: "Advantage Safelatch Black Magnalatch Pool Code",
+    quantity: 0
+  },
+  {
+    category: "Wood- Lumber",
+    sku: "14001 (F360)",
+    name: "1x6x6 PT Dog Ear Picket - Base Picket Home Depot",
+    quantity: 0
+  },
+  {
+    category: "Wood- Lumber",
+    sku: "14001P (F360) (Premium Pickets)",
+    name: "1x6x6 PT Dog Ear Picket - Premium Thick Picket - 3/4\" thick/S4S",
+    quantity: 0
+  },
+  {
+    category: "Wood- Lumber",
+    sku: "14001WC2 (F360)",
+    name: "1x6x6 #2 NWC - White Cedar Board Straight Top",
+    quantity: 0
+  },
+  {
+    category: "Wood- Lumber",
+    sku: "14002 (F360)",
+    name: "1x6x8 PT Dog Ear Picket.",
+    quantity: 0
+  },
+  {
+    category: "wood- Lumber",
+    sku: "15004-NWC (F360)",
+    name: "1x4x8 NWC Trim",
+    quantity: 0
+  }
+];
+
+// ─── State ───────────────────────────────────────────────────
+let dataA = [], dataB = [], results = [], activeFilter = 'all';
+
+// ─── Parse helpers ───────────────────────────────────────────
+function parseTSV(text) {
+  const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
+  if (!lines.length) return { headers: [], rows: [] };
+  const rows = lines.map(l => l.split('\t'));
+  const maxCols = Math.max(...rows.map(r => r.length));
+  // Try to detect header row
+  const firstRow = rows[0];
+  const isHeader = firstRow.some(c => isNaN(c) && c.trim().length > 0 && c.trim().length < 40);
+  let headers, dataRows;
+  if (isHeader) {
+    headers = firstRow.map((h, i) => h.trim() || `Col ${i+1}`);
+    dataRows = rows.slice(1);
+  } else {
+    headers = Array.from({length: maxCols}, (_, i) => `Col ${i+1}`);
+    dataRows = rows;
+  }
+  return { headers, rows: dataRows };
+}
+
+function sysToRows() {
+  return SYSTEM_INVENTORY.map(i => ({ sku: i.sku, name: i.name, category: i.category, qty: String(i.quantity) }));
+}
+
+function mapRows(parsed, skuCol, nameCol, catCol, qtyCol) {
+  const idx = (sel) => parsed.headers.indexOf(sel);
+  return parsed.rows.map(r => ({
+    sku: (r[idx(skuCol)] || '').trim(),
+    name: (r[idx(nameCol)] || '').trim(),
+    category: (r[idx(catCol)] || '').trim(),
+    qty: (r[idx(qtyCol)] || '').trim(),
+  })).filter(r => r.sku);
+}
+
+// ─── Auto-detect columns ─────────────────────────────────────
+function autoDetect(headers) {
+  const sku  = headers.find(h => /sku|item.?#|item.?no|part.?no|code/i.test(h)) || headers[0];
+  const name = headers.find(h => /name|desc|product|item.?name|material/i.test(h)) || headers[1];
+  const cat  = headers.find(h => /cat|group|section|type|dept/i.test(h)) || '--';
+  const qty  = headers.find(h => /qty|quant|count|stock|on.?hand|amount/i.test(h)) || '--';
+  return { sku, name, cat, qty };
+}
+
+function populateSelects(selectIds, headers) {
+  selectIds.forEach(id => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = '<option>--</option>';
+    headers.forEach(h => { const o = document.createElement('option'); o.value = h; o.textContent = h; sel.appendChild(o); });
+  });
+}
+
+// ─── Sheet B parse on input ──────────────────────────────────
+document.getElementById('sheetB').addEventListener('input', function() {
+  const text = this.value.trim();
+  if (!text) { document.getElementById('mapB').style.display='none'; document.getElementById('hintB').textContent='No data yet.'; return; }
+  const parsed = parseTSV(text);
+  if (!parsed.rows.length) return;
+  document.getElementById('mapB').style.display='grid';
+  populateSelects(['skuB','nameB','catB','qtyB'], parsed.headers);
+  const auto = autoDetect(parsed.headers);
+  document.getElementById('skuB').value = auto.sku;
+  document.getElementById('nameB').value = auto.name;
+  document.getElementById('catB').value = auto.cat;
+  document.getElementById('qtyB').value = auto.qty;
+  document.getElementById('hintB').textContent = `Detected ${parsed.rows.length} rows, ${parsed.headers.length} columns.`;
+});
+
+document.getElementById('sheetA').addEventListener('input', function() {
+  const text = this.value.trim();
+  if (!text) { document.getElementById('mapA').style.display='none'; document.getElementById('hintA').textContent='Using system inventory snapshot.'; return; }
+  const parsed = parseTSV(text);
+  if (!parsed.rows.length) return;
+  document.getElementById('mapA').style.display='grid';
+  populateSelects(['skuA','nameA','catA','qtyA'], parsed.headers);
+  const auto = autoDetect(parsed.headers);
+  document.getElementById('skuA').value = auto.sku;
+  document.getElementById('nameA').value = auto.name;
+  document.getElementById('catA').value = auto.cat;
+  document.getElementById('qtyA').value = auto.qty;
+  document.getElementById('hintA').textContent = `Detected ${parsed.rows.length} rows, ${parsed.headers.length} columns.`;
+});
+
+// ─── Run comparison ──────────────────────────────────────────
+function runCompare() {
+  // Build dataA
+  const rawA = document.getElementById('sheetA').value.trim();
+  if (rawA) {
+    const parsed = parseTSV(rawA);
+    dataA = mapRows(parsed, document.getElementById('skuA').value, document.getElementById('nameA').value,
+                    document.getElementById('catA').value, document.getElementById('qtyA').value);
+  } else {
+    dataA = sysToRows();
+  }
+
+  // Build dataB
+  const rawB = document.getElementById('sheetB').value.trim();
+  if (!rawB) { alert('Please paste your spreadsheet into Sheet B first!'); return; }
+  const parsedB = parseTSV(rawB);
+  dataB = mapRows(parsedB, document.getElementById('skuB').value, document.getElementById('nameB').value,
+                  document.getElementById('catB').value, document.getElementById('qtyB').value);
+
+  if (!dataA.length) { alert('Sheet A has no usable data.'); return; }
+  if (!dataB.length) { alert('Sheet B has no usable data. Make sure the SKU column is mapped correctly.'); return; }
+
+  // Build maps
+  const mapA = {}, mapB = {};
+  dataA.forEach(r => { mapA[r.sku.toUpperCase()] = r; });
+  dataB.forEach(r => { mapB[r.sku.toUpperCase()] = r; });
+
+  results = [];
+  const allSKUs = new Set([...Object.keys(mapA), ...Object.keys(mapB)]);
+
+  allSKUs.forEach(sku => {
+    const a = mapA[sku], b = mapB[sku];
+    let status;
+    if (a && b) {
+      const nameDiff = a.name && b.name && a.name.toLowerCase() !== b.name.toLowerCase();
+      const qtyDiff = a.qty !== '' && b.qty !== '' && a.qty !== b.qty;
+      status = (nameDiff || qtyDiff) ? 'diff' : 'match';
+    } else if (a && !b) {
+      status = 'only-a';
+    } else {
+      status = 'only-b';
+    }
+    results.push({ sku: (a||b).sku, nameA: a?.name || '', nameB: b?.name || '', catA: a?.category || '', catB: b?.category || '', qtyA: a?.qty ?? '', qtyB: b?.qty ?? '', status });
+  });
+
+  // Sort: diffs first, then only-b, only-a, matches
+  const order = { diff:0, 'only-b':1, 'only-a':2, match:3 };
+  results.sort((a,b) => order[a.status] - order[b.status] || a.sku.localeCompare(b.sku));
+
+  updateStats();
+  document.getElementById('stats').style.display='flex';
+  document.getElementById('resultsSection').style.display='block';
+  document.getElementById('progress').style.display='block';
+  renderTable();
+}
+
+function updateStats() {
+  const counts = { match:0, 'only-a':0, 'only-b':0, diff:0 };
+  results.forEach(r => counts[r.status]++);
+  document.getElementById('sMatched').textContent = counts.match;
+  document.getElementById('sOnlyA').textContent = counts['only-a'];
+  document.getElementById('sOnlyB').textContent = counts['only-b'];
+  document.getElementById('sDiff').textContent = counts.diff;
+
+  const pct = results.length ? Math.round(counts.match / results.length * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function setFilter(btn) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = btn.dataset.filter;
+  renderTable();
+}
+
+function renderTable() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  const filtered = results.filter(r => {
+    if (activeFilter !== 'all' && r.status !== activeFilter) return false;
+    if (q && !r.sku.toLowerCase().includes(q) && !r.nameA.toLowerCase().includes(q) && !r.nameB.toLowerCase().includes(q) && !(r.catA||r.catB).toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  const tags = { match:'tag-match', 'only-a':'tag-only-a', 'only-b':'tag-only-b', diff:'tag-diff' };
+  const labels = { match:'✅ Match', 'only-a':'🟡 Only A', 'only-b':'🔵 Only B', diff:'🔴 Diff' };
+
+  const tb = document.getElementById('resultsBody');
+  if (!filtered.length) {
+    tb.innerHTML = '';
+    document.getElementById('emptyMsg').style.display='block';
+    return;
+  }
+  document.getElementById('emptyMsg').style.display='none';
+
+  tb.innerHTML = filtered.map(r => {
+    const cat = r.catA || r.catB || '—';
+    const nameDiff = r.nameA && r.nameB && r.nameA.toLowerCase() !== r.nameB.toLowerCase();
+    const qtyDiff = r.qtyA !== '' && r.qtyB !== '' && r.qtyA !== r.qtyB;
+
+    const nameACell = nameDiff ? `<span class="old">${esc(r.nameA)}</span>` : esc(r.nameA || '—');
+    const nameBCell = nameDiff ? `<strong style="color:#f87171">${esc(r.nameB)}</strong>` : esc(r.nameB || '—');
+    const qtyACell = qtyDiff ? `<span class="old">${esc(r.qtyA)}</span>` : esc(r.qtyA || '—');
+    const qtyBCell = qtyDiff ? `<strong style="color:#f87171">${esc(r.qtyB)}</strong>` : esc(r.qtyB || '—');
+
+    return `<tr>
+      <td><span class="tag ${tags[r.status]}">${labels[r.status]}</span></td>
+      <td style="font-family:monospace;font-weight:700;color:#f59e0b">${esc(r.sku)}</td>
+      <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(r.nameA)}">${nameACell}</td>
+      <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(r.nameB)}">${nameBCell}</td>
+      <td style="color:#9ca3af;font-size:11px">${esc(cat)}</td>
+      <td>${qtyACell}</td>
+      <td>${qtyBCell}</td>
+    </tr>`;
+  }).join('');
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function resetAll() {
+  document.getElementById('sheetA').value='';
+  document.getElementById('sheetB').value='';
+  document.getElementById('mapA').style.display='none';
+  document.getElementById('mapB').style.display='none';
+  document.getElementById('hintA').textContent='Using system inventory snapshot.';
+  document.getElementById('hintB').textContent='No data yet — paste your sheet above.';
+  document.getElementById('stats').style.display='none';
+  document.getElementById('resultsSection').style.display='none';
+  document.getElementById('progress').style.display='none';
+  document.getElementById('searchBox').value='';
+  results=[];
+}
+
+function exportCSV() {
+  if (!results.length) { alert('Run a comparison first!'); return; }
+  const header = ['Status','SKU','Name A','Name B','Category','Qty A','Qty B'];
+  const rows = results.map(r => [r.status, r.sku, r.nameA, r.nameB, r.catA||r.catB, r.qtyA, r.qtyB]
+    .map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+  const csv = [header.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = 'fencepro_comparison.csv';
+  a.click();
+}
+
+// Init
+document.getElementById('sysCount').textContent = SYSTEM_INVENTORY.length;
+</script>
+</body>
+</html>

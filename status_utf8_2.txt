@@ -1,0 +1,29 @@
+﻿ M fence-pro-react/src/App.jsx
+ M fence-pro-react/src/components/BlindCountBoard.jsx
+ M fence-pro-react/src/components/InventoryManager.jsx
+ M fence-pro-react/src/index.css
+ M fencepro-shop-app/__tests__/unit/inventory-count.test.js
+ D fencepro-shop-app/package.json
+ D fencepro-shop-app/public/docs/aluminum_specs.html
+ D fencepro-shop-app/public/docs/chain_link_fittings.html
+ D fencepro-shop-app/public/docs/chain_link_specs.html
+ D fencepro-shop-app/public/docs/cmm_guide.html
+ D fencepro-shop-app/public/docs/loading_procedures.html
+ D fencepro-shop-app/public/docs/material_receiving.html
+ D fencepro-shop-app/public/docs/onboarding_guide.html
+ D fencepro-shop-app/public/docs/safety_manual.html
+ D fencepro-shop-app/public/docs/shop_sop_playbook.html
+ D fencepro-shop-app/public/docs/vinyl_specs.html
+ D fencepro-shop-app/public/docs/wood_specs.html
+ D fencepro-shop-app/public/index.html
+ D fencepro-shop-app/public/script.js
+ D fencepro-shop-app/public/style.css
+ M fencepro-shop-app/server.js
+ D fencepro-shop-app/test_exports.js
+ D fencepro-shop-app/test_models.js
+?? fence-pro-react/fencepro-shop-app/
+?? spreadsheet-compare.html
+?? status_temp.txt
+?? status_temp2.txt
+?? status_utf8.txt
+?? status_utf8_2.txt

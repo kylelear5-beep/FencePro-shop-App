@@ -1,127 +1,103 @@
 import React, { useState } from 'react';
-import { Calculator, Scale, Hash } from 'lucide-react';
+import { Scale, Hash, RefreshCcw, Zap } from 'lucide-react';
 
 export default function WeightCalculator() {
-  const [knownQty, setKnownQty] = useState('');
-  const [knownWeight, setKnownWeight] = useState('');
+  const [sampleQty, setSampleQty] = useState('50');
+  const [sampleWeight, setSampleWeight] = useState('');
+  const [totalWeight, setTotalWeight] = useState('');
 
-  const [targetQty, setTargetQty] = useState('');
-  const [targetWeight, setTargetWeight] = useState('');
+  const reset = () => {
+    setSampleWeight('');
+    setTotalWeight('');
+    setSampleQty('50');
+  };
 
-  // Calculations
-  const unitWeight = (knownQty && knownWeight && Number(knownQty) > 0)
-    ? Number(knownWeight) / Number(knownQty)
+  const unitWeight = (sampleWeight && sampleQty && Number(sampleQty) > 0)
+    ? Number(sampleWeight) / Number(sampleQty)
     : 0;
 
-  const calculatedWeight = (unitWeight && targetQty)
-    ? (unitWeight * Number(targetQty)).toFixed(2)
-    : '0.00';
-
-  const calculatedQty = (unitWeight && targetWeight && unitWeight > 0)
-    ? Math.round(Number(targetWeight) / unitWeight)
+  const totalPieces = (unitWeight && totalWeight)
+    ? Math.round(Number(totalWeight) / unitWeight)
     : 0;
 
   return (
-    <div className="w-full bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm flex flex-col h-full">
-      <div className="bg-blue-600 px-6 py-4 flex items-center gap-3">
-        <Calculator className="text-white" />
-        <h2 className="text-xl font-black text-white uppercase tracking-tight">
-          Weight & Piece Convertor
-        </h2>
+    <div className="w-full bg-slate-900 border-2 border-slate-700 rounded-2xl overflow-hidden shadow-2xl flex flex-col h-full font-sans text-white">
+      {/* Mini Header */}
+      <div className="bg-slate-800 px-5 py-3 flex items-center justify-between border-b border-slate-700">
+        <div className="flex items-center gap-2">
+          <Scale className="text-amber-500" size={18} />
+          <h2 className="text-sm font-black uppercase tracking-widest text-slate-200">
+            Screw & Hardware Counter
+          </h2>
+        </div>
+        <button onClick={reset} className="text-slate-500 hover:text-white transition-colors">
+          <RefreshCcw size={14} />
+        </button>
       </div>
 
-      <div className="p-6 space-y-8">
-        {/* Step 1: Establish Baseline */}
-        <div className="bg-gray-50 border-2 border-gray-200 p-6 rounded-xl">
-          <h3 className="text-base font-black text-blue-800 uppercase mb-4 flex items-center gap-2">
-            <span className="bg-blue-200 text-blue-800 w-7 h-7 flex items-center justify-center rounded-full text-sm">1</span>
-            Establish Baseline Weight
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-black text-gray-700 uppercase mb-2">Known Quantity (Pieces)</label>
-              <div className="relative">
-                <Hash className="absolute left-4 top-3.5 text-blue-500" size={20} />
-                <input
-                  type="number"
-                  value={knownQty}
-                  onChange={e => setKnownQty(e.target.value)}
-                  className="w-full bg-white border-2 border-gray-200 rounded-lg pl-12 pr-4 py-3 text-lg font-bold focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all"
-                  placeholder="e.g. 10"
-                  min="1"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-black text-gray-700 uppercase mb-2">Known Weight (lbs)</label>
-              <div className="relative">
-                <Scale className="absolute left-4 top-3.5 text-blue-500" size={20} />
-                <input
-                  type="number"
-                  value={knownWeight}
-                  onChange={e => setKnownWeight(e.target.value)}
-                  className="w-full bg-white border-2 border-gray-200 rounded-lg pl-12 pr-4 py-3 text-lg font-bold focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all"
-                  placeholder="e.g. 25"
-                  min="0"
-                  step="0.01"
-                />
-              </div>
+      <div className="p-5 space-y-4">
+        {/* Step 1: Small Sample */}
+        <div className="grid grid-cols-2 gap-3 pb-4 border-b border-slate-700/50">
+          <div className="space-y-1.5">
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Sample Size</label>
+            <div className="relative">
+              <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
+              <input
+                type="number"
+                value={sampleQty}
+                onChange={e => setSampleQty(e.target.value)}
+                className="w-full bg-slate-800 border border-slate-600 rounded-lg pl-9 pr-3 py-2 text-sm font-bold focus:border-amber-500 focus:outline-none transition-all"
+                placeholder="50"
+              />
             </div>
           </div>
-          {unitWeight > 0 && (
-            <div className="mt-6 text-sm font-bold text-gray-700 bg-white border border-blue-100 py-3 px-4 rounded-lg text-center shadow-sm flex items-center justify-center gap-2">
-              Estimated Unit Weight: <span className="text-blue-600 text-lg">{unitWeight.toFixed(4)} <span className="text-sm">lbs / piece</span></span>
-            </div>
-          )}
-        </div>
-
-        {/* Step 2: Calculate */}
-        <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-300 ${unitWeight > 0 ? 'opacity-100' : 'opacity-40 grayscale pointer-events-none'}`}>
-
-          {/* Pieces to Weight */}
-          <div className="bg-white border-2 border-amber-200 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="text-sm font-black text-amber-800 uppercase mb-4 flex items-center gap-2">
-              <span className="bg-amber-200 text-amber-800 w-7 h-7 flex items-center justify-center rounded-full">2A</span>
-              Find Total Weight
-            </h3>
-            <label className="block text-sm font-black text-gray-700 uppercase mb-2">Target Quantity</label>
+          <div className="space-y-1.5">
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Sample Weight (lbs)</label>
             <input
               type="number"
-              value={targetQty}
-              onChange={e => setTargetQty(e.target.value)}
-              disabled={!unitWeight}
-              className="w-full bg-gray-50 border-2 border-gray-200 rounded-lg px-4 py-3 text-lg mb-4 font-bold focus:border-amber-500 focus:ring-4 focus:ring-amber-100 focus:outline-none transition-all"
-              placeholder="e.g. 50"
+              value={sampleWeight}
+              onChange={e => setSampleWeight(e.target.value)}
+              className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm font-bold focus:border-amber-500 focus:outline-none transition-all text-amber-500"
+              placeholder="0.00"
+              step="0.001"
             />
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-5 text-center border border-amber-100 shadow-inner">
-              <span className="block text-sm font-black text-amber-600/80 uppercase mb-2">Estimated Weight</span>
-              <span className="text-5xl font-black text-amber-700 tracking-tight">{calculatedWeight} <span className="text-xl font-bold opacity-60">lbs</span></span>
-            </div>
           </div>
-
-          {/* Weight to Pieces */}
-          <div className="bg-white border-2 border-emerald-200 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="text-sm font-black text-emerald-800 uppercase mb-4 flex items-center gap-2">
-              <span className="bg-emerald-200 text-emerald-800 w-7 h-7 flex items-center justify-center rounded-full">2B</span>
-              Find Total Pieces
-            </h3>
-            <label className="block text-sm font-black text-gray-700 uppercase mb-2">Target Weight (lbs)</label>
-            <input
-              type="number"
-              value={targetWeight}
-              onChange={e => setTargetWeight(e.target.value)}
-              disabled={!unitWeight}
-              className="w-full bg-gray-50 border-2 border-gray-200 rounded-lg px-4 py-3 text-lg mb-4 font-bold focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 focus:outline-none transition-all"
-              placeholder="e.g. 125"
-            />
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg p-5 text-center border border-emerald-100 shadow-inner">
-              <span className="block text-sm font-black text-emerald-600/80 uppercase mb-2">Estimated Pieces</span>
-              <span className="text-5xl font-black text-emerald-700 tracking-tight">{calculatedQty} <span className="text-xl font-bold opacity-60">pcs</span></span>
-            </div>
-          </div>
-
         </div>
 
+        {/* Step 2: Total Weight */}
+        <div className={`space-y-4 transition-all duration-300 ${unitWeight > 0 ? 'opacity-100' : 'opacity-20 pointer-events-none'}`}>
+          <div className="space-y-1.5">
+            <label className="block text-xs font-black text-amber-500 uppercase tracking-widest">Enter Total Scale Weight (lbs)</label>
+            <input
+              type="number"
+              value={totalWeight}
+              onChange={e => setTotalWeight(e.target.value)}
+              className="w-full bg-slate-800 border-2 border-slate-600 rounded-xl px-4 py-4 text-3xl font-black text-white focus:border-amber-500 focus:outline-none transition-all shadow-inner"
+              placeholder="0.00"
+            />
+          </div>
+
+          <div className="bg-amber-500 rounded-xl p-5 text-center shadow-lg transform active:scale-95 transition-transform cursor-default">
+            <span className="block text-[10px] font-black text-amber-900 uppercase mb-1 tracking-widest">Total Piece Count</span>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-5xl font-black text-slate-900 leading-none">{totalPieces.toLocaleString()}</span>
+              <span className="text-xs font-black text-amber-900 border-2 border-amber-900/20 px-2 py-0.5 rounded-md uppercase">Pieces</span>
+            </div>
+          </div>
+        </div>
+
+        {unitWeight === 0 && (
+          <div className="py-8 text-center bg-slate-800/50 rounded-xl border border-dashed border-slate-700">
+             <p className="text-xs font-bold text-slate-500 italic">Weigh a small sample of screws first...</p>
+          </div>
+        )}
+
+        <div className="flex items-start gap-2 pt-2">
+           <Zap size={14} className="text-amber-500 mt-0.5 shrink-0" />
+           <p className="text-[10px] text-slate-400 leading-tight">
+             For high accuracy on small screws, use a sample of 100 pieces.
+           </p>
+        </div>
       </div>
     </div>
   );

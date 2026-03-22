@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fence-Pro | Superior Fence & Rail</title>
+    
+    <!-- Branding Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Roboto:wght@400;500;700&family=Source+Sans+3:wght@600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+
+<body class="app-theme">
+
+    <!-- ═══ APP WORKSPACE ═══ -->
+    <div class="app-workspace">
+        
+        <!-- ── Sidebar Nav ── -->
+        <aside class="sidebar-app">
+            <div class="sidebar-brand-box">
+                <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp" alt="Superior Logo">
+            </div>
+            
+            <nav class="sidebar-menu">
+                <button class="menu-item active" data-section="dashboard">
+                    <i data-lucide="layout-grid"></i>
+                    <span>DASHBOARD</span>
+                </button>
+                <button class="menu-item" data-section="documents">
+                    <i data-lucide="folder-kanban"></i>
+                    <span>SOP LIBRARY</span>
+                </button>
+                <button class="menu-item" data-section="tools">
+                    <i data-lucide="calculator"></i>
+                    <span>SHOP TOOLS</span>
+                </button>
+                    <button class="menu-item assistant-trigger" data-section="assistant">
+                        <i data-lucide="message-square-quote"></i>
+                        <span>ASK BOB</span>
+                    </button>
+            </nav>
+
+            <div class="sidebar-utils">
+                <a href="https://www.fence360.net/login" target="_blank" class="util-btn" title="Fence360">
+                    <i data-lucide="external-link"></i>
+                </a>
+                <a href="https://live.sosinventory.com/" target="_blank" class="util-btn" title="SOS Inventory">
+                    <i data-lucide="package"></i>
+                </a>
+            </div>
+        </aside>
+
+        <!-- ── Main Area ── -->
+        <div class="app-main">
+            
+            <!-- Top App Bar -->
+            <header class="app-topbar">
+                <div class="topbar-left">
+                    <h2 class="current-module-title oswald-title"><span class="brand-text-accent">FENCE-PRO</span> COMMAND</h2>
+                </div>
+                <div class="topbar-right">
+                    <div class="status-badge">
+                        <span class="status-pulse"></span>
+                        <span id="ai-status-text">FENCE-PRO ACTIVE</span>
+                    </div>
+                    <div class="topbar-clock oswald-title" id="header-date">--:-- --</div>
+                </div>
+            </header>
+
+            <!-- Scrollable Content Viewport -->
+            <div class="app-viewport">
+                
+                <!-- DASHBOARD MODULE -->
+                <section id="section-dashboard" class="module active">
+                    <div class="dashboard-head">
+                        <div class="greeting-box">
+                            <h1 class="oswald-title"><span id="greeting-type">GOOD</span> <span id="greeting-time">SHIFT</span></h1>
+                            <p>ESTABLISHED STANDARDS. SUPERIOR RESULTS.</p>
+                            <div class="session-info">FENCE-PRO CONSOLE // SESSION ACTIVE</div>
+                        </div>
+                    </div>
+
+                    <div class="widget-grid">
+                        <!-- Fast Stats -->
+                        <div class="widget stat-widget maroon">
+                            <span class="w-val" id="stat-quality">100%</span>
+                            <span class="w-label">QUALITY COMPLIANT</span>
+                        </div>
+                        <div class="widget stat-widget gray">
+                            <span class="w-val" id="stat-veteran">20+</span>
+                            <span class="w-label">YRS VETERAN TECH</span>
+                        </div>
+                        <div class="widget stat-widget green">
+                            <span class="w-val" id="stat-bob-status">READY</span>
+                            <span class="w-label">BIG BOB STATUS</span>
+                        </div>
+                        <div class="widget stat-widget beige">
+                            <span class="w-val" id="stat-docs-count">--</span>
+                            <span class="w-label">SYNCED DOCS</span>
+                        </div>
+
+                        <!-- Action Widget -->
+                        <div class="widget big-widget">
+                            <h3 class="widget-title oswald-title">DIRECT COMMANDS</h3>
+                            <div class="button-rack">
+                                <button class="action-btn green-solid" data-navigate="assistant">
+                                    <i data-lucide="message-circle"></i> CHAT WITH BOB
+                                </button>
+                                <button class="action-btn maroon-solid" data-navigate="documents">
+                                    <i data-lucide="library"></i> BROWSE LIBRARY
+                                </button>
+                                <button class="action-btn outline" data-navigate="tools">
+                                    <i data-lucide="check-square"></i> SHIFT CHECKLIST
+                                </button>
+                                <button class="action-btn outline" data-navigate="tools">
+                                    <i data-lucide="box"></i> MATERIAL CALC
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Advisory Widget -->
+                        <div class="widget big-widget">
+                            <h3 class="widget-title oswald-title">OPERATIONAL ADVISORY</h3>
+                            <div class="advisory-feed">
+                                <div class="adv-card">
+                                    <i data-lucide="shield-alert" class="m-icon"></i>
+                                    <div class="adv-info">
+                                        <strong>PPE PROTOCOL</strong>
+                                        <p>Confirming eye and ear protection across all vinyl routing stations.</p>
+                                    </div>
+                                </div>
+                                <div class="adv-card">
+                                    <i data-lucide="truck" class="m-icon"></i>
+                                    <div class="adv-info">
+                                        <strong>LOAD SEQUENCE</strong>
+                                        <p>Trailers must be verified and strapped by 06:30 AM local time.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ASSISTANT MODULE -->
+                <section id="section-assistant" class="module">
+                    <div class="assistant-ui">
+                        <div class="assistant-pane-left">
+                            <div class="bob-card">
+                                <div class="bob-avatar">BD</div>
+                                <h3 class="oswald-title">THE SHOP BOSS</h3>
+                                <p>Big Bob</p>
+                            </div>
+                            <div class="quick-prompts">
+                                <span class="label">QUICK TASKS</span>
+                                <button class="p-btn" data-prompt="Show morning loading sequence.">TRUCK LOADING</button>
+                                <button class="p-btn" data-prompt="What is the vinyl staging color code?">STAGING CODES</button>
+                                <button class="p-btn" data-prompt="What PPE is needed for routing?">PPE REQS</button>
+                            </div>
+                        </div>
+                        <div class="assistant-pane-main">
+                            <div class="chat-header-bar">
+                                <h3 class="oswald-title">VETERAN CONSULTATION</h3>
+                            </div>
+                            <div class="chat-viewport" id="chat-window">
+                                <div class="message-stack" id="chat-messages">
+                                    <div class="message incoming">
+                                        <div class="bubble">
+                                            <strong>Listen up! 👋</strong><br>
+                                            I'm Big Bob. I run this shop and make sure we build 'em right and build 'em safe. What do you need?
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-input-row">
+                                <div class="input-shell">
+                                    <textarea id="message-input" placeholder="Type command here..." rows="1"></textarea>
+                                    <button id="send-button" class="btn-send"><i data-lucide="send"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- LIBRARY MODULE -->
+                <section id="section-documents" class="module">
+                    <header class="module-header">
+                        <h1 class="oswald-title">DOCUMENT LIBRARY</h1>
+                        <div class="utility-search">
+                            <i data-lucide="search"></i>
+                            <input type="text" id="doc-search" placeholder="Filter Superior SOPs...">
+                        </div>
+                    </header>
+                    <div id="documents-grid" class="app-grid"></div>
+                </section>
+
+                <!-- TOOLS MODULE -->
+                <section id="section-tools" class="module">
+                    <header class="module-header">
+                        <h1 class="oswald-title">SHOP TOOLS</h1>
+                    </header>
+                    <div id="tools-grid" class="app-grid"></div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Nav Bar (App Style) -->
+    <nav class="mobile-app-bar">
+        <button class="m-btn active" data-section="dashboard"><i data-lucide="home"></i></button>
+        <button class="m-btn" data-section="documents"><i data-lucide="folder-kanban"></i></button>
+        <button class="m-btn" data-section="tools"><i data-lucide="hammer"></i></button>
+        <button class="m-btn" data-section="assistant"><i data-lucide="message-square"></i></button>
+    </nav>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

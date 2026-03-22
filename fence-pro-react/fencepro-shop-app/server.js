@@ -13,6 +13,26 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+const inventoryFile = path.join(__dirname, 'inventory.json');
+function saveInventory(data) {
+  try {
+    fs.writeFileSync(inventoryFile, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error('Error saving inventory:', err.message);
+  }
+}
+
+function loadInventory() {
+  try {
+    if (fs.existsSync(inventoryFile)) {
+      return JSON.parse(fs.readFileSync(inventoryFile, 'utf8'));
+    }
+  } catch (err) {
+    console.error('Error loading inventory:', err.message);
+  }
+  return null;
+}
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, uploadDir)
@@ -85,10 +105,12 @@ Crew Morning Roles (Departure by 7:20am):
 - Installers: Final set of eyes on material; fetch concrete/unique tools.
 
 Instructions:
-- Always give answers using bullet points if there are steps involved.
+- Always give direct, unformatted answers. DO NOT USE ANY MARKDOWN SYMBOLS (no asterisks, no hashes, no italics, no bold syntax, no backticks). The voice synthesizer reads them out loud and ruins the persona!
+- Speak like a gruff, slightly annoyed shop foreman who values hard work over everything. Use plain text formatting only.
+- If there are steps, use simple dashes or numbered lists without special markdown.
 - If they ask "What should I be doing?", use the current time to suggest the appropriate task from the Daily Rhythm. 
 - If they are missing material, tell them to "Notify the GM immediately."
-- Start EVERY single response with a brief, in-character greeting perfectly suited for a rugged, slightly annoyed shop foreman. (e.g. "Look here," or "Listen up kid,")
+- Start EVERY single response with a brief, in-character greeting perfectly suited for a rugged shop boss. (e.g. "Look here," or "Listen up kid,")
 
 KNOWLEDGE BASE (TECHNICAL SPECS):
 1. ALUMINUM STANDARDS:
@@ -119,7 +141,7 @@ SOP & PROCEDURES:
 You have access to the full "Shop SOP Playbook". If someone asks about a procedure, give it to 'em straight.`;
 
 // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Inventory Data (Master List Ã¢â‚¬â€ updated from shop spreadsheet) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
-const inventory = [
+let inventory = loadInventory() || [
 
   // Ã¢â€â‚¬Ã¢â€â‚¬ Aluminum Hardware Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   { category: 'Aluminum Hardware', sku: '73022006',    name: 'BRACKET-WALL RES/GDN BK - Aluminum Step Joint',           quantity: 0 },
@@ -644,7 +666,7 @@ app.get('/api/inventory/count-sheet', (req, res) => {
 // POST /api/inventory/reconcile
 // Accepts { sku, actualCount, counterName }.
 // Sets absolute stock to the counted value and returns the variance
-// (actualCount Ã¢â‚¬â€œ previousQuantity) so management can investigate.
+// (actualCount – previousQuantity) so management can investigate.
 app.post('/api/inventory/reconcile', (req, res) => {
   const { sku, actualCount, counterName } = req.body;
 
@@ -662,6 +684,8 @@ app.post('/api/inventory/reconcile', (req, res) => {
 
   // Set absolute stock to what was physically counted
   item.quantity = actualCount;
+  item.lastVariance = variance;
+  saveInventory(inventory);
 
   res.json({
     message: `Count reconciled for ${item.name} (${sku}) by ${counterName}`,
@@ -697,8 +721,8 @@ app.post('/api/inventory/add-item', (req, res) => {
   };
 
   inventory.push(newItem);
-  // Re-sort inventory by category nicely
   inventory.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+  saveInventory(inventory);
 
   res.json({ message: 'Item added successfully', item: newItem });
 });
@@ -716,6 +740,7 @@ app.delete('/api/inventory/item/:sku', (req, res) => {
   }
 
   const [removed] = inventory.splice(idx, 1);
+  saveInventory(inventory);
   res.json({ message: `Removed "${removed.name}" (${sku}) from inventory`, sku });
 });
 
@@ -814,11 +839,16 @@ let notCountedItems = [];
 const smtpTransport = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
   port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false,
+  secure: false, // TLS 
   auth: {
     user: process.env.SMTP_USER || '',
     pass: process.env.SMTP_PASS || '',
   },
+  tls: {
+    rejectUnauthorized: false
+  },
+  debug: true,
+  logger: true
 });
 
 const REPORT_EMAILS = [
@@ -1000,11 +1030,15 @@ async function sendCountReport({ category, counterName, countedItems, startTime,
 app.post('/api/inventory/finish-day', async (req, res) => {
   const { countedSkus, category, counterName, sendReport, startTime, finishTime } = req.body;
 
+  console.log(`[Finish Day] Processing ${category} for ${counterName}. SKUs reported: ${countedSkus?.length || 0}`);
+
   if (!category || !counterName) {
     return res.status(400).json({ error: 'category and counterName are required' });
   }
 
   const categoryItems = inventory.filter(i => i.category === category);
+  console.log(`[Finish Day] Found ${categoryItems.length} items in master inventory for category: "${category}"`);
+  
   const countedSet = new Set(countedSkus || []);
 
   // Build variance data for counted items
@@ -1013,8 +1047,8 @@ app.post('/api/inventory/finish-day', async (req, res) => {
     .map(i => ({
       sku: i.sku,
       name: i.name,
-      actualCount: i.quantity, // already updated by reconcile calls
-      variance: 0, // will be overridden below
+      actualCount: i.quantity,
+      variance: i.lastVariance || 0, // Properly read the saved variance!
     }));
 
   // Skipped items

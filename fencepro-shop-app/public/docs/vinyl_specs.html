@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinyl Fence Specifications — Superior Fence & Rail</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --maroon: #821302;
+            --maroon-dark: #5E0E01;
+            --green: #689689;
+            --cream: #F5F3EF;
+            --text-dark: #231F20;
+            --border-light: #D2CFC7;
+        }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            color: var(--text-dark);
+            background: #E8E5DE;
+            line-height: 1.6;
+        }
+
+        .page {
+            max-width: 8.5in;
+            margin: 30px auto;
+            background: white;
+            padding: 60px 70px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            border-radius: 4px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid var(--maroon);
+        }
+
+        .page-header h2 {
+            font-size: 11px;
+            font-weight: 700;
+            color: #821302;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--maroon);
+            margin-bottom: 6px;
+            margin-top: 36px;
+            text-transform: uppercase;
+        }
+
+        h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--maroon-dark);
+            margin-top: 24px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--green);
+            padding-left: 12px;
+        }
+
+        .spec-card {
+            background: var(--cream);
+            padding: 18px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            margin-bottom: 14px;
+        }
+
+        .spec-card strong {
+            color: var(--maroon);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .page-footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 16px;
+            border-top: 2px solid var(--maroon);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--maroon);
+            text-transform: uppercase;
+        }
+
+        .print-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: var(--maroon);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 100;
+            letter-spacing: 1px;
+        }
+
+        .print-btn:hover { background: var(--maroon-dark); }
+
+        @media print {
+            .print-btn { display: none !important; }
+            body { background: white !important; }
+            .page { box-shadow: none !important; margin: 0 !important; }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="print-btn" onclick="window.print()">Print</button>
+    <div class="page">
+        <div class="page-header">
+            <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
+                alt="Superior Fence & Rail" style="height:30px;">
+            <h2>Vinyl Fence Specifications</h2>
+        </div>
+        <h3 class="section-title">Vinyl Standards</h3>
+        <div class="spec-card">
+            <strong>Material: Polyvinyl Chloride (PVC)</strong>
+            <p>High-quality, UV-resistant vinyl. SolarShield™ technology to prevent fading and brittleness.</p>
+        </div>
+        <div class="spec-card">
+            <strong>Wall Thickness</strong>
+            <p>Post thickness: 0.135" to 0.150" depending on style. Rail thickness: 0.080" to 0.120".</p>
+        </div>
+        <div class="spec-card">
+            <strong>Common Styles</strong>
+            <p>Privacy (Tongue & Groove), Semi-Privacy, Picket, and Post-and-Rail.</p>
+        </div>
+        <div class="page-footer">Superior Fence & Rail — Hudson Valley H.Q.</div>
+    </div>
+</body>
+
+</html>
