@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Scale, Hash, RefreshCcw, Zap } from 'lucide-react';
+import { useI18n } from '../i18n';
 
 export default function WeightCalculator() {
+  const { t } = useI18n();
   const [sampleQty, setSampleQty] = useState('50');
   const [sampleWeight, setSampleWeight] = useState('');
   const [totalWeight, setTotalWeight] = useState('');
@@ -27,7 +29,7 @@ export default function WeightCalculator() {
         <div className="flex items-center gap-2">
           <Scale className="text-amber-500" size={18} />
           <h2 className="text-sm font-black uppercase tracking-widest text-slate-200">
-            Screw & Hardware Counter
+            {t('wc_title')}
           </h2>
         </div>
         <button onClick={reset} className="text-slate-500 hover:text-white transition-colors">
@@ -39,7 +41,7 @@ export default function WeightCalculator() {
         {/* Step 1: Small Sample */}
         <div className="grid grid-cols-2 gap-3 pb-4 border-b border-slate-700/50">
           <div className="space-y-1.5">
-            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Sample Size</label>
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">{t('wc_sample_size')}</label>
             <div className="relative">
               <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
               <input
@@ -52,7 +54,7 @@ export default function WeightCalculator() {
             </div>
           </div>
           <div className="space-y-1.5">
-            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Sample Weight (lbs)</label>
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">{t('wc_sample_weight')}</label>
             <input
               type="number"
               value={sampleWeight}
@@ -67,7 +69,7 @@ export default function WeightCalculator() {
         {/* Step 2: Total Weight */}
         <div className={`space-y-4 transition-all duration-300 ${unitWeight > 0 ? 'opacity-100' : 'opacity-20 pointer-events-none'}`}>
           <div className="space-y-1.5">
-            <label className="block text-xs font-black text-amber-500 uppercase tracking-widest">Enter Total Scale Weight (lbs)</label>
+            <label className="block text-xs font-black text-amber-500 uppercase tracking-widest">{t('wc_total_weight')}</label>
             <input
               type="number"
               value={totalWeight}
@@ -78,24 +80,24 @@ export default function WeightCalculator() {
           </div>
 
           <div className="bg-amber-500 rounded-xl p-5 text-center shadow-lg transform active:scale-95 transition-transform cursor-default">
-            <span className="block text-[10px] font-black text-amber-900 uppercase mb-1 tracking-widest">Total Piece Count</span>
+            <span className="block text-[10px] font-black text-amber-900 uppercase mb-1 tracking-widest">{t('wc_total_pieces')}</span>
             <div className="flex items-center justify-center gap-2">
               <span className="text-5xl font-black text-slate-900 leading-none">{totalPieces.toLocaleString()}</span>
-              <span className="text-xs font-black text-amber-900 border-2 border-amber-900/20 px-2 py-0.5 rounded-md uppercase">Pieces</span>
+              <span className="text-xs font-black text-amber-900 border-2 border-amber-900/20 px-2 py-0.5 rounded-md uppercase">{t('wc_pieces')}</span>
             </div>
           </div>
         </div>
 
         {unitWeight === 0 && (
           <div className="py-8 text-center bg-slate-800/50 rounded-xl border border-dashed border-slate-700">
-             <p className="text-xs font-bold text-slate-500 italic">Weigh a small sample of screws first...</p>
+             <p className="text-xs font-bold text-slate-500 italic">{t('wc_hint')}</p>
           </div>
         )}
 
         <div className="flex items-start gap-2 pt-2">
            <Zap size={14} className="text-amber-500 mt-0.5 shrink-0" />
            <p className="text-[10px] text-slate-400 leading-tight">
-             For high accuracy on small screws, use a sample of 100 pieces.
+             {t('wc_tip')}
            </p>
         </div>
       </div>

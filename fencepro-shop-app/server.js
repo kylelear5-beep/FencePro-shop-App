@@ -2389,7 +2389,8 @@ let documentCategories = [
       { id: 'vinyl-specs', name: 'Vinyl Fence Specifications', type: 'html', url: '/docs/vinyl_specs.html', status: 'current' },
       { id: 'aluminum-specs', name: 'Aluminum Fence Specifications', type: 'html', url: '/docs/aluminum_specs.html', status: 'current' },
       { id: 'chain-link-guide', name: 'Chain Link Fence Complete Guide', type: 'html', url: '/docs/chain_link_specs.html', status: 'current' },
-      { id: 'chain-link-fittings-guide', name: 'Chain Link Fittings Size Guide', type: 'html', url: '/docs/chain_link_fittings.html', status: 'current' }
+      { id: 'chain-link-fittings-guide', name: 'Chain Link Fittings Size Guide', type: 'html', url: '/docs/chain_link_fittings.html', status: 'current' },
+      { id: 'chain-link-installation', name: 'Chain Link Installation Guide', type: 'html', url: '/docs/chain_link_installation.html', status: 'current' }
     ]
   }
 ];

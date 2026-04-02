@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Sun, Cloud, CloudRain, CloudLightning, Wind, Thermometer, Calendar } from 'lucide-react';
+import { useI18n } from '../i18n';
 
 const LAT = 41.9270; // Kingston, NY area
 const LON = -73.9974;
 
 export default function WeatherWidget() {
+  const { t } = useI18n();
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -34,11 +36,11 @@ export default function WeatherWidget() {
     return <Cloud className="text-slate-400" />;
   };
 
-  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dayNames = t('wx_days');
 
   if (loading) return (
     <div className="w-full h-full bg-slate-900 animate-pulse flex items-center justify-center rounded-2xl">
-      <span className="text-slate-700 font-bold uppercase tracking-widest text-xs">Syncing Satellite...</span>
+      <span className="text-slate-700 font-bold uppercase tracking-widest text-xs">{t('wx_syncing')}</span>
     </div>
   );
 
@@ -56,14 +58,14 @@ export default function WeatherWidget() {
 
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-1">LOCAL CONDITIONS // HUDSON VALLEY</h2>
+          <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-1">{t('wx_title')}</h2>
           <div className="flex items-center gap-4">
             <span className="text-5xl font-black tracking-tighter">{Math.round(current.temperature_2m)}°</span>
             <div>
-              <p className="text-sm font-bold text-slate-200">Feels like {Math.round(current.apparent_temperature)}°</p>
+              <p className="text-sm font-bold text-slate-200">{t('wx_feels_like')} {Math.round(current.apparent_temperature)}°</p>
               <div className="flex items-center gap-2 text-xs font-bold text-amber-500 uppercase">
                 {getWeatherIcon(current.weather_code)}
-                <span>STATION ACTIVE</span>
+                <span>{t('wx_station_active')}</span>
               </div>
             </div>
           </div>
@@ -78,18 +80,18 @@ export default function WeatherWidget() {
       <div className="grid grid-cols-2 gap-3 mb-6">
         <div className="bg-slate-800/50 p-2.5 rounded-lg border border-slate-700/50 flex items-center gap-2">
            <Thermometer size={14} className="text-slate-500" />
-           <span className="text-[10px] uppercase font-bold text-slate-400">Low: {Math.round(daily.temperature_2m_min[0])}°</span>
+           <span className="text-[10px] uppercase font-bold text-slate-400">{t('wx_low')} {Math.round(daily.temperature_2m_min[0])}°</span>
         </div>
         <div className="bg-slate-800/50 p-2.5 rounded-lg border border-slate-700/50 flex items-center gap-2">
            <CloudRain size={14} className="text-blue-500" />
-           <span className="text-[10px] uppercase font-bold text-slate-400">Rain: {daily.precipitation_probability_max[0]}%</span>
+           <span className="text-[10px] uppercase font-bold text-slate-400">{t('wx_rain')} {daily.precipitation_probability_max[0]}%</span>
         </div>
       </div>
 
       {/* Forecast */}
       <div>
         <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-3 flex items-center gap-2">
-           <Calendar size={12} /> 3-DAY FORECAST
+           <Calendar size={12} /> {t('wx_forecast')}
         </h3>
         <div className="grid grid-cols-3 gap-2">
           {daily.time.map((date, i) => {

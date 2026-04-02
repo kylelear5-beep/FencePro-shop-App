@@ -22,17 +22,21 @@ import {
   ClipboardList,
   Upload,
   X,
-  Calendar
+  Calendar,
+  Globe
 } from 'lucide-react';
 import ChainLinkCalculator from './components/ChainLinkCalc';
 import InventoryManager from './components/InventoryManager';
 import BlindCountBoard from './components/BlindCountBoard';
 import WeightCalculator from './components/WeightCalculator';
 import WeatherWidget from './components/WeatherWidget';
+import { useI18n } from './i18n';
 
 // ── APP COMPONENTS ──
 
-const Sidebar = ({ activeSection, setActiveSection }) => (
+const Sidebar = ({ activeSection, setActiveSection }) => {
+  const { t } = useI18n();
+  return (
   <aside className="sidebar-app">
     <div className="sidebar-brand-box">
       <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp" alt="Superior Logo" />
@@ -44,63 +48,66 @@ const Sidebar = ({ activeSection, setActiveSection }) => (
         onClick={() => setActiveSection('dashboard')}
       >
         <LayoutGrid />
-        <span>DASHBOARD</span>
+        <span>{t('sidebar_dashboard')}</span>
       </button>
       <button
         className={`menu-item ${activeSection === 'documents' ? 'active' : ''}`}
         onClick={() => setActiveSection('documents')}
       >
         <FolderKanban />
-        <span>SOP LIBRARY</span>
+        <span>{t('sidebar_sop_library')}</span>
       </button>
       <button
         className={`menu-item ${activeSection === 'inventory' ? 'active' : ''}`}
         onClick={() => setActiveSection('inventory')}
       >
         <Package />
-        <span>INVENTORY</span>
+        <span>{t('sidebar_inventory')}</span>
       </button>
       <button
         className={`menu-item ${activeSection === 'tools' ? 'active' : ''}`}
         onClick={() => setActiveSection('tools')}
       >
         <Calculator />
-        <span>SHOP TOOLS</span>
+        <span>{t('sidebar_shop_tools')}</span>
       </button>
       <button
         className={`menu-item assistant-trigger ${activeSection === 'assistant' ? 'active' : ''}`}
         onClick={() => setActiveSection('assistant')}
       >
         <MessageSquareQuote />
-        <span>ASK BOB</span>
+        <span>{t('sidebar_ask_bob')}</span>
       </button>
       <button
         className={`menu-item ${activeSection === 'yardcrew' ? 'active' : ''}`}
         onClick={() => setActiveSection('yardcrew')}
       >
         <ClipboardList />
-        <span>YARD CREW</span>
+        <span>{t('sidebar_yard_crew')}</span>
       </button>
 
       <div className="menu-divider" style={{ borderTop: '1px solid var(--border-color)', margin: '10px 0', opacity: 0.2 }}></div>
 
       <a href="https://live.sosinventory.com/" target="_blank" rel="noreferrer" className="menu-item">
         <img src="https://www.google.com/s2/favicons?domain=sosinventory.com&sz=128" alt="SOS Inventory" style={{ width: '24px', height: '24px', borderRadius: '4px' }} />
-        <span>SOS INVENTORY</span>
+        <span>{t('sidebar_sos_inventory')}</span>
       </a>
       <a href="https://www.fence360.net/login" target="_blank" rel="noreferrer" className="menu-item">
         <img src="https://www.google.com/s2/favicons?domain=fence360.net&sz=128" alt="Fence 360" style={{ width: '24px', height: '24px', borderRadius: '4px' }} />
-        <span>FENCE 360</span>
+        <span>{t('sidebar_fence360')}</span>
       </a>
     </nav>
   </aside>
-);
+  );
+};
 
-const Topbar = ({ sectionTitle, aiStatus, time, weather }) => (
+const Topbar = ({ sectionTitle, aiStatus, time, weather }) => {
+  const { t, lang, toggleLang } = useI18n();
+  return (
   <header className="app-topbar">
     <div className="topbar-left">
       <h2 className="current-module-title oswald-title">
-        <span className="brand-text-accent">FENCE-PRO</span> {sectionTitle}
+        <span className="brand-text-accent">{t('topbar_fence_pro')}</span> {sectionTitle}
       </h2>
     </div>
     <div className="topbar-right">
@@ -108,73 +115,84 @@ const Topbar = ({ sectionTitle, aiStatus, time, weather }) => (
         <div className="topbar-weather">
           <div className="weather-item">
             <span className="weather-val">{Math.round(weather.current.temperature_2m)}°</span>
-            <span className="weather-label">TEMP</span>
+            <span className="weather-label">{t('topbar_temp')}</span>
           </div>
           <div className="weather-item hidden-mobile">
             <span className="weather-val">{Math.round(weather.current.wind_speed_10m)}</span>
-            <span className="weather-label">MPH</span>
+            <span className="weather-label">{t('topbar_mph')}</span>
           </div>
         </div>
       )}
+      <button
+        onClick={toggleLang}
+        className="status-badge"
+        style={{ cursor: 'pointer', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg-card)' }}
+        title={lang === 'en' ? 'Cambiar a Español' : 'Switch to English'}
+      >
+        <Globe size={14} />
+        <span style={{ fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.1em' }}>{t('lang_label')}</span>
+      </button>
       <div className="status-badge">
         <span className="status-pulse" style={{
           backgroundColor: aiStatus === 'ACTIVE' ? '#10b981' : '#f59e0b',
           boxShadow: aiStatus === 'ACTIVE' ? '0 0 8px rgba(16, 185, 129, 0.4)' : 'none'
         }}></span>
-        <span id="ai-status-text">FENCE-PRO {aiStatus}</span>
+        <span id="ai-status-text">{t('topbar_fence_pro')} {aiStatus}</span>
       </div>
       <div className="topbar-clock oswald-title">{time}</div>
     </div>
   </header>
-);
+  );
+};
 
 const Dashboard = ({ setActiveSection, docCount, aiStatus }) => {
   const [panelTab, setPanelTab] = useState('calendar');
+  const { t } = useI18n();
 
   return (
   <div className="dashboard-content">
     <div className="dashboard-head">
       <div className="greeting-box">
-        <h1 className="oswald-title">GOOD AFTERNOON</h1>
-        <p>ESTABLISHED STANDARDS. SUPERIOR RESULTS.</p>
-        <div className="session-info">FENCE-PRO CONSOLE // SESSION ACTIVE</div>
+        <h1 className="oswald-title">{t('dash_good_afternoon')}</h1>
+        <p>{t('dash_tagline')}</p>
+        <div className="session-info">{t('dash_session_info')}</div>
       </div>
     </div>
 
     <div className="widget-grid">
       <div className="widget stat-widget maroon">
         <span className="w-val">100%</span>
-        <span className="w-label">QUALITY COMPLIANT</span>
+        <span className="w-label">{t('dash_quality_compliant')}</span>
       </div>
       <div className="widget stat-widget gray">
         <span className="w-val">20+</span>
-        <span className="w-label">YRS VETERAN TECH</span>
+        <span className="w-label">{t('dash_yrs_veteran_tech')}</span>
       </div>
       <div className="widget stat-widget green">
         <span className="w-val" style={{ color: aiStatus === 'ACTIVE' ? '#689689' : '#821302' }}>
-          {aiStatus === 'ACTIVE' ? 'READY' : 'OFFLINE'}
+          {aiStatus === 'ACTIVE' ? t('dash_ready') : t('dash_offline')}
         </span>
-        <span className="w-label">BIG BOB STATUS</span>
+        <span className="w-label">{t('dash_big_bob_status')}</span>
       </div>
       <div className="widget stat-widget beige">
         <span className="w-val">{docCount}</span>
-        <span className="w-label">SYNCED DOCS</span>
+        <span className="w-label">{t('dash_synced_docs')}</span>
       </div>
 
       <div className="widget big-widget">
-        <h3 className="widget-title oswald-title">DIRECT COMMANDS</h3>
+        <h3 className="widget-title oswald-title">{t('dash_direct_commands')}</h3>
         <div className="button-rack">
           <button className="action-btn green-solid" onClick={() => setActiveSection('assistant')}>
-            <MessageCircle size={18} /> CHAT WITH BOB
+            <MessageCircle size={18} /> {t('dash_chat_with_bob')}
           </button>
           <button className="action-btn maroon-solid" onClick={() => setActiveSection('documents')}>
-            <Files size={18} /> BROWSE LIBRARY
+            <Files size={18} /> {t('dash_browse_library')}
           </button>
           <button className="action-btn outline" onClick={() => setActiveSection('yardcrew')}>
-            <ClipboardList size={18} /> YARD CREW
+            <ClipboardList size={18} /> {t('dash_yard_crew')}
           </button>
           <button className="action-btn outline" onClick={() => setActiveSection('tools')}>
-            <Calculator size={18} /> MATERIAL CALC
+            <Calculator size={18} /> {t('dash_material_calc')}
           </button>
         </div>
       </div>
@@ -185,13 +203,13 @@ const Dashboard = ({ setActiveSection, docCount, aiStatus }) => {
             className={`flex-1 py-3 text-sm font-black uppercase tracking-wider transition-colors ${panelTab === 'calendar' ? 'bg-gray-900 text-white' : 'text-gray-400 hover:bg-gray-200'}`}
             onClick={() => setPanelTab('calendar')}
           >
-            SHOP CALENDAR
+            {t('dash_shop_calendar')}
           </button>
           <button 
             className={`flex-1 py-3 text-sm font-black uppercase tracking-wider transition-colors ${panelTab === 'fence360' ? 'bg-amber-600 text-white' : 'text-gray-400 hover:bg-gray-200'}`}
             onClick={() => setPanelTab('fence360')}
           >
-            FENCE 360 CRM
+            {t('dash_fence_360_crm')}
           </button>
         </div>
         <div className="flex-1 w-full relative" style={{ minHeight: '450px' }}>
@@ -224,8 +242,9 @@ const Dashboard = ({ setActiveSection, docCount, aiStatus }) => {
 };
 
 const Assistant = ({ aiStatus, pendingMessage, clearPendingMessage }) => {
+  const { t } = useI18n();
   const [messages, setMessages] = useState([
-    { role: 'assistant', text: "Listen up! 👋 I'm Big Bob. I run this shop and make sure we build 'em right and build 'em safe. What do you need?" }
+    { role: 'assistant', text: t('asst_intro') }
   ]);
   const [input, setInput] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -282,13 +301,13 @@ const Assistant = ({ aiStatus, pendingMessage, clearPendingMessage }) => {
       });
 
       const data = await response.json();
-      const reply = data.reply || data.error || 'System error. Recalibrate and try again.';
+      const reply = data.reply || data.error || t('asst_system_error');
       setMessages(prev => [...prev, { role: 'assistant', text: reply }]);
       
       // Auto-read if it's an SOP explanation (optional improvement)
       // speak(reply); 
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', text: 'No handshake with Superior Core. Connection failed.' }]);
+      setMessages(prev => [...prev, { role: 'assistant', text: t('asst_connection_failed') }]);
     }
   };
 
@@ -305,26 +324,26 @@ const Assistant = ({ aiStatus, pendingMessage, clearPendingMessage }) => {
       <div className="assistant-pane-left">
         <div className="bob-card">
           <div className="bob-avatar" onClick={() => speak(messages[messages.length-1].text)}>BB</div>
-          <h3 className="oswald-title">THE SHOP BOSS</h3>
-          <p>Big Bob</p>
-          {isSpeaking && <div className="speaking-indicator">VOICE ACTIVE</div>}
+          <h3 className="oswald-title">{t('asst_shop_boss')}</h3>
+          <p>{t('asst_big_bob')}</p>
+          {isSpeaking && <div className="speaking-indicator">{t('asst_voice_active')}</div>}
         </div>
         <div className="quick-prompts">
-          <span className="label">QUICK TASKS</span>
-          <button className="p-btn" onClick={() => handleSend("Show morning loading sequence.")}>TRUCK LOADING</button>
-          <button className="p-btn" onClick={() => handleSend("What is the vinyl staging color code?")}>STAGING CODES</button>
-          <button className="p-btn" onClick={() => handleSend("What PPE is needed for routing?")}>PPE REQS</button>
+          <span className="label">{t('asst_quick_tasks')}</span>
+          <button className="p-btn" onClick={() => handleSend(t('asst_prompt_loading'))}>{t('asst_truck_loading')}</button>
+          <button className="p-btn" onClick={() => handleSend(t('asst_prompt_staging'))}>{t('asst_staging_codes')}</button>
+          <button className="p-btn" onClick={() => handleSend(t('asst_prompt_ppe'))}>{t('asst_ppe_reqs')}</button>
         </div>
       </div>
       <div className="assistant-pane-main">
         <div className="chat-header-bar">
-          <h3 className="oswald-title">VETERAN CONSULTATION</h3>
+          <h3 className="oswald-title">{t('asst_veteran_consultation')}</h3>
            <button 
             className="action-btn outline btn-sm" 
             onClick={() => window.speechSynthesis.cancel()}
             style={{ fontSize: '10px', height: '24px' }}
           >
-            MUTE BOB
+            {t('asst_mute_bob')}
           </button>
         </div>
         <div className="chat-viewport">
@@ -350,7 +369,7 @@ const Assistant = ({ aiStatus, pendingMessage, clearPendingMessage }) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
-              placeholder="Type command here..."
+              placeholder={t('asst_type_command')}
               rows="1"
             />
             <button className="btn-send" onClick={() => handleSend()}><Send size={18} /></button>
@@ -374,9 +393,11 @@ function App() {
   const [pendingBobMessage, setPendingBobMessage] = useState(null);
   const [weather, setWeather] = useState(null);
 
+  const { t } = useI18n();
+
   // Document Upload State
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [uploadData, setUploadData] = useState({ name: '', category: 'Standard Operating Procedures', file: null });
+  const [uploadData, setUploadData] = useState({ name: '', category: t('doc_cat_sop'), file: null });
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -458,7 +479,7 @@ function App() {
         setDocCount(flatDocs.length);
       }
       setShowUploadModal(false);
-      setUploadData({ name: '', category: 'Standard Operating Procedures', file: null });
+      setUploadData({ name: '', category: t('doc_cat_sop'), file: null });
     } catch (err) {
       console.error('Upload failed:', err);
     } finally {
@@ -468,14 +489,14 @@ function App() {
 
   const getSectionTitle = () => {
     switch (activeSection) {
-      case 'dashboard': return 'COMMAND';
-      case 'documents': return 'LIBRARY';
-      case 'inventory': return 'LOGISTICS';
-      case 'tools': return 'TOOLS';
-      case 'assistant': return 'CONSULTATION';
-      case 'yardcrew': return 'DIGITAL CLIPBOARD';
-      case 'calendar': return 'SCHEDULE';
-      default: return 'COMMAND';
+      case 'dashboard': return t('section_command');
+      case 'documents': return t('section_library');
+      case 'inventory': return t('section_logistics');
+      case 'tools': return t('section_tools');
+      case 'assistant': return t('section_consultation');
+      case 'yardcrew': return t('section_digital_clipboard');
+      case 'calendar': return t('section_schedule');
+      default: return t('section_command');
     }
   };
 
@@ -506,9 +527,9 @@ function App() {
           {activeSection === 'yardcrew' && (
             <div className="module active" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div className="module-header">
-                <h1 className="oswald-title">YARD CREW DIGITAL CLIPBOARD</h1>
+                <h1 className="oswald-title">{t('yard_digital_clipboard')}</h1>
               </div>
-              <BlindCountBoard counterName="Yard Supervisor" />
+              <BlindCountBoard counterName={t('yard_supervisor')} />
             </div>
           )}
 
@@ -521,14 +542,14 @@ function App() {
           {activeSection === 'documents' && (
             <div className="module active">
               <div className="module-header">
-                <h1 className="oswald-title">DOCUMENT LIBRARY</h1>
+                <h1 className="oswald-title">{t('doc_document_library')}</h1>
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <button className="action-btn green-solid" onClick={() => setShowUploadModal(true)}>
-                    <Upload size={18} /> UPLOAD DOC
+                    <Upload size={18} /> {t('doc_upload_doc')}
                   </button>
                   <div className="utility-search">
                     <Search size={18} />
-                    <input type="text" placeholder="Filter Superior SOPs..." />
+                    <input type="text" placeholder={t('doc_filter_sops')} />
                   </div>
                 </div>
               </div>
@@ -539,18 +560,18 @@ function App() {
                       <Files color="#821302" size={24} onClick={() => window.open(doc.url, '_blank')} />
                       <div style={{ flex: 1 }} onClick={() => window.open(doc.url, '_blank')}>
                         <strong style={{ textTransform: 'uppercase', fontFamily: 'var(--font-heading)', fontSize: '0.9rem' }}>{doc.name}</strong>
-                        <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '2px' }}>SOP REFERENCE • {doc.status}</p>
+                        <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '2px' }}>{t('doc_sop_reference')} • {doc.status}</p>
                       </div>
                       <button 
                         className="action-btn outline btn-sm" 
                         style={{ fontSize: '10px', padding: '4px 8px' }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          setPendingBobMessage(`Explain the ${doc.name} to me like I'm new here.`);
+                          setPendingBobMessage(t('doc_explain_prompt', { name: doc.name }));
                           setActiveSection('assistant');
                         }}
                       >
-                        ASK BOB
+                        {t('doc_ask_bob')}
                       </button>
                       <ArrowRight size={16} color="#ccc" onClick={() => window.open(doc.url, '_blank')} />
                     </div>
@@ -563,36 +584,36 @@ function App() {
                 <div className="modal-overlay">
                   <div className="modal-content" style={{ maxWidth: '500px' }}>
                     <div className="modal-header">
-                      <h2 className="oswald-title">UPLOAD NEW DOCUMENT</h2>
+                      <h2 className="oswald-title">{t('doc_upload_new')}</h2>
                       <button className="icon-btn" onClick={() => setShowUploadModal(false)}>
                         <X size={24} />
                       </button>
                     </div>
                     <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                       <div className="form-group">
-                        <label>DOCUMENT NAME</label>
+                        <label>{t('doc_document_name')}</label>
                         <input
                           type="text"
                           required
                           value={uploadData.name}
                           onChange={e => setUploadData({ ...uploadData, name: e.target.value })}
-                          placeholder="e.g. New Safety Protocol"
+                          placeholder={t('doc_name_placeholder')}
                         />
                       </div>
                       <div className="form-group">
-                        <label>CATEGORY</label>
+                        <label>{t('doc_category')}</label>
                         <select
                           value={uploadData.category}
                           onChange={e => setUploadData({ ...uploadData, category: e.target.value })}
                         >
-                          <option value="Standard Operating Procedures">Standard Operating Procedures</option>
-                          <option value="Training & Onboarding">Training & Onboarding</option>
-                          <option value="CMM Documents">CMM Documents</option>
-                          <option value="Reference">Reference</option>
+                          <option value={t('doc_cat_sop')}>{t('doc_cat_sop')}</option>
+                          <option value={t('doc_cat_training')}>{t('doc_cat_training')}</option>
+                          <option value={t('doc_cat_cmm')}>{t('doc_cat_cmm')}</option>
+                          <option value={t('doc_cat_reference')}>{t('doc_cat_reference')}</option>
                         </select>
                       </div>
                       <div className="form-group">
-                        <label>FILE</label>
+                        <label>{t('doc_file')}</label>
                         <input
                           type="file"
                           required
@@ -601,10 +622,10 @@ function App() {
                       </div>
                       <div className="button-rack" style={{ justifyContent: 'flex-end', marginTop: '10px' }}>
                         <button type="button" className="action-btn outline" onClick={() => setShowUploadModal(false)}>
-                          CANCEL
+                          {t('doc_cancel')}
                         </button>
                         <button type="submit" className="action-btn green-solid" disabled={uploading}>
-                          {uploading ? 'UPLOADING...' : 'UPLOAD'}
+                          {uploading ? t('doc_uploading') : t('doc_upload')}
                         </button>
                       </div>
                     </form>
@@ -619,7 +640,7 @@ function App() {
               {!activeTool ? (
                 <>
                   <div className="module-header">
-                    <h1 className="oswald-title">SHOP TOOLS</h1>
+                    <h1 className="oswald-title">{t('tools_shop_tools')}</h1>
                   </div>
                   <div className="app-grid">
                     {tools.map((tool, i) => (

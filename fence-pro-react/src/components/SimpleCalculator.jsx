@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Calculator } from 'lucide-react';
+import { useI18n } from '../i18n';
 
 export default function SimpleCalculator() {
+  const { t } = useI18n();
   const [display, setDisplay] = useState('0');
   const [previousVal, setPreviousVal] = useState(null);
   const [operator, setOperator] = useState(null);
@@ -78,7 +80,7 @@ export default function SimpleCalculator() {
     <div className="bg-gray-900 border-2 border-gray-800 rounded-xl overflow-hidden shadow-lg h-full flex flex-col">
       <div className="bg-gray-800 px-4 py-3 flex items-center justify-between">
         <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-          <Calculator size={16} className="text-blue-400" /> Standard
+          <Calculator size={16} className="text-blue-400" /> {t('sc_title')}
         </h2>
       </div>
       <div className="p-5 flex-grow flex flex-col">

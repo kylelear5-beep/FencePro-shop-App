@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Package, Hash, Ruler, Hammer, ChevronLeft } from 'lucide-react';
+import { useI18n } from '../i18n';
 
 const ChainLinkCalculator = ({ onBack }) => {
+  const { t } = useI18n();
   const [footage, setFootage] = useState(100);
   const [height, setHeight] = useState(6);
   const [corners, setCorners] = useState(2);
@@ -60,17 +62,17 @@ const ChainLinkCalculator = ({ onBack }) => {
         <button onClick={onBack} className="action-btn outline" style={{ height: '40px', width: '40px', padding: 0 }}>
           <ChevronLeft size={20} />
         </button>
-        <h2 className="oswald-title" style={{ fontSize: '1.4rem' }}>CHAIN LINK MATERIAL CALCULATOR</h2>
+        <h2 className="oswald-title" style={{ fontSize: '1.4rem' }}>{t('calc_title')}</h2>
       </header>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
         {/* INPUTS */}
         <div className="widget" style={{ padding: '25px' }}>
-          <h3 className="widget-title oswald-title" style={{ fontSize: '1rem' }}>PROJECT SPECS</h3>
+          <h3 className="widget-title oswald-title" style={{ fontSize: '1rem' }}>{t('calc_project_specs')}</h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             <div className="input-group">
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '800', marginBottom: '5px' }}>TOTAL LINEAR FOOTAGE</label>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '800', marginBottom: '5px' }}>{t('calc_total_footage')}</label>
               <div className="input-shell" style={{ border: '1px solid var(--border-color)', background: '#f9f9f9' }}>
                 <input
                   type="number"
@@ -83,7 +85,7 @@ const ChainLinkCalculator = ({ onBack }) => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
               <div className="input-group">
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '800', marginBottom: '5px' }}>HEIGHT (FT)</label>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '800', marginBottom: '5px' }}>{t('calc_height')}</label>
                 <select
                   value={height}
                   onChange={(e) => setHeight(e.target.value)}
@@ -95,7 +97,7 @@ const ChainLinkCalculator = ({ onBack }) => {
                 </select>
               </div>
               <div className="input-group">
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '800', marginBottom: '5px' }}>POST SPACING (FT)</label>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '800', marginBottom: '5px' }}>{t('calc_post_spacing')}</label>
                 <input
                   type="number"
                   value={spacing}
@@ -107,7 +109,7 @@ const ChainLinkCalculator = ({ onBack }) => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
               <div className="input-group">
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '800', marginBottom: '5px' }}>ENDS / CORNERS</label>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '800', marginBottom: '5px' }}>{t('calc_ends_corners')}</label>
                 <input
                   type="number"
                   value={corners}
@@ -116,7 +118,7 @@ const ChainLinkCalculator = ({ onBack }) => {
                 />
               </div>
               <div className="input-group">
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '800', marginBottom: '5px' }}>GATES (SING/DBL)</label>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '800', marginBottom: '5px' }}>{t('calc_gates')}</label>
                 <div style={{ display: 'flex', gap: '5px' }}>
                   <input type="number" value={singleGates} onChange={(e) => setSingleGates(e.target.value)} style={{ width: '50%', padding: '10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
                   <input type="number" value={doubleGates} onChange={(e) => setDoubleGates(e.target.value)} style={{ width: '50%', padding: '10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
@@ -128,36 +130,36 @@ const ChainLinkCalculator = ({ onBack }) => {
 
         {/* RESULTS */}
         <div className="widget green" style={{ padding: '25px', position: 'relative' }}>
-          <h3 className="widget-title oswald-title" style={{ fontSize: '1rem', borderBottomColor: 'var(--superior-green)' }}>BOM ESTIMATE</h3>
+          <h3 className="widget-title oswald-title" style={{ fontSize: '1rem', borderBottomColor: 'var(--superior-green)' }}>{t('calc_bom')}</h3>
 
           <div className="results-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
             <div className="stat-widget gray" style={{ boxIcons: 'none', border: 'none', padding: '15px', background: 'var(--bg-app)' }}>
               <span className="w-val" style={{ fontSize: '1.5rem' }}>{results.fabricRolls}</span>
-              <span className="w-label">50' ROLLS</span>
+              <span className="w-label">{t('calc_rolls')}</span>
             </div>
             <div className="stat-widget gray" style={{ boxIcons: 'none', border: 'none', padding: '15px', background: 'var(--bg-app)' }}>
               <span className="w-val" style={{ fontSize: '1.5rem' }}>{results.linePosts}</span>
-              <span className="w-label">LINE POSTS</span>
+              <span className="w-label">{t('calc_line_posts')}</span>
             </div>
             <div className="stat-widget gray" style={{ boxIcons: 'none', border: 'none', padding: '15px', background: 'var(--bg-app)' }}>
               <span className="w-val" style={{ fontSize: '1.5rem' }}>{results.terminalPosts}</span>
-              <span className="w-label">TERMINAL POSTS</span>
+              <span className="w-label">{t('calc_terminal_posts')}</span>
             </div>
             <div className="stat-widget gray" style={{ boxIcons: 'none', border: 'none', padding: '15px', background: 'var(--bg-app)' }}>
               <span className="w-val" style={{ fontSize: '1.5rem' }}>{results.topRails}</span>
-              <span className="w-label">21' TOP RAILS</span>
+              <span className="w-label">{t('calc_top_rails')}</span>
             </div>
           </div>
 
           <div style={{ marginTop: '20px', borderTop: '1px solid var(--border-color)', paddingTop: '15px' }}>
-            <h4 className="oswald-title" style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '10px' }}>FITTINGS LIST</h4>
+            <h4 className="oswald-title" style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '10px' }}>{t('calc_fittings')}</h4>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px', fontSize: '0.8rem' }}>
-              <div>• {results.fittings.tensionBands} Tension Bands</div>
-              <div>• {results.fittings.braceBands} Brace Bands</div>
-              <div>• {results.fittings.postCaps} Post Caps</div>
-              <div>• {results.fittings.railEnds} Rail Ends</div>
-              <div>• {results.fittings.loopCaps} Loop Caps</div>
-              <div>• {results.fittings.tieWires} Tie Wires (6")</div>
+              <div>• {results.fittings.tensionBands} {t('calc_tension_bands')}</div>
+              <div>• {results.fittings.braceBands} {t('calc_brace_bands')}</div>
+              <div>• {results.fittings.postCaps} {t('calc_post_caps')}</div>
+              <div>• {results.fittings.railEnds} {t('calc_rail_ends')}</div>
+              <div>• {results.fittings.loopCaps} {t('calc_loop_caps')}</div>
+              <div>• {results.fittings.tieWires} {t('calc_tie_wires')}</div>
             </div>
           </div>
         </div>

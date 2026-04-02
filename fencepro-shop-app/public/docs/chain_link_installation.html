@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chain-Link Fence &amp; Gate Installation — Superior Fence &amp; Rail</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --maroon: #821302;
+            --maroon-dark: #5E0E01;
+            --green: #689689;
+            --cream: #F5F3EF;
+            --text-dark: #231F20;
+            --border-light: #D2CFC7;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            color: var(--text-dark);
+            background: #E8E5DE;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* ── Page shell ── */
+        .page {
+            max-width: 8.5in;
+            margin: 30px auto;
+            background: white;
+            padding: 60px 70px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid var(--maroon);
+        }
+
+        .page-header h2 {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--maroon);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .page-num {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--maroon);
+            opacity: 0.15;
+        }
+
+        .page-footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 16px;
+            border-top: 2px solid var(--maroon);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--maroon);
+            text-transform: uppercase;
+        }
+
+        /* ── Typography ── */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--maroon);
+            margin-bottom: 6px;
+            margin-top: 36px;
+            text-transform: uppercase;
+        }
+
+        .section-banner {
+            background: var(--text-dark);
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 20px 0 16px;
+        }
+
+        .section-banner-num {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .section-banner-num .num {
+            background: var(--maroon);
+            color: white;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 16px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--maroon-dark);
+            margin-top: 24px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--green);
+            padding-left: 12px;
+        }
+
+        .important-note {
+            background: #FFF9C4;
+            border: 1px solid #FBC02D;
+            padding: 14px 18px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0;
+        }
+
+        .spec-card {
+            background: var(--cream);
+            padding: 18px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            margin-bottom: 14px;
+        }
+
+        .spec-card strong {
+            color: var(--maroon);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        hr.divider {
+            border: none;
+            border-top: 1px solid var(--border-light);
+            margin: 30px 0;
+        }
+
+        /* ── Check-list items (page 1 parts, page 2 qty) ── */
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .check-item:last-child { border-bottom: none; }
+
+        .check-box {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-light);
+            border-radius: 3px;
+            margin-top: 2px;
+        }
+
+        .check-item .part-id {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            background: var(--maroon);
+            color: white;
+            font-weight: 800;
+            font-size: 12px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .check-item .part-info {
+            flex: 1;
+        }
+
+        .check-item .part-name {
+            font-weight: 700;
+            color: var(--maroon-dark);
+        }
+
+        .check-item .part-desc {
+            font-size: 13px;
+            color: #555;
+            margin-top: 2px;
+        }
+
+        /* ── Two-column parts grid (page 2) ── */
+        .parts-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 30px;
+        }
+
+        .parts-col {
+            /* column of check-items */
+        }
+
+        /* ── Step cards ── */
+        .step {
+            background: var(--cream);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 16px 18px 16px 56px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .step-num {
+            position: absolute;
+            left: 14px;
+            top: 14px;
+            width: 30px;
+            height: 30px;
+            background: var(--maroon);
+            color: white;
+            font-weight: 800;
+            font-size: 14px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step em { color: var(--maroon-dark); }
+
+        .step-note {
+            background: white;
+            border: 1px dashed var(--border-light);
+            padding: 10px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-style: italic;
+            margin-top: 10px;
+            color: #555;
+        }
+
+        /* ── Figure reference tag ── */
+        .fig-ref {
+            display: inline-block;
+            background: var(--maroon);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        /* ── Terrain notes ── */
+        .terrain-note {
+            background: #E8F5E9;
+            border: 1px solid #81C784;
+            padding: 14px 18px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .terrain-note strong {
+            color: #2E7D32;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* ── Tools pills ── */
+        .tools-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .tools-list li {
+            background: var(--cream);
+            border: 1px solid var(--border-light);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--maroon-dark);
+        }
+
+        /* ── Quantity table ── */
+        .qty-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+            font-size: 14px;
+        }
+
+        .qty-table thead th {
+            background: var(--maroon);
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 1px;
+            padding: 10px 14px;
+            text-align: left;
+        }
+
+        .qty-table tbody td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .qty-table tbody tr:nth-child(even) {
+            background: var(--cream);
+        }
+
+        /* ── Print ── */
+        .print-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: var(--maroon);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 100;
+            letter-spacing: 1px;
+        }
+
+        .print-btn:hover { background: var(--maroon-dark); }
+
+        @media print {
+            .print-btn { display: none !important; }
+            body { background: white !important; }
+            .page { box-shadow: none !important; margin: 0 !important; padding: 40px 50px !important; }
+            .page + .page { page-break-before: always; }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="print-btn" onclick="window.print()">Print</button>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PAGE 1 — PRE-CHECK & PARTS LIST DIAGRAM
+         ═══════════════════════════════════════════════════════ -->
+    <div class="page">
+        <span class="page-num">1</span>
+        <div class="page-header">
+            <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
+                alt="Superior Fence & Rail" style="height:30px;">
+            <h2>Chain-Link Fence &amp; Gate &bull; Installation Instructions</h2>
+        </div>
+
+        <!-- Before You Start -->
+        <div class="section-banner">Before You Start, It's Important to Check&nbsp;.&nbsp;.&nbsp;.</div>
+
+        <div style="padding-left: 18px; margin-bottom: 24px;">
+            <p><strong>. . .</strong> That fence footings do not exceed legally established property lines. If uncertain,
+                refer to real estate agent's line plot or consult a professional surveyor.</p>
+            <p><strong>. . .</strong> Local codes for specifications regarding frontage locations, allowable fence
+                heights, etc. A permit may be required.</p>
+            <p><strong>. . .</strong> With local utility companies for locations of underground cables or pipelines.</p>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Parts List -->
+        <h3 class="section-title" style="text-align:center; margin-top:20px;">Chain-Link Fence and Gate</h3>
+        <div class="section-banner">Parts List</div>
+
+        <p style="text-align:center; font-size:13px; color:#666; margin-bottom:16px;">
+            The numbered parts below correspond to the fence assembly diagram. Use this list when gathering materials.
+        </p>
+
+        <div class="parts-two-col">
+            <div class="parts-col">
+                <div class="check-item">
+                    <div class="part-id">1</div>
+                    <div class="part-info">
+                        <div class="part-name">Terminal Post Cap</div>
+                        <div class="part-desc">Covers top of end, corner, and gate posts</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="part-id">2</div>
+                    <div class="part-info">
+                        <div class="part-name">Rail End (Cup)</div>
+                        <div class="part-desc">Connects top rail to terminal post</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="part-id">3</div>
+                    <div class="part-info">
+                        <div class="part-name">Rail End Band (Brace Band)</div>
+                        <div class="part-desc">Holds rail end to terminal post</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="part-id">4</div>
+                    <div class="part-info">
+                        <div class="part-name">Tension Band</div>
+                        <div class="part-desc">Secures tension bar to terminal post</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="part-id">5</div>
+                    <div class="part-info">
+                        <div class="part-name">Line Post Top (Loop Cap)</div>
+                        <div class="part-desc">Holds top rail on line posts — offset side faces outside</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="part-id">6</div>
+                    <div class="part-info">
+                        <div class="part-name">Fence Tie</div>
+                        <div class="part-desc">Secures fabric to top rail and line posts</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="part-id">7</div>
+                    <div class="part-info">
+                        <div class="part-name">Gate Frame Hinge (Female)</div>
+                        <div class="part-desc">Attaches to the gate frame</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="part-id">8</div>
+                    <div class="part-info">
+                        <div class="part-name">Gate Post Hinge (Male)</div>
+                        <div class="part-desc">Attaches to the gate post</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="parts-col">
+                <div class="check-item">
+                    <div class="part-id">9</div>
+                    <div class="part-info">
+                        <div class="part-name">Gate Fork Latch</div>
+                        <div class="part-desc">Latching mechanism for swing gates</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="part-id">10</div>
+                    <div class="part-info">
+                        <div class="part-name">Terminal Post</div>
+                        <div class="part-desc">End, corner, and gate posts</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="part-id">11</div>
+                    <div class="part-info">
+                        <div class="part-name">Tension Bar</div>
+                        <div class="part-desc">Threads through fabric end; held by tension bands</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="part-id">12</div>
+                    <div class="part-info">
+                        <div class="part-name">Top Rail</div>
+                        <div class="part-desc">Horizontal rail along top of fence</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="part-id">13</div>
+                    <div class="part-info">
+                        <div class="part-name">Line Post</div>
+                        <div class="part-desc">Intermediate posts between terminal posts</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="part-id">14</div>
+                    <div class="part-info">
+                        <div class="part-name">Bottom Tension Wire</div>
+                        <div class="part-desc">Runs along bottom of fence to prevent lifting</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="part-id">15</div>
+                    <div class="part-info">
+                        <div class="part-name">Tension Wire Clip (Hog Ring)</div>
+                        <div class="part-desc">Secures tension wire to chain-link fabric</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">Superior Fence &amp; Rail — Hudson Valley H.Q. — Page 1</div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PAGE 2 — PARTS DESCRIPTION • QUANTITY TO USE / BUY
+         ═══════════════════════════════════════════════════════ -->
+    <div class="page">
+        <span class="page-num">2</span>
+        <div class="page-header">
+            <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
+                alt="Superior Fence & Rail" style="height:30px;">
+            <h2>Chain-Link Fence &amp; Gate &bull; Installation Instructions</h2>
+        </div>
+
+        <div class="section-banner">Parts Description &bull; Quantity to Use / Buy</div>
+
+        <!-- Left + Right columns like the original -->
+        <div class="parts-two-col">
+
+            <!-- LEFT COLUMN -->
+            <div class="parts-col">
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Chain-Link Fabric</div>
+                        <div class="part-desc">Same linear footage of fence less gate openings.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Terminal Post ⑩</div>
+                        <div class="part-desc">End, corner, and gate posts: As required (2 for each gate).<br>
+                            <em>2&frac12;″ &bull; Height + 3′ buried</em></div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Line Post ⑬ <span style="font-weight:400; font-size:12px;">(Intermediate
+                                Post)</span></div>
+                        <div class="part-desc">Divide total footage of fence (less gate openings) by 10 and subtract 1.
+                            Subtract 1 additional line post for each corner post used. Space line posts equidistant at
+                            intervals not exceeding <strong>10 feet</strong>.<br>
+                            <em>1 5/8″</em></div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Top Rail ⑫ <span style="font-weight:400; font-size:12px;">(Plain or
+                                Swedged End)</span></div>
+                        <div class="part-desc">Same linear footage as fence fabric.<br>
+                            <em>21′ × 1 3/8″</em></div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Top Rail Sleeve</div>
+                        <div class="part-desc">1 for each length of plain-end top rail. Not needed for swedged-end top
+                            rail.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Tension Bar ⑪</div>
+                        <div class="part-desc">1 for each end post, 1 for each gate post, 2 for each corner post.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Single Swing Gate</div>
+                        <div class="part-desc">Individual fittings as indicated below.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Double Swing Gate</div>
+                        <div class="part-desc">Individual fittings as indicated below.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Terminal Post Cap ①</div>
+                        <div class="part-desc">1 for each terminal post.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Line Post Top (Loop Cap) ⑤</div>
+                        <div class="part-desc">1 for each line post.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="parts-col">
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Rail End (Cup) ②</div>
+                        <div class="part-desc">1 for each end post, 1 for each gate post, 2 for each corner post.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Rail End Band (Brace Band) ③</div>
+                        <div class="part-desc">1 for each rail end.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Tension Band ④</div>
+                        <div class="part-desc">For each end post, use 3 for 3′–4′; use 4 each for 5′; and use 5 each
+                            for 6′. Same for gate posts. <strong>Double the quantity for corner posts.</strong></div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Gate Post Hinge (Male) ⑧</div>
+                        <div class="part-desc">2 for single swing gate, 4 for double swing gate.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Gate Frame Hinge (Female) ⑦</div>
+                        <div class="part-desc">2 for single swing gate, 4 for double swing gate.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Gate Fork Latch ⑨</div>
+                        <div class="part-desc">1 for each single swing gate.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Fence Tie ⑥</div>
+                        <div class="part-desc">1 for every <strong>12″</strong> of top rail and 1 for every
+                            <strong>12″</strong> of line posts.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">5/16″ × 1-1/4″ Carriage Bolt</div>
+                        <div class="part-desc">1 for each rail end band; 1 for each tension band.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">3/8″ × 2″ Carriage Bolt</div>
+                        <div class="part-desc">1 for each gate frame hinge.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">3/8″ × 3″ Carriage Bolt</div>
+                        <div class="part-desc">1 for each gate post hinge.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Bottom Tension Wire ⑭</div>
+                        <div class="part-desc">Same linear footage of fence less gate openings.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Tension Wire Clip (Hog Ring) ⑮</div>
+                        <div class="part-desc">1 for every <strong>12″</strong> of tension wire.</div>
+                    </div>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"></div>
+                    <div class="part-info">
+                        <div class="part-name">Concrete Mix</div>
+                        <div class="part-desc">Approximately 1&frac12; (60 lb) sacks per post hole.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Tools -->
+        <div class="section-banner">Tools You Will Find Useful</div>
+
+        <ul class="tools-list">
+            <li>String or Chalk Line and Stakes</li>
+            <li>Tape Measure</li>
+            <li>Post Hole Digger</li>
+            <li>Wheelbarrow, Shovel and Hoe</li>
+            <li>Carpenter's Level</li>
+            <li>1/2″ and 9/16″ Wrench or Crescent Wrench</li>
+            <li>Hacksaw or Pipe Cutter</li>
+            <li>Fence Stretcher</li>
+            <li>Pliers</li>
+            <li>Tension Wire Clip (Hog Ring) Pliers</li>
+        </ul>
+
+        <div class="page-footer">Superior Fence &amp; Rail — Hudson Valley H.Q. — Page 2</div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PAGE 3 (Original pg 6) — ADDING FITTINGS TO TERMINAL POSTS
+         ═══════════════════════════════════════════════════════ -->
+    <div class="page">
+        <span class="page-num">3</span>
+        <div class="page-header">
+            <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
+                alt="Superior Fence & Rail" style="height:30px;">
+            <h2>Chain-Link Fence &amp; Gate &bull; Installation Instructions</h2>
+        </div>
+
+        <div class="section-banner">
+            <span class="section-banner-num"><span class="num">4</span> Adding Fittings to Terminal Posts</span>
+        </div>
+
+        <div class="step">
+            <div class="step-num">1</div>
+            <p>After concrete footings have been allowed to sufficiently harden, slip the <strong>rail end
+                    bands</strong> and <strong>tension bands</strong> onto the terminal posts. <em>(Refer to parts list
+                    for the description and quantity of fittings that are required for various post types and
+                    heights.)</em> The long flat surface of the tension band should face toward the <strong>outside of
+                    the fence</strong>. <span class="fig-ref">Fig. 5</span></p>
+            <div class="step-note">
+                <strong>NOTE:</strong> Take care not to spread or distort the fittings.
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">2</div>
+            <p>Apply all <strong>terminal post caps</strong>.</p>
+        </div>
+
+        <div class="spec-card" style="margin-top:20px;">
+            <strong>Fitting Layout — End &amp; Gate Post <span class="fig-ref">Fig. 5</span></strong>
+            <p>Top to bottom: Terminal Post Cap → Rail End Band → Tension Bands → Rail End Band for Tension Wire
+                (bottom).</p>
+        </div>
+        <div class="spec-card">
+            <strong>Fitting Layout — Corner Post <span class="fig-ref">Fig. 5</span></strong>
+            <p>Same layout but <strong>duplicated on each side</strong> of the corner. Double the number of tension
+                bands.</p>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Terrain adjustments -->
+        <h3 class="section-title">Terrain Adjustments</h3>
+
+        <div class="terrain-note">
+            <strong>Terraced Ground <span class="fig-ref">Fig. 6</span></strong>
+            <p>Corner post assembly is used at point A to allow fabric to follow terraced contour of ground. The fence
+                steps down in sections, with each section remaining level.</p>
+        </div>
+
+        <div class="terrain-note">
+            <strong>Very Uneven Ground <span class="fig-ref">Fig. 7</span></strong>
+            <p>Corner post assembly is used at points A and B when ground rises or drops more than <strong>15″ per 100
+                    linear feet</strong>. This allows the fabric and top rail to angle with the slope while maintaining
+                proper tension.</p>
+        </div>
+
+        <div class="page-footer">Superior Fence &amp; Rail — Hudson Valley H.Q. — Page 3</div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PAGE 4 (Original pg 7) — INSTALLING TOP RAILS & TENSION WIRE
+         ═══════════════════════════════════════════════════════ -->
+    <div class="page">
+        <span class="page-num">4</span>
+        <div class="page-header">
+            <img src="https://d1qpm27e29dlmy.cloudfront.net/wp-content/uploads/2025/05/22130933/logoV2.webp"
+                alt="Superior Fence & Rail" style="height:30px;">
+            <h2>Chain-Link Fence &amp; Gate &bull; Installation Instructions</h2>
+        </div>
+
+        <div class="section-banner">
+            <span class="section-banner-num"><span class="num">5</span> Installing Top Rails</span>
+        </div>
+
+        <div class="step">
+            <div class="step-num">1</div>
+            <p>Place <strong>line post top</strong> on the top of each line post. The off-set round side should be toward
+                the <strong>outside of the fence</strong>. <span class="fig-ref">Fig. 8</span></p>
+        </div>
+
+        <div class="step">
+            <div class="step-num">2</div>
+            <p>Insert one length of <strong>top rail</strong> through the line post top closest to a terminal post. Slip
+                <strong>rail end</strong> onto the end of the top rail and attach it to a terminal post by using a
+                <strong>rail end band</strong>. Secure by using a <strong>5/16″ × 1-1/4″ carriage bolt</strong> with the
+                head to the outside of the fence. <span class="fig-ref">Fig. 9</span></p>
+        </div>
+
+        <div class="step">
+            <div class="step-num">3</div>
+            <p>Continue by forcing lengths of <strong>swedge-end top rail</strong> together through the line post tops.
+                (If swedge-end top rail is not used, join lengths together with <strong>top rail sleeves</strong>.)
+                <span class="fig-ref">Fig. 10</span></p>
+        </div>
+
+        <div class="step">
+            <div class="step-num">4</div>
+            <p>Upon reaching the next terminal post, measure carefully and cut the top rail to fit tightly between the
+                last length of top rail and the rail end. Fasten rail end to rail end band on the terminal post. Secure
+                in place with a <strong>5/16″ × 1-1/4″ carriage bolt</strong>. <span class="fig-ref">Fig. 11</span></p>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section-banner">
+            <span class="section-banner-num"><span class="num">6</span> Adding Tension Wire (Optional)</span>
+        </div>
+
+        <div class="important-note">
+            💡 Tension wire runs along the bottom of the fence to prevent the fabric from being pushed up or pulled out.
+            While optional, it is <strong>highly recommended</strong> for security and durability.
+        </div>
+
+        <div class="step">
+            <div class="step-num">1</div>
+            <p>Wrap <strong>tension wire</strong> once around bottom rail end band carriage bolt. Using pliers, twist
+                several times to secure. <span class="fig-ref">Fig. 12</span></p>
+            <p style="margin-top:8px;">Tension wire should run along the <strong>same side of the posts as the
+                    fabric</strong>.</p>
+        </div>
+
+        <div class="step">
+            <div class="step-num">2</div>
+            <p>Apply <strong>tension wire clips</strong> no more than <strong>24″</strong> apart, or as needed for
+                securing the wire to the chain-link fabric.</p>
+        </div>
+
+        <div class="spec-card" style="margin-top:16px;">
+            <strong>Tension Wire – Quick Reference</strong>
+            <p><strong>Wire length:</strong> Same linear footage as fence, minus gate openings.</p>
+            <p><strong>Clip spacing:</strong> Every 24″ maximum (12″ recommended per shop standard).</p>
+            <p><strong>Attachment:</strong> Wrap once around carriage bolt at bottom rail end band, twist to secure at
+                each terminal post.</p>
+        </div>
+
+        <div class="page-footer">Superior Fence &amp; Rail — Hudson Valley H.Q. — Page 4</div>
+    </div>
+</body>
+
+</html>

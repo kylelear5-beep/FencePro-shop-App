@@ -1,49 +1,30 @@
 import React, { useState, useEffect } from 'react';
+import { useI18n } from '../i18n';
 
 // ── Variance badge helper ─────────────────────────────────────────────────────
-// COLOUR RULES (applied by absolute % of previous system count):
-//
-//   🟢 GREEN  — Zero variance or within tight tolerance
-//               Regular: ±5%  |  Bulk categories: ±2%
-//
-//   🟠 ORANGE — Minor variance, worth a look
-//               Regular: ±6–10%  |  Bulk: ±3–5%
-//
-//   🔴 RED    — Significant variance, investigate
-//               Regular: >10%  |  Bulk: >5%
-//
-// Both positive (counted MORE) and negative (counted LESS) use the same
-// absolute-value thresholds so the colour is never misleading.
 function VarianceBadge({ variance, actualCount, category }) {
-  // Reconstruct what the system previously held
+  const { t } = useI18n();
   const previousCount = Math.max(0, actualCount - variance);
-
   const BULK_CATS = ['Shop Consumables', 'Chain Link', 'Vinyl Caps', 'Vinyl Hardware', 'Aluminum Hardware'];
-  const isBulk    = BULK_CATS.some(c => (category || '').toLowerCase().includes(c.toLowerCase())) || previousCount > 100;
-
-  const greenPct  = isBulk ? 0.02 : 0.05;  // within this %  → GREEN
-  const orangePct = isBulk ? 0.05 : 0.10;  // within this %  → ORANGE  (beyond → RED)
-
-  const greenThreshold  = Math.ceil(previousCount * greenPct);
+  const isBulk = BULK_CATS.some(c => (category || '').toLowerCase().includes(c.toLowerCase())) || previousCount > 100;
+  const greenPct = isBulk ? 0.02 : 0.05;
+  const orangePct = isBulk ? 0.05 : 0.10;
+  const greenThreshold = Math.ceil(previousCount * greenPct);
   const orangeThreshold = Math.ceil(previousCount * orangePct);
-  const absVar          = Math.abs(variance);
-
-  let cls   = 'text-emerald-700 bg-emerald-100 border-emerald-300'; // 🟢 default GOOD
-  let label = 'GOOD';
-
+  const absVar = Math.abs(variance);
+  let cls = 'text-emerald-700 bg-emerald-100 border-emerald-300';
+  let label = t('bcb_good');
   if (variance !== 0) {
     const sign = variance > 0 ? '+' : '';
     label = `${sign}${variance}`;
-
     if (absVar <= greenThreshold) {
-      cls = 'text-emerald-700 bg-emerald-100 border-emerald-300'; // 🟢 within tolerance
+      cls = 'text-emerald-700 bg-emerald-100 border-emerald-300';
     } else if (absVar <= orangeThreshold) {
-      cls = 'text-orange-700 bg-orange-100 border-orange-300';   // 🟠 minor variance
+      cls = 'text-orange-700 bg-orange-100 border-orange-300';
     } else {
-      cls = 'text-red-700 bg-red-100 border-red-300';            // 🔴 significant variance
+      cls = 'text-red-700 bg-red-100 border-red-300';
     }
   }
-
   return (
     <span className={`text-xs font-black px-3 py-1.5 rounded-md border-2 ${cls}`}>
       {label}
@@ -53,36 +34,26 @@ function VarianceBadge({ variance, actualCount, category }) {
 
 /**
  * BlindCountBoard — Rugged digital clipboard for physical inventory counts.
- *
- *  FLOW:
- *   1. Fetch count sheet + Big Bob's daily assignment.
- *   2. Crew picks a category and counts items one by one.
- *   3. After each "Submit", the system-stored count is compared and a
- *      GREEN / ORANGE / RED variance badge appears immediately.
- *      The old system count stays HIDDEN — true blind count.
- *   5. Quick-add panel lets shop crew add missing items on the fly.
- *   6. "Finish Section" logs skipped items + emails variance report.
  */
 export default function BlindCountBoard({ counterName = 'Unknown' }) {
+  const { t } = useI18n();
   const [categories, setCategories]             = useState([]);
   const [items, setItems]                       = useState([]);
   const [assignment, setAssignment]             = useState(null);
   const [activeCategory, setActiveCategory]     = useState(null);
   const [counts, setCounts]                     = useState({});
-  const [status, setStatus]                     = useState({});
+  const [results, setResults]                   = useState({});       // per-item results after submit
   const [loading, setLoading]                   = useState(true);
   const [error, setError]                       = useState(null);
+  const [submitting, setSubmitting]             = useState(false);
   const [dayFinished, setDayFinished]           = useState(null);
   const [showWeekSchedule, setShowWeekSchedule] = useState(false);
-  
-  // Track start times per category
-  const [startTimes, setStartTimes] = useState({});
+  const [startTimes, setStartTimes]             = useState({});
 
   // Quick-add (shop side)
   const [showAddPanel, setShowAddPanel] = useState(false);
   const [addForm, setAddForm]           = useState({ sku: '', name: '', category: '', quantity: '0' });
   const [addStatus, setAddStatus]       = useState(null);
-
 
   // ── Data load ────────────────────────────────────────────────────────────
   const load = async () => {
@@ -112,52 +83,71 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
   const handleCountChange = (sku, value) =>
     setCounts(prev => ({ ...prev, [sku]: value }));
 
-  const handleSubmit = async (sku) => {
-    const actualCount = parseInt(counts[sku], 10);
-    if (isNaN(actualCount)) return;
-    setStatus(prev => ({ ...prev, [sku]: 'submitting' }));
+  const handleSubmitAll = async () => {
+    const activeCat = categories.find(c => c.name === activeCategory);
+    if (!activeCat) return;
+
+    const catItems = activeCat.items;
+    const itemsToSubmit = catItems.filter(i => counts[i.sku] !== undefined && counts[i.sku] !== '');
+
+    if (itemsToSubmit.length === 0) {
+      alert(t('bcb_enter_at_least'));
+      return;
+    }
+
+    setSubmitting(true);
+
     try {
-      const res = await fetch('/api/inventory/reconcile', {
+      const newResults = {};
+      const countedSkus = [];
+
+      for (const item of itemsToSubmit) {
+        const actualCount = parseInt(counts[item.sku], 10);
+        if (isNaN(actualCount)) continue;
+
+        const res = await fetch('/api/inventory/reconcile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
+          body: JSON.stringify({ sku: item.sku, actualCount, counterName }),
+        });
+
+        if (res.ok) {
+          const result = await res.json();
+          newResults[item.sku] = { done: true, variance: result.variance, actualCount };
+          countedSkus.push(item.sku);
+        } else {
+          newResults[item.sku] = { done: false, error: true };
+        }
+      }
+      setResults(newResults);
+
+      const startTime = startTimes[activeCategory] || new Date().toISOString();
+      const finishTime = new Date().toISOString();
+
+      const finishRes = await fetch('/api/inventory/finish-day', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
-        body: JSON.stringify({ sku, actualCount, counterName }),
+        body: JSON.stringify({
+          category: activeCategory,
+          countedSkus,
+          counterName,
+          sendReport: true,
+          startTime,
+          finishTime,
+        }),
       });
-      if (!res.ok) throw new Error('Reconciliation failed');
-      const result = await res.json();
-      
-      const newStatus = { ...status, [sku]: { done: true, variance: result.variance, actualCount } };
-      setStatus(newStatus);
 
-      // ── AUTO-FINISH LOGIC ──
-      // If this was the last item in the active category, trigger the report automatically
-      const currentCatItems = categories.find(c => c.name === activeCategory)?.items || [];
-      const doneCount = currentCatItems.filter(i => (i.sku === sku) || (newStatus[i.sku] && newStatus[i.sku].done)).length;
-      
-      if (doneCount === currentCatItems.length && currentCatItems.length > 0) {
-        handleFinishDay(activeCategory, newStatus);
+      if (finishRes.ok) {
+        const summary = await finishRes.json();
+        setDayFinished(summary);
       }
-    } catch {
-      setStatus(prev => ({ ...prev, [sku]: 'error' }));
+    } catch (err) {
+      console.error('Submit all failed:', err);
+      alert(t('bcb_submit_error'));
+    } finally {
+      setSubmitting(false);
     }
   };
-
-  const handleFinishDay = async (categoryName, currentStatus = status) => {
-    const catItems   = categories.find(c => c.name === categoryName)?.items || [];
-    const countedSkus = catItems.filter(i => currentStatus[i.sku] && currentStatus[i.sku].done).map(i => i.sku);
-    const startTime = startTimes[categoryName] || new Date().toISOString();
-    const finishTime = new Date().toISOString();
-    try {
-      const res = await fetch('/api/inventory/finish-day', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
-        body: JSON.stringify({ category: categoryName, countedSkus, counterName, sendReport: true, startTime, finishTime }),
-      });
-      if (!res.ok) throw new Error('Failed to finish');
-      const summary = await res.json();
-      setDayFinished(summary);
-    } catch { /* silently ignore */ }
-  };
-
 
   const handleAddItem = async (e) => {
     e.preventDefault();
@@ -181,17 +171,15 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
-  const isDone            = (sku) => { const s = status[sku]; return s && typeof s === 'object' && s.done; };
-  const categoryDoneCount = (ci)  => ci.filter(i => isDone(i.sku)).length;
-  const totalItems        = items.length;
-  const totalDone         = Object.values(status).filter(s => typeof s === 'object' && s.done).length;
+  const totalItems = items.length;
+  const totalDone  = Object.values(results).filter(s => typeof s === 'object' && s.done).length;
 
   // ── Loading ───────────────────────────────────────────────────────────────
   if (loading) return (
     <div className="min-h-[400px] flex items-center justify-center">
       <div className="text-center">
         <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-lg font-bold text-gray-600 uppercase tracking-wide">Loading count sheet...</p>
+        <p className="text-lg font-bold text-gray-600 uppercase tracking-wide">{t('bcb_loading')}</p>
       </div>
     </div>
   );
@@ -200,9 +188,9 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
   if (error) return (
     <div className="min-h-[400px] flex items-center justify-center">
       <div className="bg-red-50 border-2 border-red-400 rounded-lg p-8 text-center max-w-md">
-        <p className="text-xl font-black text-red-700 uppercase mb-2">⚠ Error</p>
+        <p className="text-xl font-black text-red-700 uppercase mb-2">{t('bcb_error')}</p>
         <p className="text-red-600 font-semibold">{error}</p>
-        <button onClick={load} className="mt-4 px-4 py-2 bg-red-600 text-white font-black uppercase rounded-lg">Retry</button>
+        <button onClick={load} className="mt-4 px-4 py-2 bg-red-600 text-white font-black uppercase rounded-lg">{t('bcb_retry')}</button>
       </div>
     </div>
   );
@@ -212,47 +200,44 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
     <div className="max-w-4xl mx-auto">
       <header className="bg-emerald-800 text-white rounded-t-xl px-6 py-6 text-center">
         <p className="text-4xl mb-2">✅</p>
-        <h2 className="text-2xl font-black tracking-tight uppercase">Section Complete</h2>
+        <h2 className="text-2xl font-black tracking-tight uppercase">{t('bcb_section_complete')}</h2>
         <p className="text-emerald-200 text-sm font-semibold mt-1">{dayFinished.message}</p>
         {dayFinished.emailReport?.sent && (
-          <p className="text-emerald-300 text-xs mt-1 font-bold">📧 Variance report emailed to management</p>
+          <p className="text-emerald-300 text-xs mt-1 font-bold">{t('bcb_email_sent')}</p>
         )}
-        {dayFinished.emailReport?.betaMock && (
-          <p className="text-amber-300 text-xs mt-1">(Email configured but in BETA mock mode — set SMTP_* in .env to go live)</p>
+        {dayFinished.emailReport?.sent === false && dayFinished.emailReport?.reason && (
+          <p className="text-amber-300 text-xs mt-1 font-bold">{t('bcb_email_label')} {dayFinished.emailReport.reason}</p>
         )}
       </header>
 
       {/* Counted */}
       <div className="bg-white border-2 border-gray-200">
         <div className="bg-gray-900 text-white px-6 py-3">
-          <h3 className="text-sm font-black uppercase tracking-wide">✓ Counted — {dayFinished.counted} items</h3>
+          <h3 className="text-sm font-black uppercase tracking-wide">{t('bcb_counted_items', { count: dayFinished.counted })}</h3>
         </div>
-        {activeCategory && categories.find(c => c.name === activeCategory)?.items
-          .filter(i => isDone(i.sku))
-          .map(item => {
-            const s        = status[item.sku];
-            const variance = s?.variance ?? 0;
-            const actual   = Number(counts[item.sku] || 0);
-            return (
-              <div key={item.sku} className="px-6 py-3 flex items-center justify-between border-b border-gray-100">
-                <div>
-                  <p className="text-sm font-bold text-gray-900">{item.name}</p>
-                  <p className="text-xs font-bold text-gray-400 uppercase">{item.sku}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-bold text-gray-600">Counted: {actual}</span>
-                  <VarianceBadge variance={variance} actualCount={actual} category={activeCategory} />
-                </div>
+        {dayFinished.countedItems?.map(item => {
+          const variance = item.variance ?? 0;
+          const actual   = item.actualCount ?? 0;
+          return (
+            <div key={item.sku} className="px-6 py-3 flex items-center justify-between border-b border-gray-100">
+              <div>
+                <p className="text-sm font-bold text-gray-900">{item.name}</p>
+                <p className="text-xs font-bold text-gray-400 uppercase">{item.sku}</p>
               </div>
-            );
-          })}
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-bold text-gray-600">{t('bcb_counted')} {actual}</span>
+                <VarianceBadge variance={variance} actualCount={actual} category={activeCategory} />
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Skipped */}
       {dayFinished.skipped > 0 && (
         <div className="bg-white border-2 border-gray-200 border-t-0">
           <div className="bg-amber-600 text-white px-6 py-3">
-            <h3 className="text-sm font-black uppercase tracking-wide">⊘ Not Counted — {dayFinished.skipped} items</h3>
+            <h3 className="text-sm font-black uppercase tracking-wide">{t('bcb_not_counted', { count: dayFinished.skipped })}</h3>
           </div>
           {dayFinished.skippedItems.map(item => (
             <div key={item.sku} className="px-6 py-3 flex items-center justify-between border-b border-gray-100">
@@ -260,19 +245,19 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
                 <p className="text-sm font-bold text-gray-900">{item.name}</p>
                 <p className="text-xs font-bold text-gray-400 uppercase">{item.sku}</p>
               </div>
-              <span className="text-xs font-black text-amber-700 bg-amber-100 border-2 border-amber-300 px-3 py-1.5 rounded-md">SKIPPED</span>
+              <span className="text-xs font-black text-amber-700 bg-amber-100 border-2 border-amber-300 px-3 py-1.5 rounded-md">{t('bcb_skipped')}</span>
             </div>
           ))}
         </div>
       )}
 
       <div className="mt-4 bg-gray-100 border-2 border-gray-300 rounded-b-xl px-5 py-3 flex items-center justify-between">
-        <p className="text-sm font-bold text-gray-600">📋 Variance report generated. Review flagged items with management.</p>
+        <p className="text-sm font-bold text-gray-600">{t('bcb_variance_report')}</p>
         <button
-          onClick={() => { setDayFinished(null); setActiveCategory(null); load(); }}
+          onClick={() => { setDayFinished(null); setActiveCategory(null); setResults({}); setCounts({}); load(); }}
           className="px-4 py-2 bg-gray-800 text-white text-xs font-black uppercase rounded-lg hover:bg-gray-700 transition-colors"
         >
-          New Count
+          {t('bcb_new_count')}
         </button>
       </div>
     </div>
@@ -291,10 +276,10 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
               <span className="text-3xl">🦺</span>
               <div>
                 <h2 className="text-xl font-black tracking-tight uppercase">
-                  {assignment.assigned ? `${assignment.dayName} Count` : 'No Count Today'}
+                  {assignment.assigned ? `${assignment.dayName} ${t('bcb_count')}` : t('bcb_no_count_today')}
                 </h2>
                 <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mt-0.5">
-                  Big Bob's Orders • Week {assignment.weekNumber || ''}
+                  {t('bcb_bobs_orders', { week: assignment.weekNumber || '' })}
                 </p>
               </div>
             </div>
@@ -308,7 +293,7 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
                   onClick={() => setShowWeekSchedule(!showWeekSchedule)}
                   className="text-xs font-bold text-gray-500 hover:text-gray-300 uppercase cursor-pointer transition-colors"
                 >
-                  {showWeekSchedule ? '▾ Hide Week Schedule' : '▸ Show Full Week'}
+                  {showWeekSchedule ? t('bcb_hide_week') : t('bcb_show_week')}
                 </button>
                 {showWeekSchedule && (
                   <div className="mt-2 grid grid-cols-5 gap-1">
@@ -326,8 +311,8 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
             )}
 
             <div className="flex items-center gap-3 mt-3">
-              <span className="bg-amber-500 text-black text-xs font-black uppercase tracking-widest px-4 py-2 rounded-md">Counter: {counterName}</span>
-              <span className="bg-gray-800 text-gray-300 text-xs font-bold px-3 py-2 rounded-md border border-gray-700">{totalDone}/{totalItems} Total</span>
+              <span className="bg-amber-500 text-black text-xs font-black uppercase tracking-widest px-4 py-2 rounded-md">{t('bcb_counter')} {counterName}</span>
+              <span className="bg-gray-800 text-gray-300 text-xs font-bold px-3 py-2 rounded-md border border-gray-700">{totalDone}/{totalItems} {t('bcb_total')}</span>
             </div>
           </div>
         )}
@@ -339,36 +324,30 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
         <div className={`bg-white border-2 border-gray-200 ${assignment ? '' : 'rounded-t-xl'} rounded-b-xl divide-y-2 divide-gray-100`}>
           {/* Assigned today */}
           {categories.filter(cat => isAssigned(cat.name)).map((cat) => {
-            const done = categoryDoneCount(cat.items);
             const total = cat.items.length;
-            const complete = done === total;
             return (
               <button key={cat.name}
-                onClick={() => { 
-                  setActiveCategory(cat.name); 
+                onClick={() => {
+                  setActiveCategory(cat.name);
                   setAddForm(f => ({ ...f, category: cat.name }));
                   if (!startTimes[cat.name]) {
                     setStartTimes(prev => ({ ...prev, [cat.name]: new Date().toISOString() }));
                   }
                 }}
-                className={`w-full px-6 py-5 flex items-center justify-between text-left cursor-pointer transition-colors hover:bg-amber-50 ${complete ? 'bg-emerald-50' : 'bg-amber-50/30'}`}
+                className="w-full px-6 py-5 flex items-center justify-between text-left cursor-pointer transition-colors hover:bg-amber-50 bg-amber-50/30"
               >
                 <div className="flex items-center gap-4">
-                  {complete
-                    ? <span className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center text-lg font-black">✓</span>
-                    : <span className="w-10 h-10 rounded-full bg-amber-500 text-black flex items-center justify-center text-sm font-black">{done > 0 ? done : '!'}</span>}
+                  <span className="w-10 h-10 rounded-full bg-amber-500 text-black flex items-center justify-center text-sm font-black">!</span>
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="text-lg font-black text-gray-900 uppercase tracking-tight">{cat.name}</p>
-                      <span className="text-[10px] font-black text-amber-700 bg-amber-200 px-2 py-0.5 rounded uppercase">Today</span>
+                      <span className="text-[10px] font-black text-amber-700 bg-amber-200 px-2 py-0.5 rounded uppercase">{t('bcb_today')}</span>
                     </div>
-                    <p className="text-xs font-bold text-gray-500">{total} items</p>
+                    <p className="text-xs font-bold text-gray-500">{total} {t('bcb_items')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className={`text-xs font-black uppercase px-3 py-1.5 rounded-md ${complete ? 'bg-emerald-600 text-white' : done > 0 ? 'bg-amber-100 text-amber-800' : 'bg-amber-500 text-black'}`}>
-                    {complete ? 'DONE' : done > 0 ? `${done}/${total}` : 'START'}
-                  </span>
+                  <span className="text-xs font-black uppercase px-3 py-1.5 rounded-md bg-amber-500 text-black">{t('bcb_start')}</span>
                   <span className="text-gray-400 text-xl">→</span>
                 </div>
               </button>
@@ -376,32 +355,26 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
           })}
           {/* Other categories */}
           {categories.filter(cat => !isAssigned(cat.name)).map((cat) => {
-            const done = categoryDoneCount(cat.items);
             const total = cat.items.length;
-            const complete = done === total;
             return (
               <button key={cat.name}
-                onClick={() => { 
-                  setActiveCategory(cat.name); 
+                onClick={() => {
+                  setActiveCategory(cat.name);
                   setAddForm(f => ({ ...f, category: cat.name }));
                   if (!startTimes[cat.name]) {
                     setStartTimes(prev => ({ ...prev, [cat.name]: new Date().toISOString() }));
                   }
                 }}
-                className={`w-full px-6 py-4 flex items-center justify-between text-left cursor-pointer transition-colors hover:bg-gray-50 ${complete ? 'bg-emerald-50' : ''}`}
+                className="w-full px-6 py-4 flex items-center justify-between text-left cursor-pointer transition-colors hover:bg-gray-50"
               >
                 <div className="flex items-center gap-4">
-                  {complete
-                    ? <span className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm font-black">✓</span>
-                    : <span className="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold">{done > 0 ? done : ''}</span>}
+                  <span className="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xs font-bold"></span>
                   <div>
                     <p className="text-base font-bold text-gray-600 uppercase tracking-tight">{cat.name}</p>
-                    <p className="text-xs text-gray-400">{total} items</p>
+                    <p className="text-xs text-gray-400">{total} {t('bcb_items')}</p>
                   </div>
                 </div>
-                <span className={`text-xs font-bold px-3 py-1.5 rounded-md ${complete ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-400'}`}>
-                  {complete ? 'DONE' : done > 0 ? `${done}/${total}` : ''}
-                </span>
+                <span className="text-xs font-bold px-3 py-1.5 rounded-md bg-gray-100 text-gray-400"></span>
               </button>
             );
           })}
@@ -413,7 +386,7 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
   // ── Active Category Counting ───────────────────────────────────────────────
   const activeCat = categories.find(c => c.name === activeCategory);
   const catItems  = activeCat ? activeCat.items : [];
-  const catDone   = categoryDoneCount(catItems);
+  const filledCount = catItems.filter(i => counts[i.sku] !== undefined && counts[i.sku] !== '').length;
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -421,50 +394,50 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
       {/* Header */}
       <header className="bg-gray-900 text-white rounded-t-xl px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-4">
-          <button onClick={() => setActiveCategory(null)}
+          <button onClick={() => { setActiveCategory(null); setResults({}); }}
             className="w-10 h-10 rounded-lg bg-gray-700 hover:bg-gray-600 text-white flex items-center justify-center text-lg font-bold cursor-pointer transition-colors">
             ←
           </button>
           <div>
             <h2 className="text-xl font-black tracking-tight uppercase">{activeCategory}</h2>
-            <p className="text-gray-400 text-sm font-semibold mt-0.5">{catDone}/{catItems.length} items counted</p>
+            <p className="text-gray-400 text-sm font-semibold mt-0.5">{t('bcb_items_filled', { filled: filledCount, total: catItems.length })}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="bg-amber-500 text-black text-xs font-black uppercase tracking-widest px-4 py-2 rounded-md">Counter: {counterName}</span>
+          <span className="bg-amber-500 text-black text-xs font-black uppercase tracking-widest px-4 py-2 rounded-md">{t('bcb_counter')} {counterName}</span>
           <button onClick={() => setShowAddPanel(!showAddPanel)}
             className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase px-3 py-2 rounded-md transition-colors">
-            + ADD ITEM
+            {t('bcb_add_item')}
           </button>
         </div>
       </header>
 
       {/* Progress bar */}
       <div className="bg-gray-800 h-2">
-        <div className="bg-emerald-500 h-full transition-all duration-500" style={{ width: `${catItems.length > 0 ? (catDone / catItems.length) * 100 : 0}%` }} />
+        <div className="bg-amber-500 h-full transition-all duration-500" style={{ width: `${catItems.length > 0 ? (filledCount / catItems.length) * 100 : 0}%` }} />
       </div>
 
       {/* Quick-Add Panel */}
       {showAddPanel && (
         <div className="bg-amber-50 border-2 border-amber-400 px-6 py-4">
-          <p className="text-xs font-black text-amber-800 uppercase mb-3">📦 Add Item to "{activeCategory}" — syncs to management</p>
+          <p className="text-xs font-black text-amber-800 uppercase mb-3">{t('bcb_add_item_msg', { category: activeCategory })}</p>
           <form onSubmit={handleAddItem} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <input type="text" required placeholder="SKU *"
+            <input type="text" required placeholder={t('bcb_sku')}
               value={addForm.sku} onChange={e => setAddForm(f => ({ ...f, sku: e.target.value }))}
               className="border-2 border-amber-300 rounded-lg px-3 py-2 text-sm font-bold focus:outline-none focus:border-amber-500" />
-            <input type="text" required placeholder="Description *"
+            <input type="text" required placeholder={t('bcb_description')}
               value={addForm.name} onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))}
               className="border-2 border-amber-300 rounded-lg px-3 py-2 text-sm font-bold focus:outline-none focus:border-amber-500 col-span-2" />
-            <input type="number" min="0" placeholder="Qty on hand"
+            <input type="number" min="0" placeholder={t('bcb_qty_on_hand')}
               value={addForm.quantity} onChange={e => setAddForm(f => ({ ...f, quantity: e.target.value }))}
               className="border-2 border-amber-300 rounded-lg px-3 py-2 text-sm font-bold focus:outline-none focus:border-amber-500" />
             <div className="col-span-2 sm:col-span-4 flex gap-3 items-center">
               <button type="submit" disabled={addStatus?.type === 'loading'}
                 className="bg-amber-500 hover:bg-amber-600 text-black font-black text-xs uppercase px-4 py-2 rounded-lg transition-colors">
-                {addStatus?.type === 'loading' ? 'Saving...' : 'Save Item'}
+                {addStatus?.type === 'loading' ? t('bcb_saving') : t('bcb_save_item')}
               </button>
               <button type="button" onClick={() => setShowAddPanel(false)}
-                className="text-xs font-bold text-gray-500 hover:text-gray-700">Cancel</button>
+                className="text-xs font-bold text-gray-500 hover:text-gray-700">{t('bcb_cancel_add')}</button>
               {addStatus && (
                 <span className={`text-xs font-black ${addStatus.type === 'error' ? 'text-red-600' : 'text-emerald-600'}`}>
                   {addStatus.message}
@@ -475,31 +448,28 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
         </div>
       )}
 
-      {/* Variance Legend */}
-      <div className="bg-gray-50 border-x-2 border-gray-200 px-6 py-2 flex items-center gap-3 flex-wrap text-xs font-bold">
-        <span className="text-gray-500 uppercase">Variance:</span>
-        <span className="text-emerald-700 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded">🟢 GREEN = Good</span>
-        <span className="text-orange-700 bg-orange-100 border border-orange-300 px-2 py-0.5 rounded">🟠 ORANGE = Minor — review</span>
-        <span className="text-red-700 bg-red-100 border border-red-300 px-2 py-0.5 rounded">🔴 RED = Investigate</span>
+      {/* Instructions */}
+      <div className="bg-blue-50 border-x-2 border-gray-200 px-6 py-3 flex items-start gap-3">
+        <span className="text-xl">📋</span>
+        <p className="text-sm text-blue-800 font-semibold">
+          {t('bcb_instructions')} <strong>{t('bcb_instructions_btn')}</strong> {t('bcb_instructions_end')}
+        </p>
       </div>
 
-      {/* Item Rows */}
+      {/* Item Rows — just count inputs, no individual submit buttons */}
       <div className="bg-white border-2 border-gray-200 rounded-b-xl divide-y-2 divide-gray-100">
         {catItems.length === 0 && (
-          <div className="p-10 text-center text-gray-400 font-bold uppercase">No items in this category</div>
+          <div className="p-10 text-center text-gray-400 font-bold uppercase">{t('bcb_no_items')}</div>
         )}
 
         {catItems.map((item, idx) => {
-          const itemDone    = isDone(item.sku);
-          const isSubmitting = status[item.sku] === 'submitting';
-          const isError     = status[item.sku] === 'error';
-          const itemStatus  = status[item.sku];
-          const isRemoving  = removing[item.sku];
+          const result = results[item.sku];
+          const hasFilled = counts[item.sku] !== undefined && counts[item.sku] !== '';
 
           return (
             <div key={item.sku}
-              className={`px-6 py-5 transition-colors duration-300 ${
-                itemDone ? 'bg-emerald-50' : idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+              className={`px-6 py-4 transition-colors duration-300 ${
+                result?.done ? 'bg-emerald-50' : hasFilled ? 'bg-amber-50/40' : idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'
               }`}
             >
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -509,54 +479,29 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
                   <p className="text-xs font-bold text-gray-500 uppercase tracking-[0.15em] mt-1">{item.sku}</p>
                 </div>
 
-                {/* Controls */}
-                <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
-                  {itemDone ? (
+                {/* Count Input + Result */}
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  {result?.done && (
                     <>
-                      {/* Checkmark */}
                       <span className="bg-emerald-600 text-white text-xs font-black uppercase px-2 py-1.5 rounded-md">✓</span>
-
-                      {/* ── LIVE VARIANCE BADGE ── */}
                       <VarianceBadge
-                        variance={itemStatus?.variance ?? 0}
+                        variance={result.variance ?? 0}
                         actualCount={Number(counts[item.sku] || 0)}
                         category={activeCategory}
                       />
-
-                      {/* Allow correction */}
-                      <input type="number" min="0"
-                        value={counts[item.sku] ?? ''}
-                        onChange={e => handleCountChange(item.sku, e.target.value)}
-                        className="w-24 h-10 px-3 text-base font-bold text-gray-900 bg-emerald-50 border-2 border-emerald-400 rounded-lg focus:border-amber-500 focus:outline-none"
-                      />
-                      <button onClick={() => handleSubmit(item.sku)}
-                        className="h-10 px-3 text-xs font-black uppercase rounded-lg bg-gray-700 hover:bg-gray-800 text-white cursor-pointer transition-all">
-                        Update
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <input type="number" placeholder="Count"
-                        value={counts[item.sku] || ''}
-                        onChange={e => handleCountChange(item.sku, e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && handleSubmit(item.sku)}
-                        min="0"
-                        className="w-28 h-11 px-3 text-base font-bold text-gray-900 bg-gray-100 border-2 border-gray-300 rounded-lg placeholder:text-gray-400 placeholder:text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 focus:outline-none transition-all"
-                      />
-                      <button onClick={() => handleSubmit(item.sku)}
-                        disabled={isSubmitting}
-                        className={`h-11 px-4 text-xs font-black uppercase tracking-wide rounded-lg cursor-pointer transition-all ${
-                          isSubmitting ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 text-black shadow-md'
-                        }`}>
-                        {isSubmitting ? '...' : 'Submit'}
-                      </button>
                     </>
                   )}
-
-                  {isError && (
-                    <span className="text-xs font-black text-red-600 uppercase bg-red-100 px-2 py-1 rounded-md">⚠ Failed</span>
+                  {result?.error && (
+                    <span className="text-xs font-black text-red-600 uppercase bg-red-100 px-2 py-1 rounded-md">{t('bcb_failed')}</span>
                   )}
 
+                  <input type="number" placeholder={t('bcb_count')}
+                    value={counts[item.sku] || ''}
+                    onChange={e => handleCountChange(item.sku, e.target.value)}
+                    min="0"
+                    disabled={submitting}
+                    className="w-28 h-11 px-3 text-base font-bold text-gray-900 bg-gray-100 border-2 border-gray-300 rounded-lg placeholder:text-gray-400 placeholder:text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 focus:outline-none transition-all disabled:opacity-50"
+                  />
                 </div>
               </div>
             </div>
@@ -564,29 +509,40 @@ export default function BlindCountBoard({ counterName = 'Unknown' }) {
         })}
       </div>
 
-      {/* Bottom actions */}
+      {/* Bottom: Single Submit All Button */}
       <div className="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <button onClick={() => setActiveCategory(null)}
+        <button onClick={() => { setActiveCategory(null); setResults({}); }}
           className="text-sm font-bold text-gray-600 hover:text-gray-900 cursor-pointer transition-colors">
-          ← Back to all sections
+          {t('bcb_back_sections')}
         </button>
-        <button onClick={() => handleFinishDay(activeCategory)}
-          className={`h-11 px-6 text-sm font-black uppercase tracking-wide rounded-lg cursor-pointer transition-all shadow-md ${
-            catDone === catItems.length
-              ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-              : 'bg-gray-800 hover:bg-gray-900 text-white'
-          }`}>
-          {catDone === catItems.length
-            ? '✓ Finish Section + Email Report'
-            : `Finish Section (${catItems.length - catDone} uncounted)`}
+        <button
+          onClick={handleSubmitAll}
+          disabled={submitting || filledCount === 0}
+          className={`h-12 px-8 text-sm font-black uppercase tracking-wide rounded-lg cursor-pointer transition-all shadow-lg ${
+            submitting
+              ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+              : filledCount === catItems.length
+                ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                : filledCount > 0
+                  ? 'bg-amber-500 hover:bg-amber-600 text-black'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          }`}
+        >
+          {submitting
+            ? t('bcb_submitting')
+            : filledCount === catItems.length
+              ? t('bcb_submit_all', { count: filledCount })
+              : filledCount > 0
+                ? t('bcb_submit_partial', { filled: filledCount, total: catItems.length })
+                : t('bcb_enter_counts')}
         </button>
       </div>
 
-      {catDone < catItems.length && (
+      {filledCount < catItems.length && filledCount > 0 && (
         <div className="mt-3 bg-amber-100 border-2 border-amber-400 rounded-lg px-5 py-3 flex items-start gap-3">
           <span className="text-xl">💡</span>
           <p className="text-sm text-amber-800 font-medium">
-            <strong>Blank items won't be counted.</strong> {catItems.length - catDone} items will be logged as "Not Counted" if you finish now. You can come back to them.
+            <strong>{t('bcb_items_no_count', { count: catItems.length - filledCount })}</strong> {t('bcb_not_counted_note')}
           </p>
         </div>
       )}
