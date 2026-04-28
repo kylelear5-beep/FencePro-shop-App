@@ -1,0 +1,20 @@
+{
+  "name": "FencePro Shop Assistant",
+  "short_name": "FencePro",
+  "description": "Superior Fence & Rail — Shop Management, Inventory & AI Assistant",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a1a1a",
+  "theme_color": "#8B1A1A",
+  "icons": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "en-US"
+}
